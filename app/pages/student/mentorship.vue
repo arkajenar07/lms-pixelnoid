@@ -1,164 +1,280 @@
 <template>
-  <div class="dash-page">
-    <!-- ── Ambient background ── -->
-    <div class="bg-ambients" aria-hidden="true">
-      <div class="ambient ambient-tl"></div>
-      <div class="ambient ambient-tr"></div>
-      <div class="ambient ambient-br"></div>
-    </div>
-    <div class="bg-grid" aria-hidden="true"></div>
+  <div
+    class="flex min-h-screen bg-[#F5F5F8] antialiased relative overflow-x-hidden"
+    style="font-family: 'Instrument Sans', Raleway, sans-serif"
+  >
+    <!-- Sidebar -->
+    <StudentSidebar :open="sidebarOpen" @update:open="sidebarOpen = $event" />
 
-    <!-- ── Sidebar ── -->
-    <Sidebar :open="sidebarOpen" @update:open="sidebarOpen = $event" />
+    <!-- Main wrap -->
+    <div class="flex-1 lg:ml-[260px] flex flex-col relative z-[1]">
 
-    <!-- ── Main content ── -->
-    <div class="main-wrap">
-      
-      <!-- Top bar -->
-      <header class="topbar">
-        <button class="topbar-toggle" @click="sidebarOpen = !sidebarOpen" aria-label="Toggle sidebar">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <!-- ── TOPBAR ── -->
+      <header class="sticky top-0 z-[100] flex items-center gap-4 px-10 py-4 max-[900px]:px-6 bg-white border-b border-[#EEEDF5]">
+        <button
+          class="hidden max-[900px]:flex w-9 h-9 border border-[#E8E7F2] bg-white cursor-pointer rounded-xl items-center justify-center text-[#443E8D] hover:bg-[#F0EFF9] transition-colors"
+          @click="sidebarOpen = !sidebarOpen"
+          aria-label="Toggle sidebar"
+        >
+          <svg class="w-5 h-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
             <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
           </svg>
         </button>
-        <div class="topbar-greeting">
-          <h1 class="greeting-title">Mentorship & Check-in 🎯</h1>
-          <p class="greeting-sub">Diskusi, dapatkan insight, dan pantau perkembanganmu langsung dengan ekspert.</p>
+
+        <div class="flex-1 min-w-0">
+          <div class="flex items-center gap-2 mb-0.5">
+            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-[#F0EFF9] text-[0.6rem] font-bold tracking-wider uppercase text-[#443E8D]">
+              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
+              Mentorship
+            </span>
+          </div>
+          <h1 class="text-[1.1rem] font-bold text-[#1A1830] m-0 tracking-tight">
+            Sesi Belajar &amp; Check-in
+          </h1>
+        </div>
+
+        <div class="flex-shrink-0 flex items-center gap-2 bg-[#F0EFF9] px-3.5 py-2 rounded-xl">
+          <span class="text-[0.6rem] font-bold uppercase tracking-wider text-[#7B77B8]">Phase</span>
+          <span class="text-[1.1rem] font-black leading-none text-[#443E8D]">{{ currentPhase }}</span>
         </div>
       </header>
 
-      <!-- ── Dashboard content ── -->
-      <main class="dash-content">
+      <!-- ── MAIN CONTENT ── -->
+      <main class="py-8 px-10 max-[900px]:p-6 flex flex-col gap-8 max-w-[1200px] mx-auto w-full">
 
-        <!-- ═══ ROW 1: Booking Session ═══ -->
-        <section class="booking-section">
-          <div class="section-header">
-            <h2 class="section-title">Booking Sesi Baru</h2>
-            <p class="section-desc">Pilih jenis mentoring yang sesuai dengan kebutuhan belajarmu saat ini.</p>
-          </div>
-          
-          <div class="booking-cards">
-            <!-- 1:1 Mentoring -->
-            <div class="book-card">
-              <div class="book-icon-wrap bg-purple-light">
-                <svg viewBox="0 0 24 24" fill="none" class="text-purple" stroke="currentColor" stroke-width="2">
-                  <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>
-                </svg>
-              </div>
-              <div class="book-info">
-                <h3>Mentoring 1-on-1</h3>
-                <p>Private session 45 menit untuk review code, portfolio, atau kendala spesifik.</p>
-              </div>
-              <button class="btn-book">Jadwalkan 1:1</button>
+        <!-- Phase Progress Banner -->
+        <section class="relative overflow-hidden rounded-2xl bg-[#443E8D] p-7 lg:p-8">
+          <!-- Decorative circle -->
+          <div class="pointer-events-none absolute -top-16 -right-16 w-56 h-56 rounded-full bg-white/5"></div>
+          <div class="pointer-events-none absolute -bottom-10 right-32 w-40 h-40 rounded-full bg-white/5"></div>
+
+          <div class="relative z-10 flex flex-col lg:flex-row items-start lg:items-center gap-6 lg:gap-10">
+            <!-- Phase Info -->
+            <div class="flex flex-col gap-1 flex-1">
+              <span class="text-[0.6rem] font-bold uppercase tracking-wider text-white/60">📍 Kamu sekarang di</span>
+              <h2 class="text-[1.2rem] font-bold text-white tracking-tight m-0">Phase 2 — Build &amp; Debug</h2>
+              <p class="text-[0.8rem] text-white/70 leading-relaxed m-0">Week 5–9 · Fokus: mulai bangun dari nol, belajar debugging, dan susun code yang rapi.</p>
             </div>
 
-            <!-- Group Mentoring -->
-            <div class="book-card">
-              <div class="book-icon-wrap bg-green-light">
-                <svg viewBox="0 0 24 24" fill="none" class="text-green" stroke="currentColor" stroke-width="2">
-                  <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/>
-                </svg>
+            <!-- Phase Steps + Progress -->
+            <div class="flex flex-col gap-4 lg:min-w-[280px]">
+              <div class="flex items-center gap-3 flex-wrap">
+                <div
+                  v-for="phase in phases"
+                  :key="phase.id"
+                  class="flex items-center gap-2"
+                >
+                  <div
+                    class="w-6 h-6 rounded-full flex items-center justify-center text-[0.65rem] font-bold flex-shrink-0 transition-all"
+                    :class="phase.id < currentPhase
+                      ? 'bg-white text-[#443E8D]'
+                      : phase.id === currentPhase
+                        ? 'bg-white text-[#443E8D] ring-2 ring-white/40'
+                        : 'bg-white/20 text-white/60'"
+                  >
+                    <svg v-if="phase.id < currentPhase" class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="20 6 9 17 4 12"/></svg>
+                    <span v-else>{{ phase.id }}</span>
+                  </div>
+                  <span class="text-[0.72rem] font-semibold" :class="phase.id === currentPhase ? 'text-white' : 'text-white/55'">{{ phase.name }}</span>
+                  <span v-if="phase.id < phases.length" class="text-white/30 text-xs">·</span>
+                </div>
               </div>
-              <div class="book-info">
-                <h3>Group Mentoring</h3>
-                <p>Diskusi kelompok untuk sprint review harian bersama teman-teman & mentor.</p>
+              <div>
+                <div class="h-[5px] bg-white/20 rounded-full overflow-hidden mb-1.5">
+                  <div class="h-full bg-white rounded-full transition-all" style="width: 44%"></div>
+                </div>
+                <span class="text-[0.68rem] text-white/60">Week 7 dari 16 · 44% selesai</span>
               </div>
-              <button class="btn-book">Gabung Group</button>
             </div>
           </div>
         </section>
 
-        <div class="grid-layout">
-          <!-- ═══ LEFT COLUMN ═══ -->
-          <div class="left-col">
-            
-            <!-- Jadwal Session -->
-            <section class="card schedule-card">
-              <div class="card-header border-b">
-                <div class="section-badge badge-orange">
-                  <span class="badge-dot"></span> Jadwal Sesi Mendatang
-                </div>
-              </div>
-              <div class="schedule-list">
-                <div v-for="session in upcomingSessions" :key="session.id" class="session-item">
-                  <div class="session-date-box">
-                    <span class="sd-day">{{ session.day }}</span>
-                    <span class="sd-month">{{ session.month }}</span>
-                  </div>
-                  <div class="session-details">
-                    <h4 class="s-title">{{ session.title }}</h4>
-                    <div class="s-meta">
-                      <span class="s-time ms-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
-                        {{ session.time }}
-                      </span>
-                      <span class="s-type ms-icon">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M15 21v-8a1 1 0 00-1-1h-4a1 1 0 00-1 1v8"/><path d="M3 10V4a1 1 0 011-1h16a1 1 0 011 1v6"/></svg>
-                        {{ session.type }}
-                      </span>
-                    </div>
-                    <div class="s-mentor">Mentor: <strong>{{ session.mentor }}</strong></div>
-                  </div>
-                  <div class="session-actions">
-                    <button class="btn-meet">Gabung Meet</button>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            <!-- Catatan Mentoring -->
-            <section class="card notes-card">
-              <div class="card-header border-b">
-                <div class="section-badge badge-indigo">
-                  <span class="badge-dot"></span> Catatan & Insight Mentor
-                </div>
-              </div>
-              <div class="notes-list">
-                <div v-for="note in mentorNotes" :key="note.id" class="note-box">
-                  <div class="note-head">
-                    <div class="n-mentor">
-                      <div class="n-avatar">{{ note.init }}</div>
-                      <div>
-                        <div class="n-name">{{ note.mentor }}</div>
-                        <div class="n-topic">{{ note.topic }}</div>
-                      </div>
-                    </div>
-                    <span class="n-date">{{ note.date }}</span>
-                  </div>
-                  <p class="n-text">"{{ note.note }}"</p>
-                  <div class="n-tags">
-                    <span v-for="tag in note.tags" :key="tag" class="n-tag">{{ tag }}</span>
-                  </div>
-                </div>
-              </div>
-            </section>
+        <!-- Booking Sesi -->
+        <div class="flex flex-col gap-4">
+          <div>
+            <h2 class="text-[1rem] font-bold text-[#1A1830] tracking-tight m-0 mb-0.5">Booking Sesi</h2>
+            <p class="text-[0.8rem] text-[#9896C8] m-0">Pilih tipe sesi sesuai kebutuhanmu minggu ini.</p>
           </div>
 
-          <!-- ═══ RIGHT COLUMN ═══ -->
-          <div class="right-col">
-            
-            <!-- Riwayat Mentoring -->
-            <section class="card history-card">
-              <div class="card-header border-b">
-                <div class="section-badge badge-gray">
-                  <span class="badge-dot" style="background:#9CA3AF"></span> Riwayat Sesimu
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <!-- Main Class -->
+            <div class="bg-white border border-[#EEEDF5] rounded-2xl p-5 flex items-start gap-4 hover:border-[#C4C1E8] transition-all">
+              <div class="w-12 h-12 rounded-xl bg-[#F0EFF9] flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 text-[#443E8D]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <rect x="3" y="3" width="18" height="18" rx="4"/><path d="M9 9h6M9 12h6M9 15h4"/>
+                </svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <span class="inline-block text-[0.6rem] font-bold text-[#443E8D] bg-[#F0EFF9] px-2 py-0.5 rounded-full mb-2">60–90 menit</span>
+                <h3 class="text-[0.9rem] font-bold text-[#1A1830] mb-1 m-0">Main Class</h3>
+                <p class="text-[0.78rem] text-[#6B68A8] leading-relaxed m-0">Sesi utama belajar konsep, live coding, dan mulai bangun project. Materi dibedakan per track.</p>
+              </div>
+              <button class="shrink-0 self-center text-[0.75rem] font-bold px-3.5 py-2 rounded-xl bg-[#443E8D] text-white hover:bg-[#3A3478] transition-all shadow-sm shadow-[#443E8D]/20">
+                Gabung
+              </button>
+            </div>
+
+            <!-- Micro Session -->
+            <div class="bg-white border border-[#EEEDF5] rounded-2xl p-5 flex items-start gap-4 hover:border-[#A7F3D0] transition-all">
+              <div class="w-12 h-12 rounded-xl bg-[#ECFDF5] flex items-center justify-center flex-shrink-0">
+                <svg class="w-5 h-5 text-[#10B981]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                  <circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>
+                </svg>
+              </div>
+              <div class="flex-1 min-w-0">
+                <span class="inline-block text-[0.6rem] font-bold text-[#10B981] bg-[#ECFDF5] px-2 py-0.5 rounded-full mb-2">30–45 menit · 2x/minggu</span>
+                <h3 class="text-[0.9rem] font-bold text-[#1A1830] mb-1 m-0">Micro Session</h3>
+                <p class="text-[0.78rem] text-[#6B68A8] leading-relaxed m-0">Check progress project, debug bareng mentor, dan selesaikan masalah yang bikin stuck.</p>
+              </div>
+              <NuxtLink
+                to="/student/micro-session-booking"
+                class="shrink-0 self-center text-[0.75rem] font-bold px-3.5 py-2 rounded-xl bg-[#10B981] text-white hover:bg-[#059669] transition-all shadow-sm shadow-[#10B981]/20"
+              >
+                Pilih Jadwal
+              </NuxtLink>
+            </div>
+          </div>
+        </div>
+
+        <!-- Main Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-[1fr_340px] gap-6 items-start">
+
+          <!-- LEFT: Jadwal + Catatan Mentor -->
+          <div class="flex flex-col gap-6">
+
+            <!-- Jadwal Mendatang -->
+            <div class="bg-white border border-[#EEEDF5] rounded-2xl overflow-hidden">
+              <div class="flex items-center justify-between px-5 py-4 border-b border-[#F3F2FA]">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#FEF9EC] text-[0.65rem] font-bold uppercase tracking-wider text-[#D97706]">
+                  <span class="w-1.5 h-1.5 rounded-full bg-[#F59E0B]"></span>
+                  Jadwal Sesi Mendatang
+                </span>
+              </div>
+              <div class="flex flex-col divide-y divide-[#F3F2FA]">
+                <div v-for="session in upcomingSessions" :key="session.id" class="flex items-center gap-4 px-5 py-4 hover:bg-[#FAFAFA] transition-colors">
+                  <!-- Date box -->
+                  <div class="w-12 h-12 rounded-xl bg-white border border-[#EEEDF5] flex flex-col items-center justify-center flex-shrink-0 shadow-sm">
+                    <span class="text-[1rem] font-black text-[#1A1830] leading-none">{{ session.day }}</span>
+                    <span class="text-[0.55rem] font-bold text-[#443E8D] uppercase tracking-wider mt-0.5">{{ session.month }}</span>
+                  </div>
+                  <!-- Details -->
+                  <div class="flex-1 min-w-0">
+                    <span
+                      class="inline-block text-[0.6rem] font-bold px-1.5 py-0.5 rounded mb-1"
+                      :class="session.type === 'Main Class' ? 'bg-[#F0EFF9] text-[#443E8D]' : 'bg-[#ECFDF5] text-[#10B981]'"
+                    >{{ session.type }}</span>
+                    <h4 class="text-[0.85rem] font-bold text-[#1A1830] m-0 mb-1 truncate">{{ session.title }}</h4>
+                    <div class="flex items-center gap-3 text-[0.72rem] text-[#9896C8]">
+                      <span class="flex items-center gap-1">
+                        <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                        {{ session.time }}
+                      </span>
+                      <span class="flex items-center gap-1">
+                        <svg class="w-3 h-3" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                        {{ session.mentor }}
+                      </span>
+                    </div>
+                  </div>
+                  <button class="shrink-0 text-[0.72rem] font-bold px-3 py-1.5 rounded-lg bg-[#443E8D] text-white hover:bg-[#3A3478] transition-all">
+                    Gabung
+                  </button>
+                </div>
+
+                <div v-if="upcomingSessions.length === 0" class="flex items-center justify-center py-10 text-[0.82rem] text-[#B5B3D8]">
+                  Belum ada sesi terjadwal. Yuk booking dulu! 👆
                 </div>
               </div>
-              <div class="history-list">
-                <div v-for="h in historySessions" :key="h.id" class="history-item">
-                  <div class="h-icon" :class="h.type === '1:1 Session' ? 'bg-purple-light text-purple' : 'bg-green-light text-green'">
-                    <svg v-if="h.type === '1:1 Session'" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-                    <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 00-3-3.87"/><path d="M16 3.13a4 4 0 010 7.75"/></svg>
+            </div>
+
+            <!-- Catatan Mentor -->
+            <div class="bg-white border border-[#EEEDF5] rounded-2xl overflow-hidden">
+              <div class="flex items-center px-5 py-4 border-b border-[#F3F2FA]">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#F0EFF9] text-[0.65rem] font-bold uppercase tracking-wider text-[#443E8D]">
+                  <span class="w-1.5 h-1.5 rounded-full bg-[#443E8D]"></span>
+                  Catatan &amp; Feedback Mentor
+                </span>
+              </div>
+              <div class="flex flex-col divide-y divide-[#F3F2FA]">
+                <div v-for="note in mentorNotes" :key="note.id" class="p-5 flex flex-col gap-3">
+                  <div class="flex items-start justify-between gap-3">
+                    <div class="flex items-center gap-3">
+                      <div class="w-8 h-8 rounded-xl flex items-center justify-center text-white font-bold text-[0.7rem] flex-shrink-0 bg-gradient-to-br from-[#443E8D] to-[#7B77B8]">
+                        {{ note.init }}
+                      </div>
+                      <div>
+                        <div class="text-[0.85rem] font-bold text-[#1A1830] leading-none mb-0.5">{{ note.mentor }}</div>
+                        <div class="text-[0.68rem] text-[#9896C8]">{{ note.topic }}</div>
+                      </div>
+                    </div>
+                    <span class="text-[0.65rem] text-[#B5B3D8] whitespace-nowrap">{{ note.date }}</span>
                   </div>
-                  <div class="h-details">
-                    <h4 class="h-title">{{ h.topic }}</h4>
-                    <p class="h-meta">{{ h.date }} • {{ h.mentor }}</p>
+                  <p class="text-[0.8rem] text-[#4A476F] leading-relaxed m-0 border-l-2 border-[#443E8D]/25 pl-3 italic">"{{ note.note }}"</p>
+                  <div class="flex flex-wrap gap-1.5">
+                    <span v-for="tag in note.tags" :key="tag" class="text-[0.65rem] font-semibold text-[#6B68A8] bg-[#F0EFF9] px-2 py-0.5 rounded-md border border-[#D8D6F0]">{{ tag }}</span>
                   </div>
-                  <span class="h-status" :class="'h-status-'+h.status.toLowerCase()">{{ h.status }}</span>
                 </div>
               </div>
-              <button class="btn-load-more">Lihat Lebih Banyak</button>
-            </section>
+            </div>
+          </div>
+
+          <!-- RIGHT: Cara Kerja + Riwayat -->
+          <div class="flex flex-col gap-6">
+
+            <!-- Cara Kerja Program -->
+            <div class="bg-white border border-[#EEEDF5] rounded-2xl overflow-hidden">
+              <div class="flex items-center px-5 py-4 border-b border-[#F3F2FA]">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#EFF6FF] text-[0.65rem] font-bold uppercase tracking-wider text-[#2563EB]">
+                  <span class="w-1.5 h-1.5 rounded-full bg-[#3B82F6]"></span>
+                  Cara Kerja Program
+                </span>
+              </div>
+              <div class="flex flex-col divide-y divide-[#F3F2FA]">
+                <div v-for="item in howItWorks" :key="item.title" class="flex items-start gap-3.5 px-5 py-3.5">
+                  <div
+                    class="w-9 h-9 rounded-xl flex items-center justify-center text-[1rem] flex-shrink-0"
+                    :class="item.bgClass"
+                  >{{ item.icon }}</div>
+                  <div>
+                    <div class="text-[0.83rem] font-bold text-[#1A1830] mb-0.5">{{ item.title }}</div>
+                    <div class="text-[0.75rem] text-[#6B68A8] leading-relaxed">{{ item.desc }}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Riwayat Sesi -->
+            <div class="bg-white border border-[#EEEDF5] rounded-2xl overflow-hidden">
+              <div class="flex items-center px-5 py-4 border-b border-[#F3F2FA]">
+                <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-[#F3F4F6] text-[0.65rem] font-bold uppercase tracking-wider text-[#4B5563]">
+                  <span class="w-1.5 h-1.5 rounded-full bg-[#9CA3AF]"></span>
+                  Riwayat Sesimu
+                </span>
+              </div>
+              <div class="flex flex-col divide-y divide-[#F3F2FA]">
+                <div v-for="h in historySessions" :key="h.id" class="flex items-center gap-3 px-5 py-3.5">
+                  <div
+                    class="w-9 h-9 rounded-xl flex items-center justify-center flex-shrink-0"
+                    :class="h.type === 'Main Class' ? 'bg-[#F0EFF9]' : 'bg-[#ECFDF5]'"
+                  >
+                    <svg v-if="h.type === 'Main Class'" class="w-4 h-4 text-[#443E8D]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="4"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
+                    <svg v-else class="w-4 h-4 text-[#10B981]" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/></svg>
+                  </div>
+                  <div class="flex-1 min-w-0">
+                    <h4 class="text-[0.82rem] font-bold text-[#1A1830] m-0 mb-0.5 truncate">{{ h.topic }}</h4>
+                    <p class="text-[0.68rem] text-[#9896C8] m-0">{{ h.date }} · {{ h.type }}</p>
+                  </div>
+                  <span
+                    class="text-[0.6rem] font-bold px-2 py-0.5 rounded-full flex-shrink-0"
+                    :class="h.status === 'Selesai' ? 'bg-[#ECFDF5] text-[#10B981]' : 'bg-[#FEF2F2] text-[#EF4444]'"
+                  >{{ h.status }}</span>
+                </div>
+              </div>
+              <div class="px-5 pb-4 pt-2">
+                <button class="w-full py-2.5 rounded-xl text-[0.75rem] font-bold text-[#6B68A8] bg-[#F8F7FD] border border-[#EEEDF5] hover:bg-[#F0EFF9] transition-colors">
+                  Lihat Lebih Banyak
+                </button>
+              </div>
+            </div>
 
           </div>
         </div>
@@ -166,327 +282,105 @@
       </main>
     </div>
 
-    <!-- Mobile overlay -->
-    <div v-if="sidebarOpen" class="sidebar-overlay" @click="sidebarOpen = false"></div>
+    <!-- Sidebar overlay (mobile only) -->
+    <div
+      v-if="sidebarOpen"
+      class="fixed inset-0 bg-[rgba(15,23,42,0.15)] z-[150] hidden max-[900px]:block backdrop-blur-[2px]"
+      @click="sidebarOpen = false"
+    ></div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import Sidebar from '~/components/student/StudentSidebar.vue'
+import StudentSidebar from '~/components/student/StudentSidebar.vue'
 
 useSeoMeta({
-  title: 'Mentorship — Carriera Course',
-  description: 'Jadwalkan sesi 1:1, group mentoring, dan lihat feedback langsung dari ekspert.'
+  title: 'Sesi Belajar – Pixelnoid Academy',
+  description: 'Booking Main Class, Micro Session, dan pantau progress projectmu.'
 })
 
 definePageMeta({ layout: 'dashboard' })
 
 const sidebarOpen = ref(false)
+const currentPhase = ref(2)
 
-/* ── Dummy Data ── */
+const phases = ref([
+  { id: 1, name: 'Foundation & Flow' },
+  { id: 2, name: 'Build & Debug' },
+  { id: 3, name: 'Real Project' },
+])
+
+const howItWorks = ref([
+  {
+    icon: '📚',
+    title: 'Main Class',
+    desc: 'Belajar konsep + live coding. Tiap sesi ditutup dengan arahan project.',
+    bgClass: 'bg-[#F0EFF9]'
+  },
+  {
+    icon: '⚡',
+    title: 'Micro Session',
+    desc: 'Cek progress, debug bareng, dan selesaikan masalah. 2x seminggu.',
+    bgClass: 'bg-[#ECFDF5]'
+  },
+  {
+    icon: '🛠️',
+    title: 'Project-Based Flow',
+    desc: 'Tiap minggu ada output kecil. Project = bukti nyata kamu belajar.',
+    bgClass: 'bg-[#FEF9EC]'
+  },
+  {
+    icon: '🗓️',
+    title: 'Jadwal Fleksibel',
+    desc: 'Pilih hari belajarmu sendiri. Tetap ada ritme dan target output.',
+    bgClass: 'bg-[#EFF6FF]'
+  }
+])
+
 const upcomingSessions = ref([
   {
     id: 1,
-    day: '14', month: 'Apr',
-    title: 'Review System Architecture',
-    time: '16:00 - 16:45 WIB', type: '1:1 Mentoring',
-    mentor: 'Kak Yudha Pratama'
+    day: '14', month: 'Mei',
+    title: 'Logic & Function Dasar',
+    time: '16:00 – 17:30 WIB',
+    type: 'Main Class',
+    mentor: 'Lead Mentor'
   },
   {
     id: 2,
-    day: '16', month: 'Apr',
-    title: 'Weekly Sprint Check-in (Group C)',
-    time: '19:30 - 20:30 WIB', type: 'Group Session',
-    mentor: 'Kak Sari Dewi'
+    day: '16', month: 'Mei',
+    title: 'Micro Session – Debug & Review Project',
+    time: '19:30 – 20:15 WIB',
+    type: 'Micro Session',
+    mentor: 'Support Mentor'
   }
 ])
 
 const mentorNotes = ref([
   {
     id: 1,
-    init: 'YP', mentor: 'Kak Yudha Pratama',
-    topic: '1:1 • Review Architecture', date: '08 Apr 2026',
-    note: 'Struktur database sudah lumayan kuat. Tinggal perlu memperhatikan index di table transaksi untuk optimasi read query. Boleh baca-baca lagi soal B-Tree indexing.',
-    tags: ['Database', 'Optimization', 'To-Do']
+    init: 'LM', mentor: 'Lead Mentor',
+    topic: 'Main Class · Logic Dasar',
+    date: '09 Mei 2026',
+    note: 'Kamu sudah paham cara nulis function dengan benar. Minggu depan coba terapkan ke fitur filter di project kamu. Kalau stuck, langsung muncul di Micro Session ya!',
+    tags: ['Function', 'Project', 'Keep Going!']
   },
   {
     id: 2,
-    init: 'SD', mentor: 'Kak Sari Dewi',
-    topic: 'Group • Sprint Planning', date: '04 Apr 2026',
-    note: 'Arka proaktif banget menjelaskan kendala API. Next-nya coba break down task API integration jadi sub-task yang lebih kecil supaya gampang ditrack ya.',
-    tags: ['Soft-skill', 'Planning']
+    init: 'SM', mentor: 'Support Mentor',
+    topic: 'Micro Session · Debug',
+    date: '07 Mei 2026',
+    note: 'Error yang kamu temukan tadi itu karena variabel belum didefinisikan sebelum dipanggil. Coba biasakan baca pesan error dulu sebelum langsung tanya, itu latihan penting banget.',
+    tags: ['Debugging', 'Soft-skill']
   }
 ])
 
 const historySessions = ref([
-  {
-    id: 1, topic: 'Review System Architecture', date: '08 Apr 2026', mentor: 'Kak Yudha P.', type: '1:1 Session', status: 'Selesai'
-  },
-  {
-    id: 2, topic: 'Weekly Sprint Check-in', date: '04 Apr 2026', mentor: 'Kak Sari D.', type: 'Group Session', status: 'Selesai'
-  },
-  {
-    id: 3, topic: 'Kickoff Sprint 4', date: '01 Apr 2026', mentor: 'Kak Yudha P.', type: 'Group Session', status: 'Selesai'
-  },
-  {
-    id: 4, topic: 'Career Mapping & CV Review', date: '25 Mar 2026', mentor: 'Kak Budi S.', type: '1:1 Session', status: 'Selesai'
-  },
-  {
-    id: 5, topic: 'Debugging React Hooks', date: '20 Mar 2026', mentor: 'Kak Sari D.', type: '1:1 Session', status: 'Missed'
-  }
+  { id: 1, topic: 'Logic & Struktur Berpikir', date: '09 Mei 2026', type: 'Main Class', status: 'Selesai' },
+  { id: 2, topic: 'Micro Session – Review Project', date: '07 Mei 2026', type: 'Micro Session', status: 'Selesai' },
+  { id: 3, topic: 'Intro Function & Data', date: '02 Mei 2026', type: 'Main Class', status: 'Selesai' },
+  { id: 4, topic: 'Micro Session – Debugging', date: '30 Apr 2026', type: 'Micro Session', status: 'Selesai' },
+  { id: 5, topic: 'Template & Submission Pertama', date: '25 Apr 2026', type: 'Main Class', status: 'Missed' },
 ])
 </script>
-
-<style scoped>
-/* ══════════════════════════════════════
-   BASE & LAYOUT (Sama dengan Dashboard)
-══════════════════════════════════════ */
-.dash-page {
-  display: flex;
-  min-height: 100vh;
-  background: #F8F9FD;
-  font-family: 'Instrument Sans', 'Raleway', sans-serif;
-  position: relative;
-  overflow-x: hidden;
-}
-
-.bg-ambients { pointer-events: none; position: fixed; inset: 0; z-index: 0; overflow: hidden; }
-.ambient { position: absolute; border-radius: 50%; filter: blur(120px); }
-.ambient-tl { top: -5%;  left: -5%;  width: 40%; height: 40%; background: radial-gradient(circle, rgba(100,88,245,.07), transparent 70%); }
-.ambient-tr { top: 0;    right: -5%; width: 25%; height: 25%; background: radial-gradient(circle, rgba(165,180,252,.05), transparent 70%); }
-.ambient-br { bottom: 0; right: 10%; width: 30%; height: 30%; background: radial-gradient(circle, rgba(100,88,245,.04), transparent 60%); }
-
-.bg-grid {
-  pointer-events: none; position: fixed; inset: 0; z-index: 0;
-  background-image:
-    linear-gradient(to right,  rgba(100,88,245,.04) 1px, transparent 1px),
-    linear-gradient(to bottom, rgba(100,88,245,.04) 1px, transparent 1px);
-  background-size: 80px 80px;
-  mask-image: linear-gradient(to bottom, transparent, black 5%, black 95%, transparent);
-}
-
-.main-wrap {
-  margin-left: 260px;
-  flex: 1;
-  min-width: 0;
-  position: relative;
-  z-index: 10;
-  display: flex;
-  flex-direction: column;
-}
-
-.topbar {
-  position: sticky; top: 0; z-index: 100;
-  display: flex; align-items: center; gap: 1rem;
-  padding: 1rem 2rem;
-  background: rgba(248,249,253,.85);
-  backdrop-filter: blur(16px);
-  border-bottom: 1px solid rgba(0,0,0,.06);
-}
-.greeting-title { font-size: 1.0625rem; font-weight: 600; color: #111827; margin: 0; }
-.greeting-sub { font-size: .8125rem; color: #9CA3AF; margin-top: .1rem; }
-.topbar-toggle { display: none; }
-
-.dash-content {
-  padding: 1.75rem 2rem 3rem;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
-}
-
-@media (max-width: 900px) {
-  .main-wrap { margin-left: 0; }
-  .topbar-toggle { display: block; background: none; border: none; cursor: pointer; }
-  .dash-content { padding: 1.25rem 1rem 3rem; }
-}
-
-/* ══════════════════════════════════════
-   BOOKING SECTION
-══════════════════════════════════════ */
-.booking-section {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-  margin-bottom: .5rem;
-}
-.section-header { margin-bottom: .25rem; }
-.section-title { font-size: 1.25rem; font-weight: 600; color: #111827; }
-.section-desc { font-size: .875rem; color: #6B7280; }
-
-.booking-cards {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 1.25rem;
-}
-
-.book-card {
-  background: #fff;
-  border: 1px solid #E9EBF0;
-  border-radius: 16px;
-  padding: 1.5rem;
-  display: flex;
-  align-items: center;
-  gap: 1.25rem;
-  box-shadow: 0 4px 12px rgba(0,0,0,.02);
-  transition: all .2s;
-}
-.book-card:hover { transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,.05); border-color: #D1D5DB; }
-
-.book-icon-wrap {
-  width: 56px; height: 56px; border-radius: 14px;
-  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
-}
-.bg-purple-light { background: rgba(100,88,245,.1); }
-.text-purple { color: #6458f5; }
-.bg-green-light { background: rgba(16,185,129,.1); }
-.text-green { color: #10B981; }
-
-.book-info { flex: 1; }
-.book-info h3 { font-size: 1rem; font-weight: 600; color: #111827; margin-bottom: .35rem; }
-.book-info p { font-size: .8125rem; color: #6B7280; line-height: 1.5; }
-
-.btn-book {
-  background: #111827; color: #fff;
-  border: none; padding: .6rem 1.2rem;
-  border-radius: 10px; font-weight: 500; font-family: inherit; font-size: .875rem;
-  cursor: pointer; transition: background .2s; flex-shrink: 0;
-}
-.btn-book:hover { background: #374151; }
-
-@media (max-width: 900px) {
-  .booking-cards { grid-template-columns: 1fr; }
-  .book-card { flex-direction: column; text-align: center; }
-}
-
-/* ══════════════════════════════════════
-   GRID LAYOUT
-══════════════════════════════════════ */
-.grid-layout {
-  display: grid;
-  grid-template-columns: 1fr 380px;
-  gap: 1.5rem;
-  align-items: start;
-}
-
-@media (max-width: 1100px) {
-  .grid-layout { grid-template-columns: 1fr; }
-}
-
-.left-col, .right-col { display: flex; flex-direction: column; gap: 1.5rem; }
-
-/* ── Card Base ── */
-.card {
-  background: #fff;
-  border: 1px solid #E9EBF0;
-  border-radius: 16px;
-  box-shadow: 0 4px 12px rgba(0,0,0,.02);
-}
-.card-header { padding: 1.25rem 1.5rem; display: flex; align-items: center; justify-content: space-between; }
-.border-b { border-bottom: 1px solid #F3F4F6; }
-
-/* Section Badges */
-.section-badge {
-  display: inline-flex; align-items: center; gap: .5rem;
-  padding: .35rem .75rem; border-radius: 999px;
-  font-size: .75rem; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
-}
-.badge-dot { width: 6px; height: 6px; border-radius: 50%; }
-.badge-orange  { background: rgba(245,158,11,.1); color: #D97706; }
-.badge-orange .badge-dot { background: #F59E0B; }
-.badge-indigo { background: rgba(99,102,241,.1); color: #4F46E5; }
-.badge-indigo .badge-dot { background: #6366F1; }
-.badge-gray { background: #F3F4F6; color: #4B5563; }
-
-/* ════════════════════ SCHEDULE ════════════════════ */
-.schedule-list { padding: 1rem 1.5rem; display: flex; flex-direction: column; gap: 1rem; }
-.session-item {
-  display: flex; gap: 1rem; align-items: center;
-  padding: 1rem; border-radius: 12px; border: 1px solid #F3F4F6;
-  background: #FAFAFA; transition: border .2s;
-}
-.session-item:hover { border-color: #E5E7EB; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,.03); }
-
-.session-date-box {
-  width: 60px; height: 60px; background: #fff; border: 1px solid #E5E7EB; border-radius: 10px;
-  display: flex; flex-direction: column; align-items: center; justify-content: center; flex-shrink: 0;
-}
-.sd-day { font-size: 1.25rem; font-weight: 700; color: #111827; line-height: 1; }
-.sd-month { font-size: .6875rem; font-weight: 600; color: #6458f5; text-transform: uppercase; margin-top: .2rem; }
-
-.session-details { flex: 1; min-width: 0; }
-.s-title { font-size: .9375rem; font-weight: 600; color: #111827; margin-bottom: .3rem; }
-.s-meta { display: flex; gap: 1rem; color: #6B7280; font-size: .8125rem; }
-.ms-icon { display: flex; align-items: center; gap: .35rem; }
-.ms-icon svg { width: 14px; height: 14px; }
-.s-mentor { margin-top: .35rem; font-size: .8125rem; color: #4B5563; }
-
-.session-actions { flex-shrink: 0; }
-.btn-meet {
-  background: #6458f5; color: #fff; border: none; padding: .5rem 1rem; border-radius: 8px;
-  font-weight: 500; font-family: inherit; font-size: .8125rem; cursor: pointer; transition: background .2s;
-}
-.btn-meet:hover { background: #5448e0; }
-
-/* ════════════════════ NOTES ════════════════════ */
-.notes-list { padding: 1.25rem 1.5rem; display: flex; flex-direction: column; gap: 1.25rem; }
-.note-box {
-  background: #fff; border: 1px solid #E9EBF0; border-radius: 12px;
-  padding: 1.25rem; box-shadow: 0 2px 6px rgba(0,0,0,.02);
-}
-.note-head { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: .875rem; }
-.n-mentor { display: flex; align-items: center; gap: .75rem; }
-.n-avatar {
-  width: 36px; height: 36px; border-radius: 8px;
-  background: linear-gradient(135deg, #6458f5, #818cf8); color: #fff;
-  display: flex; align-items: center; justify-content: center; font-size: .75rem; font-weight: 700;
-}
-.n-name { font-size: .875rem; font-weight: 600; color: #111827; }
-.n-topic { font-size: .75rem; color: #6B7280; margin-top: .1rem; }
-.n-date { font-size: .75rem; color: #9CA3AF; }
-
-.n-text { font-size: .875rem; color: #374151; line-height: 1.6; margin-bottom: 1rem; font-style: italic; }
-.n-tags { display: flex; flex-wrap: wrap; gap: .5rem; }
-.n-tag {
-  background: #F3F4F6; color: #4B5563; font-size: .7rem; font-weight: 600;
-  padding: .2rem .5rem; border-radius: 4px;
-}
-
-/* ════════════════════ HISTORY ════════════════════ */
-.history-list { padding: 1rem 1.5rem; display: flex; flex-direction: column; gap: .75rem; }
-.history-item {
-  display: flex; align-items: center; gap: 1rem;
-  padding: .75rem 0; border-bottom: 1px solid #F3F4F6;
-}
-.history-item:last-child { border-bottom: none; }
-.h-icon {
-  width: 40px; height: 40px; border-radius: 10px; flex-shrink: 0;
-  display: flex; align-items: center; justify-content: center;
-}
-.h-icon svg { width: 18px; height: 18px; }
-
-.h-details { flex: 1; min-width: 0; }
-.h-title { font-size: .875rem; font-weight: 600; color: #111827; margin-bottom: .2rem; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.h-meta { font-size: .75rem; color: #6B7280; }
-
-.h-status { font-size: .7rem; font-weight: 600; padding: .25rem .5rem; border-radius: 999px; flex-shrink: 0; }
-.h-status-selesai { background: rgba(16,185,129,.1); color: #10B981; }
-.h-status-missed { background: rgba(239,68,68,.1); color: #EF4444; }
-
-.btn-load-more {
-  display: block; width: calc(100% - 3rem); margin: 0 1.5rem 1.5rem;
-  padding: .6rem; text-align: center; border-radius: 8px; font-weight: 600; font-size: .8125rem; font-family: inherit;
-  background: #F9FAFB; color: #4B5563; border: 1px solid #E5E7EB; cursor: pointer; transition: all .2s;
-}
-.btn-load-more:hover { background: #F3F4F6; color: #111827; }
-
-/* ── Overlays ── */
-.sidebar-overlay {
-  display: none;
-  position: fixed; inset: 0; z-index: 190;
-  background: rgba(0,0,0,.5); backdrop-filter: blur(2px);
-}
-@media (max-width: 900px) {
-  .sidebar-overlay { display: block; }
-}
-</style>

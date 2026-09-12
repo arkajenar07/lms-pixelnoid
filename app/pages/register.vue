@@ -1,4 +1,4 @@
-﻿<template>
+<template>
   <div class="auth-page">
     <!-- Ambient background glow effects -->
     <div class="bg-ambients" aria-hidden="true">
@@ -36,10 +36,7 @@
               <div class="field-group" :class="{ 'has-error': errors.firstName }">
                 <label for="firstName" class="field-label">Nama Depan</label>
                 <div class="input-wrap">
-                  <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
-                    <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
-                    <circle cx="12" cy="7" r="4"/>
-                  </svg>
+                  <UserIcon class="input-icon" />
                   <input
                     id="firstName"
                     v-model="form.firstName"
@@ -55,10 +52,7 @@
               <div class="field-group" :class="{ 'has-error': errors.lastName }">
                 <label for="lastName" class="field-label">Nama Belakang</label>
                 <div class="input-wrap">
-                  <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
-                    <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
-                    <circle cx="12" cy="7" r="4"/>
-                  </svg>
+                  <UserIcon class="input-icon" />
                   <input
                     id="lastName"
                     v-model="form.lastName"
@@ -72,14 +66,28 @@
               </div>
             </div>
 
+            <!-- Username -->
+            <div class="field-group" :class="{ 'has-error': errors.username }">
+              <label for="username" class="field-label">Username</label>
+              <div class="input-wrap">
+                <AtSymbolIcon class="input-icon" />
+                <input
+                  id="username"
+                  v-model="form.username"
+                  type="text"
+                  class="field-input"
+                  placeholder="julianto123"
+                  autocomplete="username"
+                />
+              </div>
+              <span v-if="errors.username" class="field-error">{{ errors.username }}</span>
+            </div>
+
             <!-- Email -->
             <div class="field-group" :class="{ 'has-error': errors.email }">
               <label for="email" class="field-label">Email</label>
               <div class="input-wrap">
-                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
-                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
-                  <polyline points="22,6 12,13 2,6"/>
-                </svg>
+                <EnvelopeIcon class="input-icon" />
                 <input
                   id="email"
                   v-model="form.email"
@@ -96,10 +104,7 @@
             <div class="field-group" :class="{ 'has-error': errors.password }">
               <label for="password" class="field-label">Password</label>
               <div class="input-wrap">
-                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
-                  <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
-                  <path d="M7 11V7a5 5 0 0110 0v4"/>
-                </svg>
+                <LockClosedIcon class="input-icon" />
                 <input
                   id="password"
                   v-model="form.password"
@@ -114,14 +119,8 @@
                   @click="showPassword = !showPassword"
                   :aria-label="showPassword ? 'Sembunyikan password' : 'Tampilkan password'"
                 >
-                  <svg v-if="!showPassword" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                    <circle cx="12" cy="12" r="3"/>
-                  </svg>
-                  <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
-                    <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/>
-                    <line x1="1" y1="1" x2="23" y2="23"/>
-                  </svg>
+                  <EyeSlashIcon v-if="!showPassword" />
+                  <EyeIcon v-else />
                 </button>
               </div>
               <!-- Password strength indicator -->
@@ -143,9 +142,7 @@
             <div class="field-group" :class="{ 'has-error': errors.confirmPassword }">
               <label for="confirmPassword" class="field-label">Konfirmasi Password</label>
               <div class="input-wrap">
-                <svg class="input-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
-                  <path d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z"/>
-                </svg>
+                <ShieldCheckIcon class="input-icon" />
                 <input
                   id="confirmPassword"
                   v-model="form.confirmPassword"
@@ -160,14 +157,8 @@
                   @click="showConfirm = !showConfirm"
                   :aria-label="showConfirm ? 'Sembunyikan' : 'Tampilkan'"
                 >
-                  <svg v-if="!showConfirm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
-                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                    <circle cx="12" cy="12" r="3"/>
-                  </svg>
-                  <svg v-else viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75">
-                    <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19m-6.72-1.07a3 3 0 11-4.24-4.24"/>
-                    <line x1="1" y1="1" x2="23" y2="23"/>
-                  </svg>
+                  <EyeSlashIcon v-if="!showConfirm" />
+                  <EyeIcon v-else />
                 </button>
               </div>
               <span v-if="errors.confirmPassword" class="field-error">{{ errors.confirmPassword }}</span>
@@ -191,9 +182,7 @@
             <button type="submit" class="btn-submit" :disabled="isLoading">
               <span v-if="!isLoading">
                 Buat Akun
-                <svg class="btn-arrow" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2">
-                  <path d="M3 8h10M9 4l4 4-4 4" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
+                <ArrowRightIcon class="btn-arrow" />
               </span>
               <span v-else class="loading-spinner"></span>
             </button>
@@ -203,11 +192,11 @@
 
             <!-- OAuth -->
             <button type="button" class="btn-oauth" @click="registerWithGoogle">
-              <svg class="oauth-icon" viewBox="0 0 24 24">
-                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
-                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
-                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"/>
-                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+              <svg class="oauth-icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"></path>
+                <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"></path>
+                <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l3.66-2.84z"></path>
+                <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"></path>
               </svg>
               Daftar dengan Google
             </button>
@@ -256,9 +245,7 @@
           <ul class="panel-features">
             <li v-for="feat in panelFeatures" :key="feat" class="panel-feature-item">
               <span class="feat-check">
-                <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.5">
-                  <path d="M3 8l3.5 3.5L13 4" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
+                <CheckIcon />
               </span>
               {{ feat }}
             </li>
@@ -273,6 +260,17 @@
 
 <script setup lang="ts">
 import { ref, reactive, computed } from 'vue'
+import { 
+  UserIcon, 
+  EnvelopeIcon, 
+  AtSymbolIcon,
+  LockClosedIcon, 
+  EyeIcon, 
+  EyeSlashIcon, 
+  ShieldCheckIcon,
+  ArrowRightIcon,
+  CheckIcon
+} from '@heroicons/vue/24/outline'
 import logo from '~/assets/images/logo-pc.png'
 
 useSeoMeta({
@@ -284,6 +282,8 @@ definePageMeta({
   layout: false
 })
 
+const supabase = useSupabaseClient()
+
 const showPassword = ref(false)
 const showConfirm = ref(false)
 const isLoading = ref(false)
@@ -291,6 +291,7 @@ const isLoading = ref(false)
 const form = reactive({
   firstName: '',
   lastName: '',
+  username: '',
   email: '',
   password: '',
   confirmPassword: '',
@@ -300,6 +301,7 @@ const form = reactive({
 const errors = reactive({
   firstName: '',
   lastName: '',
+  username: '',
   email: '',
   password: '',
   confirmPassword: '',
@@ -330,6 +332,12 @@ const validate = () => {
   if (!form.firstName.trim()) { errors.firstName = 'Nama depan wajib diisi.'; valid = false }
   if (!form.lastName.trim())  { errors.lastName  = 'Nama belakang wajib diisi.'; valid = false }
 
+  if (!form.username.trim()) {
+    errors.username = 'Username wajib diisi.'; valid = false
+  } else if (!/^[a-zA-Z0-9_]+$/.test(form.username)) {
+    errors.username = 'Username hanya boleh berisi huruf, angka, dan underscore.'; valid = false
+  }
+
   if (!form.email) {
     errors.email = 'Email wajib diisi.'; valid = false
   } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
@@ -358,8 +366,47 @@ const validate = () => {
 const handleRegister = async () => {
   if (!validate()) return
   isLoading.value = true
-  // TODO: replace with actual registration logic
-  await new Promise(r => setTimeout(r, 1400))
+  
+  const fullName = `${form.firstName} ${form.lastName}`.trim()
+
+  const { data, error } = await supabase.auth.signUp({
+    email: form.email,
+    password: form.password,
+    options: {
+      data: {
+        role: ['student'],
+        full_name: fullName,
+        name: fullName,
+        display_name: fullName,
+        username: form.username
+      }
+    }
+  })
+
+  if (error) {
+    alert(error.message || 'Gagal mendaftar')
+    isLoading.value = false
+    return
+  }
+
+  if (data.user) {
+    const { error: dbError } = await supabase.from('users').insert({
+      id: data.user.id,
+      fullname: fullName,
+      username: form.username,
+      roles: ['student']
+    } as any)
+    
+    if (dbError) {
+      console.error('Failed to create public user profile', dbError)
+      alert(`Gagal menyimpan profil: ${dbError.message}`)
+      isLoading.value = false
+      return
+    }
+  }
+
+  // Redirect to dashboard
+  await navigateTo('/student')
   isLoading.value = false
 }
 

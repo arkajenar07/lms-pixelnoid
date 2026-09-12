@@ -36,3 +36,5 @@ body {
 ::-webkit-scrollbar-thumb:hover {
   background: #9CA3AF;
 }
+
+/* Custom animations are now managed in tailwind.config.ts */

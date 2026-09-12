@@ -1,12 +1,24 @@
 /**
- * middleware/role.ts  (used as "guest" guard)
+ * middleware/role.ts  (dipakai sebagai "guest" guard)
  * Jika sudah login, jangan bisa buka /login atau /register lagi.
- * Redirect ke dashboard sesuai role.
+ * Langsung redirect ke dashboard student.
  */
-export default defineNuxtRouteMiddleware(() => {
-  const { isLoggedIn, user, defaultRedirectForRole } = useAuth()
+export default defineNuxtRouteMiddleware(async () => {
+  const user = useSupabaseUser()
 
-  if (isLoggedIn.value && user.value) {
-    return navigateTo(defaultRedirectForRole(user.value.role), { redirectCode: 302 })
+  if (!user.value?.id) return
+
+  // Cek sessionStorage dulu (lebih cepat, hindari DB call)
+  if (import.meta.client) {
+    const stored = sessionStorage.getItem('px_active_portal')
+    if (stored === 'student') return navigateTo('/student')
   }
+
+  // Fallback ke DB — pastikan id valid sebelum query
+  if (import.meta.client) {
+    sessionStorage.setItem('px_active_portal', 'student')
+  }
+
+  return navigateTo('/student')
 })
+

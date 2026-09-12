@@ -1,191 +1,233 @@
 <template>
-  <div class="dash-page">
-    <!-- ── Ambient background ── -->
-    <div class="bg-ambients" aria-hidden="true">
-      <div class="ambient ambient-tl"></div>
-      <div class="ambient ambient-tr"></div>
-      <div class="ambient ambient-br"></div>
-    </div>
-    <div class="bg-grid" aria-hidden="true"></div>
+  <div class="min-h-screen bg-[#F7F7F9] font-['Instrument_Sans','Raleway',sans-serif] relative overflow-x-hidden">
 
-    <!-- ── Sidebar ── -->
-    <Sidebar :open="sidebarOpen" @update:open="sidebarOpen = $event" />
+    <StudentSidebar :open="sidebarOpen" @update:open="sidebarOpen = $event" />
 
-    <!-- ── Main content ── -->
-    <div class="main-wrap">
-      
-      <!-- Top bar -->
-      <header class="topbar">
-        <button class="topbar-toggle" @click="sidebarOpen = !sidebarOpen" aria-label="Toggle sidebar">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-            <line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="18" x2="21" y2="18"/>
-          </svg>
-        </button>
-        <div class="topbar-greeting">
-          <h1 class="greeting-title">Portfolio Builder 💼</h1>
-          <p class="greeting-sub">Ubah keringat dan baris kodemu menjadi rekam jejak yang tak terbantahkan oleh rekruter.</p>
+    <div class="min-[901px]:ml-[210px] flex-1 min-w-0 relative z-10 flex flex-col">
+      <!-- Topbar -->
+      <header class="sticky top-0 z-[100] flex w-full items-center justify-between gap-4 px-8 py-5 max-[900px]:px-5 max-[900px]:py-4 bg-white/[0.92] backdrop-blur-[14px] [-webkit-backdrop-filter:blur(14px)] border-b border-[#E4E4E7]">
+        <div class="flex items-center gap-3 sm:gap-4 w-full max-w-[1440px] mx-auto">
+          <button
+            class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#E4E4E7] text-[#52525B] transition-transform duration-200 hover:-translate-y-0.5 hover:border-[#CFCFE0] hover:text-[#443E8D] min-[900px]:hidden"
+            @click="sidebarOpen = !sidebarOpen"
+            aria-label="Toggle sidebar"
+          >
+            <Bars3Icon class="h-5 w-5" />
+          </button>
+          
+          <div class="min-w-0 flex-1">
+            <h1 class="text-[0.95rem] sm:text-[1.1rem] font-semibold leading-snug tracking-[-0.02em] text-[#18181B] lg:text-[1.15rem]">
+              Portfolio Builder
+            </h1>
+            <p class="mt-0.5 sm:mt-1 text-[0.7rem] sm:text-[0.82rem] leading-relaxed text-[#71717A]">
+              Susun project terbaikmu, siap untuk direkrut.
+            </p>
+          </div>
+
+          <div class="hidden sm:flex items-center gap-3">
+            <button class="px-4 py-2 bg-white border border-[#E4E4E7] rounded-xl text-[0.85rem] font-bold text-[#18181B] hover:bg-[#F4F4F5] transition-colors shadow-sm">
+              Preview
+            </button>
+            <button class="px-4 py-2 bg-[#443E8D] text-white rounded-xl text-[0.85rem] font-bold hover:bg-[#3A3478] shadow-sm transition-colors flex items-center gap-2">
+              Publish <ArrowUpRightIcon class="w-4 h-4" />
+            </button>
+          </div>
         </div>
       </header>
 
-      <!-- ── Dashboard content ── -->
-      <main class="dash-content">
-
-        <!-- ═══ Publish / Export Section ═══ -->
-        <section class="publish-section">
-          <div class="card publish-card">
-            <div class="pc-left">
-              <div class="pc-status">
-                <span class="status-dot animate-pulse"></span>
-                <span>Portfolio Publikmu Siap Dibagikan</span>
+      <main class="p-8 max-[900px]:p-5 flex flex-col gap-8 w-full max-w-[1440px] mx-auto">
+        <!-- Publish / Export Section -->
+        <section>
+          <div class="bg-white rounded-2xl border border-[#E4E4E7] p-6 flex flex-col md:flex-row justify-between items-center gap-6 shadow-sm relative overflow-hidden group">
+            <div class="absolute top-0 right-0 w-64 h-64 bg-[#443E8D]/[0.02] blur-3xl rounded-full translate-x-1/2 -translate-y-1/2 group-hover:scale-125 transition-transform duration-700"></div>
+            
+            <div class="flex flex-col gap-4 relative z-10">
+              <div class="flex items-center gap-2.5 text-[0.6875rem] font-black uppercase tracking-widest text-[#443E8D]">
+                <span class="w-2 h-2 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,0.5)] animate-pulse"></span>
+                Portfolio Publikmu Siap Dibagikan
               </div>
-              <div class="pc-link-box">
-                <span class="link-label">Link Portfolio Publik:</span>
-                <a href="#" class="link-url">carriera.id/p/arka-jenar</a>
-                <button class="btn-copy" title="Salin Link">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 012 2v14a2 2 0 01-2 2H6a2 2 0 01-2-2V6a2 2 0 012-2h2"/><rect x="8" y="2" width="8" height="4" rx="1"/></svg>
+              <div class="flex items-center gap-2 bg-gray-50 border border-gray-100 rounded-xl p-2 pl-4 pr-2">
+                <span class="text-[0.6875rem] font-bold text-gray-400 uppercase tracking-widest">Link:</span>
+                <a href="#" class="font-mono text-[0.875rem] font-bold text-[#443E8D] hover:underline">pixelnoid.id/p/arka-jenar</a>
+                <button class="p-2 bg-white border border-gray-100 rounded-lg text-gray-500 hover:text-[#443E8D] hover:border-[#443E8D]/20 transition-all shadow-sm" title="Salin Link">
+                  <ClipboardDocumentIcon class="w-4 h-4" />
                 </button>
               </div>
             </div>
-            <div class="pc-right">
-              <div class="stats-row">
-                <div class="stat">
-                  <span class="stat-val">{{ projects.filter(p => p.published).length }}</span>
-                  <span class="stat-lbl">Proyek Publik</span>
+
+            <div class="flex items-center gap-8 relative z-10">
+              <div class="flex gap-6">
+                <div class="text-center">
+                  <span class="block text-2xl font-black text-gray-900 leading-none">{{ projects.filter(p => p.published).length }}</span>
+                  <span class="text-[0.625rem] font-bold text-gray-400 uppercase tracking-widest mt-1.5">Publik</span>
                 </div>
-                <div class="stat">
-                  <span class="stat-val">{{ projects.length }}</span>
-                  <span class="stat-lbl">Proyek Approved</span>
+                <div class="w-px h-10 bg-gray-100"></div>
+                <div class="text-center">
+                  <span class="block text-2xl font-black text-gray-900 leading-none">{{ projects.length }}</span>
+                  <span class="text-[0.625rem] font-bold text-gray-400 uppercase tracking-widest mt-1.5">Approved</span>
                 </div>
               </div>
-              <div class="pc-actions">
-                <button class="btn-outline">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-                  Export ke PDF
+              <div class="flex gap-3">
+                <button class="inline-flex items-center gap-2 px-4 py-2.5 rounded-xl border border-gray-200 bg-white text-[0.8125rem] font-bold text-gray-700 hover:bg-gray-50 transition-all shadow-sm">
+                  <ArrowDownTrayIcon class="w-4 h-4" />
+                  PDF
                 </button>
-                <button class="btn-primary">
-                  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
-                  Lihat Live
+                <button class="inline-flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[#443E8D] text-[0.8125rem] font-bold text-white hover:bg-[#373275] transition-all shadow-lg shadow-[#443E8D]/20">
+                  <EyeIcon class="w-4 h-4" />
+                  Live View
                 </button>
               </div>
             </div>
           </div>
         </section>
 
-        <!-- ═══ List Projects (Approved) ═══ -->
-        <section class="projects-section">
-          <div class="section-header">
-            <h2 class="section-title">Katalog Proyek Terverifikasi</h2>
-            <p class="section-desc">Pilih project yang sudah selesai di-review mentor untuk dijadikan Case Study portfoliomu.</p>
+        <!-- Projects Section -->
+        <section class="flex flex-col gap-6">
+          <div class="flex flex-col gap-1">
+            <h2 class="text-xl font-bold text-gray-900 tracking-tight">Katalog Proyek Terverifikasi</h2>
+            <p class="text-[0.875rem] text-gray-500 font-light">Pilih project yang sudah selesai di-review mentor untuk dijadikan Case Study portfoliomu.</p>
           </div>
 
-          <div class="projects-list">
-            <div v-for="(project, index) in projects" :key="project.id" class="card project-card" :class="{ 'is-expanded': activeProjectId === project.id }">
+          <div class="flex flex-col gap-4">
+            <div v-for="project in projects" :key="project.id" class="bg-white rounded-2xl border border-[#E4E4E7] overflow-hidden shadow-sm hover:shadow-md transition-all duration-300" :class="{ 'ring-2 ring-[#443E8D]/10 border-[#443E8D]/20': activeProjectId === project.id }">
               
-              <!-- Project Header (Collapsed View) -->
-              <div class="project-header" @click="toggleProject(project.id)">
-                <div class="ph-thumb" :style="`background: ${project.bg}`">{{ project.initial }}</div>
-                <div class="ph-info">
-                  <div class="top-row">
-                    <h3 class="ph-title">{{ project.name }}</h3>
-                    <span class="ph-badge" :class="project.published ? 'badge-green' : 'badge-gray'">
+              <!-- Project Header -->
+              <div class="flex items-center gap-4 p-5 cursor-pointer select-none" @click="toggleProject(project.id)">
+                <div class="w-14 h-14 rounded-xl flex items-center justify-center text-white text-lg font-black shadow-lg" :style="{ background: project.bg }">
+                  {{ project.initial }}
+                </div>
+                <div class="flex-1 min-w-0">
+                  <div class="flex items-center gap-3 mb-1">
+                    <h3 class="text-[1rem] font-bold text-gray-900 tracking-tight truncate">{{ project.name }}</h3>
+                    <span class="text-[0.625rem] font-black uppercase tracking-widest px-2 py-0.5 rounded-md" :class="project.published ? 'bg-emerald-50 text-emerald-600 border border-emerald-100' : 'bg-gray-100 text-gray-400 border border-gray-200'">
                       {{ project.published ? 'Live / Publish' : 'Draft' }}
                     </span>
                   </div>
-                  <p class="ph-subtitle">{{ project.role }} • Selesai pada {{ project.date }}</p>
-                  <div class="ph-tech">
-                    <span v-for="tag in project.tech" :key="tag">{{ tag }}</span>
+                  <p class="text-[0.8125rem] text-gray-400 font-medium leading-none">{{ project.role }} · {{ project.date }}</p>
+                  <div class="flex flex-wrap gap-1.5 mt-2.5">
+                    <span v-for="tag in project.tech" :key="tag" class="text-[0.625rem] font-bold font-mono px-2 py-0.5 bg-gray-50 text-gray-500 rounded border border-gray-100">
+                      {{ tag }}
+                    </span>
                   </div>
                 </div>
-                <!-- Expansion Arrow -->
-                <div class="ph-action">
-                  <button class="btn-expand">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" :class="{ 'rotate': activeProjectId === project.id }">
-                      <polyline points="6 9 12 15 18 9"/>
-                    </svg>
-                  </button>
-                </div>
+                <button class="w-10 h-10 rounded-full bg-gray-50 flex items-center justify-center text-gray-400 transition-all hover:bg-[#443E8D]/5 hover:text-[#443E8D]" :class="{ 'rotate-180 bg-[#443E8D]/10 text-[#443E8D]': activeProjectId === project.id }">
+                  <ChevronDownIcon class="w-5 h-5 transition-transform duration-300" />
+                </button>
               </div>
 
-              <!-- Project Builder (Expanded View) -->
-              <div class="project-builder" v-if="activeProjectId === project.id">
-                
-                <div class="pb-grid">
-                  <!-- Left side: Setup & Desc -->
-                  <div class="pb-col">
-                    <div class="field-item">
-                      <label>Judul Tampilan (Display Title)</label>
-                      <input type="text" class="input-light" v-model="project.displayName" placeholder="E.g. ThreadMark E-Commerce">
+              <!-- Project Builder -->
+              <Transition
+                enter-active-class="transition duration-300 ease-out"
+                enter-from-class="transform -translate-y-4 opacity-0"
+                enter-to-class="transform translate-y-0 opacity-100"
+                leave-active-class="transition duration-200 ease-in"
+                leave-from-class="transform translate-y-0 opacity-100"
+                leave-to-class="transform -translate-y-4 opacity-0"
+              >
+                <div v-if="activeProjectId === project.id" class="border-t border-gray-50 bg-[#FAFAFA]/50">
+                  <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 p-6 lg:p-8">
+                    <!-- Setup Column -->
+                    <div class="flex flex-col gap-6">
+                      <div class="flex flex-col gap-2">
+                        <label class="text-[0.75rem] font-bold text-gray-900 uppercase tracking-widest">Judul Tampilan (Display Title)</label>
+                        <input type="text" class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white focus:ring-2 focus:ring-[#443E8D]/10 focus:border-[#443E8D] outline-none transition-all text-[0.875rem] font-bold" v-model="project.displayName" placeholder="E.g. ThreadMark E-Commerce">
+                      </div>
+                      <div class="flex flex-col gap-2">
+                        <label class="text-[0.75rem] font-bold text-gray-900 uppercase tracking-widest">Deskripsi Singkat (Elevator Pitch)</label>
+                        <textarea class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white focus:ring-2 focus:ring-[#443E8D]/10 focus:border-[#443E8D] outline-none transition-all text-[0.875rem] resize-none" rows="3" v-model="project.shortDesc" placeholder="Jelaskan dalam 1-2 kalimat apa yang proyek ini selesaikan..."></textarea>
+                      </div>
+
+                      <!-- Project Links Section -->
+                      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div class="flex flex-col gap-2">
+                          <label class="text-[0.75rem] font-bold text-gray-900 uppercase tracking-widest flex items-center gap-2">
+                            <svg class="w-3.5 h-3.5" fill="currentColor" viewBox="0 0 24 24"><path d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"/></svg>
+                            Github Link
+                          </label>
+                          <input type="text" class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white focus:ring-2 focus:ring-[#443E8D]/10 focus:border-[#443E8D] outline-none transition-all text-[0.8125rem] font-mono" v-model="project.githubLink" placeholder="https://github.com/...">
+                        </div>
+                        <div class="flex flex-col gap-2">
+                          <label class="text-[0.75rem] font-bold text-gray-900 uppercase tracking-widest flex items-center gap-2">
+                            <LinkIcon class="w-3.5 h-3.5" />
+                            Live Demo Link
+                          </label>
+                          <input type="text" class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-white focus:ring-2 focus:ring-[#443E8D]/10 focus:border-[#443E8D] outline-none transition-all text-[0.8125rem] font-mono" v-model="project.liveLink" placeholder="https://...">
+                        </div>
+                      </div>
+                      
+                      <div class="flex items-center gap-3 cursor-pointer select-none group mt-2" @click="project.published = !project.published">
+                        <div class="relative w-11 h-6 rounded-full transition-colors duration-300" :class="project.published ? 'bg-emerald-500' : 'bg-gray-200'">
+                          <div class="absolute top-1 left-1 w-4 h-4 bg-white rounded-full transition-transform duration-300 shadow-sm" :class="{ 'translate-x-5': project.published }"></div>
+                        </div>
+                        <span class="text-[0.875rem] font-bold text-gray-700">Tampilkan proyek ini di portfolio publik</span>
+                      </div>
                     </div>
-                    <div class="field-item">
-                      <label>Deskripsi Singkat (Elevator Pitch)</label>
-                      <textarea class="input-light" rows="3" v-model="project.shortDesc" placeholder="Jelaskan dalam 1-2 kalimat apa yang proyek ini selesaikan..."></textarea>
-                    </div>
-                    
-                    <div class="field-toggle">
-                      <label class="toggle-label">
-                        <input type="checkbox" v-model="project.published">
-                        <span class="toggle-switch"></span>
-                        Tampilkan proyek ini di portfolio publik
-                      </label>
+
+                    <!-- STAR Formula Column -->
+                    <div class="flex flex-col gap-6 bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                      <div class="flex items-center gap-2.5 mb-2">
+                        <DocumentTextIcon class="w-5 h-5 text-[#443E8D]" />
+                        <h4 class="text-[0.9375rem] font-bold text-gray-900">Formula Case Study (STAR)</h4>
+                      </div>
+                      
+                      <div class="flex flex-col gap-2">
+                        <label class="text-[0.75rem] font-bold text-amber-600 uppercase tracking-widest">1. Situasi & Masalah (Problem)</label>
+                        <textarea class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-amber-100 focus:border-amber-400 outline-none transition-all text-[0.8125rem] leading-relaxed" rows="3" v-model="project.problem" placeholder="Apa masalah awal klien? Mengapa proyek ini dibuat?"></textarea>
+                      </div>
+
+                      <div class="flex flex-col gap-2">
+                        <label class="text-[0.75rem] font-bold text-indigo-600 uppercase tracking-widest">2. Pendekatan & Solusi (Approach)</label>
+                        <textarea class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-indigo-100 focus:border-indigo-400 outline-none transition-all text-[0.8125rem] leading-relaxed" rows="3" v-model="project.solution" placeholder="Sistem apa yang kamu buat? Tech stack apa yang kamu pilih dan mengapa?"></textarea>
+                      </div>
+
+                      <div class="flex flex-col gap-2">
+                        <label class="text-[0.75rem] font-bold text-emerald-600 uppercase tracking-widest">3. Dampak & Hasil (Result)</label>
+                        <textarea class="w-full px-4 py-3 rounded-xl border border-gray-200 bg-gray-50 focus:bg-white focus:ring-2 focus:ring-emerald-100 focus:border-emerald-400 outline-none transition-all text-[0.8125rem] leading-relaxed" rows="3" v-model="project.result" placeholder="Berapa % peningkatan efisiensi? Apa tanggapan klien? Gunakan metrik!"></textarea>
+                      </div>
                     </div>
                   </div>
 
-                  <!-- Right side: Case Study Builder -->
-                  <div class="pb-col">
-                    <h4 class="cs-title">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 00-2 2v16a2 2 0 002 2h12a2 2 0 002-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
-                      Formula Case Study (STAR)
-                    </h4>
-                    
-                    <div class="field-item">
-                      <label class="text-orange">1. Situasi & Masalah (Problem)</label>
-                      <textarea class="input-light" rows="3" v-model="project.problem" placeholder="Apa masalah awal klien? Mengapa proyek ini dibuat?"></textarea>
-                    </div>
-
-                    <div class="field-item">
-                      <label class="text-indigo">2. Pendekatan & Solusi (Approach)</label>
-                      <textarea class="input-light" rows="3" v-model="project.solution" placeholder="Sistem apa yang kamu buat? Tech stack apa yang kamu pilih dan mengapa?"></textarea>
-                    </div>
-
-                    <div class="field-item">
-                      <label class="text-green">3. Dampak & Hasil (Result)</label>
-                      <textarea class="input-light" rows="3" v-model="project.result" placeholder="Berapa % peningkatan efisiensi? Apa tanggapan klien? Gunakan metrik!"></textarea>
-                    </div>
-                  </div>
-                </div>
-
-                <div class="pb-footer border-t">
-                  <div class="pb-footer-left">
-                    <button class="btn-text">
-                      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><circle cx="8.5" cy="8.5" r="1.5"/><polyline points="21 15 16 10 5 21"/></svg>
+                  <div class="flex items-center justify-between p-6 border-t border-gray-100 bg-white">
+                    <button class="inline-flex items-center gap-2 text-[0.8125rem] font-bold text-gray-400 hover:text-gray-900 transition-colors">
+                      <PhotoIcon class="w-4 h-4" />
                       Kelola Gambar / Thumbnail
                     </button>
-                  </div>
-                  <div class="pb-footer-right">
-                    <span class="save-status text-gray text-sm">Disimpan otomatis</span>
-                    <button class="btn-primary" @click="activeProjectId = null">Selesai Edit</button>
+                    <div class="flex items-center gap-6">
+                      <span class="text-[0.75rem] font-medium text-gray-300 italic">Disimpan otomatis</span>
+                      <button class="px-6 py-2.5 rounded-xl bg-[#443E8D] text-[0.8125rem] font-bold text-white hover:bg-[#373275] transition-all shadow-md shadow-[#443E8D]/10" @click="activeProjectId = null">
+                        Selesai Edit
+                      </button>
+                    </div>
                   </div>
                 </div>
-
-              </div>
+              </Transition>
             </div>
           </div>
         </section>
-
       </main>
     </div>
 
-    <!-- Mobile overlay -->
-    <div v-if="sidebarOpen" class="sidebar-overlay" @click="sidebarOpen = false"></div>
+    <div v-if="sidebarOpen" class="fixed inset-0 bg-gray-900/40 backdrop-blur-sm z-[150] lg:hidden" @click="sidebarOpen = false"></div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
-import Sidebar from '~/components/student/StudentSidebar.vue'
+import StudentSidebar from '~/components/student/StudentSidebar.vue'
+import {
+  Bars3Icon,
+  BriefcaseIcon,
+  ClipboardDocumentIcon,
+  ArrowDownTrayIcon,
+  EyeIcon,
+  ChevronDownIcon,
+  DocumentTextIcon,
+  PhotoIcon,
+  LinkIcon
+} from '@heroicons/vue/24/outline'
 
 useSeoMeta({
-  title: 'Portfolio Builder — Carriera Course',
+  title: 'Portfolio Builder — Pixelnoid Academy',
   description: 'Ubah projectmu menjadi aset portfolio yang tak terbantahkan.'
 })
 
@@ -213,199 +255,16 @@ const projects = ref([
     initial: 'TM', bg: 'linear-gradient(135deg, #111827, #374151)',
     tech: ['Nuxt 3', 'Supabase', 'Stripe'],
     published: true,
+    githubLink: 'https://github.com/arkajenar/threadmark',
+    liveLink: 'https://threadmark.id',
     shortDesc: 'Platform belanja streetwear dengan fitur checkout langsung dan CMS untuk manajemen stok.',
     problem: 'Klien kehilangan potensi 30% penjualan karena mengandalkan manual order via WhatsApp. Klien membutuhkan sistem auto-checkout.',
     solution: 'Membangun aplikasi PWA berbasis Nuxt 3 untuk load sangat cepat di mobile, dan mengintegrasikan Stripe untuk menerima pembayaran kartu otomatis.',
     result: 'Proses pemesanan menjadi 100% otomatis, menekan human-error hingga 0%, dan mempercepat rilis produk baru ke katalog klien dalam hitungan menit.'
-  },
-  {
-    id: 2,
-    name: 'Sistem Inventory Gudang "LogisFlow"', displayName: 'LogisFlow — SaaS Inventory Management',
-    role: 'Backend Dev', date: '3 Bulan lalu',
-    initial: 'LF', bg: 'linear-gradient(135deg, #6458f5, #818cf8)',
-    tech: ['Laravel 10', 'PostgreSQL', 'Redis'],
-    published: false,
-    shortDesc: 'Dashboard monitoring stok logistik harian dengan real-time reporting.',
-    problem: '',
-    solution: '',
-    result: ''
-  },
-  {
-    id: 3,
-    name: 'Landing Page Carriera (Clone)', displayName: 'Carriera Bootcamp Site',
-    role: 'Frontend Dev', date: '4 Bulan lalu',
-    initial: 'PX', bg: 'linear-gradient(135deg, #10B981, #34D399)',
-    tech: ['HTML', 'Vanilla CSS', 'Vue'],
-    published: true,
-    shortDesc: 'Pekerjaan dasar mereplika design UI/UX platform secara pixel-perfect.',
-    problem: 'Memahami prinsip typography, spacing, dan layout yang scalable untuk direplika sesuai file desain.',
-    solution: 'Menggunakan metodologi Atomic Design menggunakan Vanilla CSS yang modular tanpa framework.',
-    result: 'Mendapat nilai A+ atas kedisiplinan margin dan accessibility.'
   }
 ])
 </script>
 
-<style scoped>
-/* ══════════════════════════════════════
-   BASE & LAYOUT
-══════════════════════════════════════ */
-.dash-page { display: flex; min-height: 100vh; background: #F8F9FD; font-family: 'Instrument Sans', 'Raleway', sans-serif; position: relative; overflow-x: hidden; }
-.bg-ambients { pointer-events: none; position: fixed; inset: 0; z-index: 0; overflow: hidden; }
-.ambient { position: absolute; border-radius: 50%; filter: blur(120px); }
-.ambient-tl { top: -5%;  left: -5%;  width: 40%; height: 40%; background: radial-gradient(circle, rgba(100,88,245,.07), transparent 70%); }
-.ambient-tr { top: 0;    right: -5%; width: 25%; height: 25%; background: radial-gradient(circle, rgba(165,180,252,.05), transparent 70%); }
-.ambient-br { bottom: 0; right: 10%; width: 30%; height: 30%; background: radial-gradient(circle, rgba(100,88,245,.04), transparent 60%); }
-.bg-grid { pointer-events: none; position: fixed; inset: 0; z-index: 0; background-image: linear-gradient(to right, rgba(0,0,0,.02) 1px, transparent 1px), linear-gradient(to bottom, rgba(0,0,0,.02) 1px, transparent 1px); background-size: 80px 80px; }
-
-.main-wrap { margin-left: 260px; flex: 1; min-width: 0; position: relative; z-index: 10; display: flex; flex-direction: column; }
-.topbar { position: sticky; top: 0; z-index: 100; display: flex; align-items: center; gap: 1rem; padding: 1rem 2rem; background: rgba(248,249,253,.85); backdrop-filter: blur(16px); border-bottom: 1px solid rgba(0,0,0,.06); }
-.greeting-title { font-size: 1.0625rem; font-weight: 600; color: #111827; margin: 0; }
-.greeting-sub { font-size: .8125rem; color: #6B7280; font-style: italic; margin-top: .1rem; }
-.topbar-toggle { display: none; }
-.dash-content { padding: 1.75rem 2rem 3rem; display: flex; flex-direction: column; gap: 1.5rem; }
-
-@media (max-width: 900px) {
-  .main-wrap { margin-left: 0; }
-  .topbar-toggle { display: block; background: none; border: none; cursor: pointer; }
-  .dash-content { padding: 1.25rem 1rem 3rem; }
-}
-
-/* ── Utility ── */
-.card { background: #fff; border: 1px solid #E9EBF0; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,.02); }
-.border-t { border-top: 1px solid #F3F4F6; }
-.text-sm { font-size: .8125rem; }
-.text-gray { color: #9CA3AF; }
-.text-orange { color: #F59E0B; }
-.text-indigo { color: #6366F1; }
-.text-green { color: #10B981; }
-
-.section-header { margin-bottom: 1rem; }
-.section-title { font-size: 1.125rem; font-weight: 600; color: #111827; margin-bottom: .25rem; }
-.section-desc { font-size: .875rem; color: #6B7280; }
-
-.btn-primary { background: #111827; color: #fff; border: none; padding: .6rem 1.2rem; border-radius: 10px; font-weight: 600; font-family: inherit; font-size: .875rem; cursor: pointer; transition: background .2s; display: inline-flex; align-items: center; gap: .5rem; }
-.btn-primary:hover { background: #374151; }
-.btn-primary svg { width: 16px; height: 16px; }
-
-.btn-outline { background: #fff; color: #374151; border: 1px solid #D1D5DB; padding: .6rem 1.2rem; border-radius: 10px; font-weight: 600; font-family: inherit; font-size: .875rem; cursor: pointer; transition: all .2s; display: inline-flex; align-items: center; gap: .5rem; }
-.btn-outline:hover { background: #F9FAFB; border-color: #9CA3AF; }
-.btn-outline svg { width: 16px; height: 16px; }
-
-/* ════════════════════ PUBLISH / EXPORT ════════════════════ */
-.publish-card {
-  display: flex; justify-content: space-between; align-items: center;
-  padding: 1.5rem 2rem; background: linear-gradient(145deg, #fff, #F9FAFB);
-  border: 1px solid rgba(100,88,245,.2);
-}
-
-.pc-left { display: flex; flex-direction: column; gap: .75rem; }
-.pc-status { display: flex; align-items: center; gap: .5rem; font-size: .875rem; font-weight: 700; color: #111827; text-transform: uppercase; letter-spacing: .05em; }
-.status-dot { width: 10px; height: 10px; background: #10B981; border-radius: 50%; box-shadow: 0 0 10px rgba(16,185,129,.5); }
-.animate-pulse { animation: pulse 2s infinite; }
-@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.5} }
-
-.pc-link-box { display: flex; align-items: center; gap: .5rem; background: #fff; border: 1px solid #E5E7EB; border-radius: 8px; padding: .4rem .4rem .4rem 1rem; width: fit-content; }
-.link-label { font-size: .75rem; color: #6B7280; font-weight: 600; }
-.link-url { font-family: 'JetBrains Mono', monospace; font-size: .875rem; color: #6458f5; text-decoration: none; font-weight: 600; }
-.btn-copy { background: #F3F4F6; border: none; padding: .4rem; border-radius: 6px; cursor: pointer; color: #4B5563; transition: all .2s; display: flex; align-items: center; }
-.btn-copy:hover { background: #E5E7EB; color: #111827; }
-.btn-copy svg { width: 16px; height: 16px; }
-
-.pc-right { display: flex; align-items: center; gap: 2rem; }
-.stats-row { display: flex; gap: 1.5rem; }
-.stat { display: flex; flex-direction: column; align-items: center; }
-.stat-val { font-size: 1.5rem; font-weight: 800; color: #111827; line-height: 1; }
-.stat-lbl { font-size: .6875rem; font-weight: 600; color: #6B7280; text-transform: uppercase; margin-top: .2rem; }
-
-.pc-actions { display: flex; gap: .75rem; }
-
-@media (max-width: 900px) {
-  .publish-card { flex-direction: column; align-items: flex-start; gap: 1.5rem; padding: 1.5rem; }
-  .pc-right { flex-direction: column; align-items: flex-start; gap: 1.25rem; width: 100%; }
-}
-
-/* ════════════════════ PROJECTS LIST ════════════════════ */
-.projects-list { display: flex; flex-direction: column; gap: 1rem; }
-
-.project-card { transition: box-shadow .2s, border-color .2s; }
-.project-card:hover { border-color: #D1D5DB; box-shadow: 0 8px 20px rgba(0,0,0,.03); }
-.project-card.is-expanded { border-color: rgba(100,88,245,.4); box-shadow: 0 10px 30px rgba(100,88,245,.06); }
-
-/* Header / Collapsed */
-.project-header {
-  display: flex; align-items: center; gap: 1.25rem; padding: 1.25rem 1.5rem;
-  cursor: pointer; user-select: none;
-}
-.ph-thumb {
-  width: 56px; height: 56px; border-radius: 12px; color: #fff;
-  display: flex; align-items: center; justify-content: center;
-  font-size: 1.25rem; font-weight: 800; flex-shrink: 0; box-shadow: 0 4px 10px rgba(0,0,0,.1);
-}
-.ph-info { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: .25rem; }
-.top-row { display: flex; align-items: center; gap: .75rem; }
-.ph-title { font-size: 1rem; font-weight: 600; color: #111827; margin: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;}
-.ph-badge { font-size: .6875rem; font-weight: 700; padding: .15rem .5rem; border-radius: 4px; text-transform: uppercase; }
-.badge-green { background: rgba(16,185,129,.1); color: #10B981; }
-.badge-gray  { background: #F3F4F6; color: #6B7280; }
-
-.ph-subtitle { font-size: .8125rem; color: #6B7280; margin: 0; }
-.ph-tech { display: flex; flex-wrap: wrap; gap: .35rem; margin-top: .4rem; }
-.ph-tech span { font-size: .6875rem; font-weight: 600; font-family: 'JetBrains Mono', monospace; background: #FAFAFA; border: 1px solid #E5E7EB; color: #4B5563; padding: .15rem .4rem; border-radius: 4px; }
-
-.ph-action { flex-shrink: 0; }
-.btn-expand { background: #F3F4F6; border: none; width: 36px; height: 36px; border-radius: 50%; color: #4B5563; display: flex; align-items: center; justify-content: center; transition: all .2s; }
-.btn-expand svg { width: 18px; height: 18px; transition: transform .3s; }
-.btn-expand svg.rotate { transform: rotate(180deg); }
-.project-header:hover .btn-expand { background: #E5E7EB; color: #111827; }
-
-/* ── Project Builder (Expanded) ── */
-.project-builder {
-  border-top: 1px solid #F3F4F6;
-  background: #FAFAFA;
-  border-radius: 0 0 16px 16px;
-}
-.pb-grid { display: grid; grid-template-columns: 1fr 1.3fr; gap: 2rem; padding: 1.5rem; }
-@media (max-width: 900px) { .pb-grid { grid-template-columns: 1fr; } }
-
-.pb-col { display: flex; flex-direction: column; gap: 1.25rem; }
-
-/* Fields */
-.field-item { display: flex; flex-direction: column; gap: .5rem; }
-.field-item label { font-size: .8125rem; font-weight: 600; color: #374151; }
-.input-light {
-  width: 100%; padding: .75rem 1rem; border-radius: 10px; border: 1px solid #D1D5DB;
-  font-family: inherit; font-size: .875rem; color: #111827; background: #fff;
-  transition: all .2s; resize: vertical; line-height: 1.5;
-}
-.input-light:focus { outline: none; border-color: #6458f5; box-shadow: 0 0 0 3px rgba(100,88,245,.1); }
-
-.cs-title { display: flex; align-items: center; gap: .5rem; font-size: .9375rem; font-weight: 700; color: #111827; margin: 0 0 .5rem; }
-.cs-title svg { width: 18px; height: 18px; color: #6458f5; }
-
-/* Toggle */
-.field-toggle { margin-top: .5rem; }
-.toggle-label { display: flex; align-items: center; gap: .75rem; cursor: pointer; font-size: .875rem; font-weight: 500; color: #374151; user-select: none; }
-.toggle-label input { display: none; }
-.toggle-switch {
-  position: relative; width: 44px; height: 24px; background: #D1D5DB; border-radius: 99px; transition: background .3s;
-}
-.toggle-switch::after {
-  content: ''; position: absolute; top: 2px; left: 2px; width: 20px; height: 20px; background: #fff; border-radius: 50%; transition: left .3s, box-shadow .3s;
-  box-shadow: 0 2px 4px rgba(0,0,0,.1);
-}
-.toggle-label input:checked ~ .toggle-switch { background: #10B981; }
-.toggle-label input:checked ~ .toggle-switch::after { left: 22px; }
-
-/* Footer Actions */
-.pb-footer { padding: 1rem 1.5rem; display: flex; justify-content: space-between; align-items: center; }
-.pb-footer-left, .pb-footer-right { display: flex; align-items: center; gap: 1rem; }
-.btn-text {
-  background: none; border: none; color: #6B7280; font-size: .875rem; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: .5rem; transition: color .2s;
-}
-.btn-text:hover { color: #111827; }
-.btn-text svg { width: 16px; height: 16px; }
-
-/* Overlays */
-.sidebar-overlay { display: none; position: fixed; inset: 0; z-index: 190; background: rgba(0,0,0,.5); backdrop-filter: blur(2px); }
-@media (max-width: 900px) { .sidebar-overlay { display: block; } }
+<style>
+/* Aesthetic and transitions handled by Tailwind */
 </style>

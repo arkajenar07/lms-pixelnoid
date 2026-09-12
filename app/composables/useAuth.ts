@@ -1,13 +1,13 @@
-﻿/**
+/**
  * useAuth — Mock Authentication System (No DB required)
  *
  * Sistem auth simulasi berbasis localStorage + Nuxt useState.
  * Siap diganti Supabase/API nanti cukup swap bagian loginWithCredentials.
  *
  * Demo accounts:
- *   student@carriera.dev  / student123   → role: student
- *   mentor@carriera.dev   / mentor123    → role: mentor
- *   admin@carriera.dev    / admin123     → role: admin
+ *   student@pixelnoid.dev  / student123   → role: student
+ *   mentor@pixelnoid.dev   / mentor123    → role: mentor
+ *   admin@pixelnoid.dev    / admin123     → role: admin
  */
 
 // ── Types ─────────────────────────────────────────────────────────────
@@ -33,7 +33,7 @@ const MOCK_USERS: Array<AuthUser & { password: string }> = [
   {
     id: 'usr_001',
     name: 'Arka Jenar',
-    email: 'student@carriera.dev',
+    email: 'student@pixelnoid.dev',
     password: 'student123',
     role: 'student',
     avatar: 'AJ',
@@ -43,7 +43,7 @@ const MOCK_USERS: Array<AuthUser & { password: string }> = [
   {
     id: 'usr_002',
     name: 'Yudha Pratama',
-    email: 'mentor@carriera.dev',
+    email: 'mentor@pixelnoid.dev',
     password: 'mentor123',
     role: 'mentor',
     avatar: 'YP',
@@ -52,8 +52,8 @@ const MOCK_USERS: Array<AuthUser & { password: string }> = [
   },
   {
     id: 'usr_003',
-    name: 'Admin Carriera',
-    email: 'admin@carriera.dev',
+    name: 'Admin Pixelnoid Digital Academy',
+    email: 'admin@pixelnoid.dev',
     password: 'admin123',
     role: 'admin',
     avatar: 'AD',
@@ -62,7 +62,7 @@ const MOCK_USERS: Array<AuthUser & { password: string }> = [
   },
 ]
 
-const STORAGE_KEY = 'carriera_auth_user'
+const STORAGE_KEY = 'Pixelnoid Digital Academy_auth_user'
 
 // ── Composable ──────────────────────────────────────────────────────────
 export const useAuth = () => {
@@ -80,10 +80,10 @@ export const useAuth = () => {
   })
 
   // ── Computed helpers ─────────────────────────────────────────────
-  const isLoggedIn  = computed(() => !!user.value)
-  const isStudent   = computed(() => user.value?.role === 'student')
-  const isMentor    = computed(() => user.value?.role === 'mentor')
-  const isAdmin     = computed(() => user.value?.role === 'admin')
+  const isLoggedIn = computed(() => !!user.value)
+  const isStudent = computed(() => user.value?.role === 'student')
+  const isMentor = computed(() => user.value?.role === 'mentor')
+  const isAdmin = computed(() => user.value?.role === 'admin')
 
   // ── Login ────────────────────────────────────────────────────────
   const login = async (email: string, password: string): Promise<LoginResult> => {
@@ -133,10 +133,10 @@ export const useAuth = () => {
   // ── Role-based redirect helper ───────────────────────────────────
   const defaultRedirectForRole = (role: UserRole): string => {
     switch (role) {
-      case 'student': return '/student/dashboard'
-      case 'mentor':  return '/mentor/dashboard'
-      case 'admin':   return '/admin/dashboard'
-      default:        return '/'
+      case 'student': return '/student/'
+      case 'mentor': return '/mentor/'
+      case 'admin': return '/admin/'
+      default: return '/'
     }
   }
 

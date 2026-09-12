@@ -4,9 +4,9 @@
  * Redirect ke /login jika belum auth.
  */
 export default defineNuxtRouteMiddleware((to) => {
-  const { isLoggedIn } = useAuth()
+  const user = useSupabaseUser()
 
-  if (!isLoggedIn.value) {
+  if (!user.value) {
     return navigateTo('/login', {
       redirectCode: 302,
       query: { redirect: to.fullPath !== '/login' ? to.fullPath : undefined },

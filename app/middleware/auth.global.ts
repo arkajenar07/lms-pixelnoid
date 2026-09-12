@@ -4,29 +4,68 @@
  * Global route guard — runs on every navigation.
  *
  * Rules:
- *   - Routes starting with /student/* → require login
- *   - Routes /login, /register       → redirect to dashboard if already logged in
- *   - Everything else (landing, etc.) → public, no guard
+ *   - /login, /register, /forgot-password → selalu public
+ *   - /student/* → membutuhkan user yang sudah login dengan role 'student'
+ *   - Selain itu → public, tidak dijaga
+ *
+ * Urutan pengecekan (client):
+ *   1. sessionStorage — cepat, handles post-login race condition
+ *   2. useSupabaseUser() — fallback jika sessionStorage kosong
+ *   3. DB query — fallback terakhir (F5 / SSR / tab baru)
  */
-export default defineNuxtRouteMiddleware((to) => {
-  const { isLoggedIn, user, defaultRedirectForRole } = useAuth()
+export default defineNuxtRouteMiddleware(async (to) => {
+  // Halaman publik — lewati semua pengecekan
+  if (
+    to.path === '/login' ||
+    to.path === '/register' ||
+    to.path === '/forgot-password'
+  ) return
 
-  const PROTECTED_PREFIXES = ['/student', '/mentor', '/admin']
-  const GUEST_ONLY_ROUTES  = ['/login', '/register', '/forgot-password']
+  // Hanya jaga route /student/*
+  if (!to.path.startsWith('/student')) return
 
-  const isProtected = PROTECTED_PREFIXES.some(p => to.path.startsWith(p))
-  const isGuestOnly = GUEST_ONLY_ROUTES.some(p => to.path === p || to.path.startsWith(p))
-
-  // 1. Belum login tapi akses protected route → ke /login
-  if (isProtected && !isLoggedIn.value) {
-    return navigateTo({
-      path: '/login',
-      query: { redirect: to.fullPath },
-    })
+  // ── Client: cek sessionStorage DULU (sebelum Supabase state) ──
+  // Ini penting untuk menghindari race condition setelah login:
+  // loginForPortal() set sessionStorage sebelum navigateTo, tapi
+  // useSupabaseUser() belum tentu terupdate saat middleware jalan.
+  if (import.meta.client) {
+    const storedPortal = sessionStorage.getItem('px_active_portal')
+    if (storedPortal === 'student') return          // ✅ Langsung lolos
+    if (storedPortal) {
+      // Ada portal lain di sessionStorage — tolak akses
+      return navigateTo({ path: '/login', query: { redirect: to.fullPath } })
+    }
+    // sessionStorage kosong → lanjut cek Supabase user
   }
 
-  // 2. Sudah login tapi buka halaman guest-only → ke dashboard
-  if (isGuestOnly && isLoggedIn.value && user.value) {
-    return navigateTo(defaultRedirectForRole(user.value.role))
+  // ── Cek Supabase auth state ──
+  const supabaseUser = useSupabaseUser()
+
+  if (!supabaseUser.value?.id) {
+    return navigateTo({ path: '/login', query: { redirect: to.fullPath } })
+  }
+
+  // ── Fallback: fetch role dari DB (SSR / F5 / tab baru) ──
+  const supabase = useSupabaseClient()
+  const { data } = await supabase
+    .from('users')
+    .select('roles')
+    .eq('id', supabaseUser.value.id)
+    .single()
+
+  const userRoles: string[] = data
+    ? (Array.isArray(data.roles) ? data.roles : (data.roles ? [data.roles] : []))
+    : []
+
+  if (!userRoles.includes('student')) {
+    return navigateTo({ path: '/login', query: { redirect: to.fullPath } })
+  }
+
+  // Simpan ke sessionStorage agar navigasi berikutnya lebih cepat
+  if (import.meta.client) {
+    sessionStorage.setItem('px_active_portal', 'student')
   }
 })
+
+
+
