@@ -24,33 +24,44 @@ export default defineNuxtRouteMiddleware(async (to) => {
   // Hanya jaga route /student/*
   if (!to.path.startsWith('/student')) return
 
-  // ── Client: cek sessionStorage DULU (sebelum Supabase state) ──
-  // Ini penting untuk menghindari race condition setelah login:
-  // loginForPortal() set sessionStorage sebelum navigateTo, tapi
-  // useSupabaseUser() belum tentu terupdate saat middleware jalan.
+  // ── Client: cek sessionStorage / localStorage DULU (sebelum Supabase state) ──
+  // Ini penting untuk menghindari race condition setelah login dan saat refresh:
   if (import.meta.client) {
-    const storedPortal = sessionStorage.getItem('px_active_portal')
+    const storedPortal = sessionStorage.getItem('px_active_portal') || localStorage.getItem('px_active_portal')
     if (storedPortal === 'student') return          // ✅ Langsung lolos
-    if (storedPortal) {
-      // Ada portal lain di sessionStorage — tolak akses
+    if (storedPortal && storedPortal !== 'student') {
+      // Ada portal lain di storage — tolak akses
       return navigateTo({ path: '/login', query: { redirect: to.fullPath } })
     }
-    // sessionStorage kosong → lanjut cek Supabase user
   }
 
   // ── Cek Supabase auth state ──
+  const supabase = useSupabaseClient()
   const supabaseUser = useSupabaseUser()
 
-  if (!supabaseUser.value?.id) {
+  let userId = (supabaseUser.value as any)?.id || (supabaseUser.value as any)?.sub || null
+
+  // Jika belum terisi di reactive state (misal saat F5 / refresh halaman), ambil dari getSession
+  if (!userId) {
+    const { data: sessionData } = await supabase.auth.getSession()
+    userId = sessionData?.session?.user?.id || null
+  }
+
+  // Fallback terakhir: getUser()
+  if (!userId) {
+    const { data: authData } = await supabase.auth.getUser()
+    userId = authData?.user?.id || null
+  }
+
+  if (!userId) {
     return navigateTo({ path: '/login', query: { redirect: to.fullPath } })
   }
 
-  // ── Fallback: fetch role dari DB (SSR / F5 / tab baru) ──
-  const supabase = useSupabaseClient()
+  // ── Fallback: fetch role dari DB ──
   const { data } = await supabase
     .from('users')
     .select('roles')
-    .eq('id', supabaseUser.value.id)
+    .eq('id', userId)
     .single()
 
   const userRoles: string[] = data
@@ -61,9 +72,10 @@ export default defineNuxtRouteMiddleware(async (to) => {
     return navigateTo({ path: '/login', query: { redirect: to.fullPath } })
   }
 
-  // Simpan ke sessionStorage agar navigasi berikutnya lebih cepat
+  // Simpan ke sessionStorage & localStorage agar navigasi / refresh berikutnya langsung lolos
   if (import.meta.client) {
     sessionStorage.setItem('px_active_portal', 'student')
+    localStorage.setItem('px_active_portal', 'student')
   }
 })
 

@@ -93,6 +93,7 @@ import {
   BriefcaseIcon,
   Square3Stack3DIcon,
   BellIcon,
+  CheckBadgeIcon,
   ArrowRightOnRectangleIcon
 } from '@heroicons/vue/24/outline'
 
@@ -147,7 +148,7 @@ const navItems = [
   { to: '/student/', label: 'Dashboard', icon: Squares2X2Icon, badge: null },
   { to: '/student/class', label: 'Kelas', icon: BookOpenIcon, badge: null },
   { to: '/student/aktivitas', label: 'Aktivitas', icon: ClipboardDocumentCheckIcon, badge: '3' },
-  { to: '/student/notifications', label: 'Notifikasi', icon: BellIcon, badge: '5' },
+  { to: '/student/absensi', label: 'Absensi', icon: CheckBadgeIcon, badge: null },
 ]
 </script>
 

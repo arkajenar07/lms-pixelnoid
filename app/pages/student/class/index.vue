@@ -29,51 +29,64 @@
           </div>
 
           <!-- Class Switcher (jika lebih dari 1 kelas) -->
-          <div v-if="enrolledClasses.length > 1" class="flex-shrink-0">
-            <div class="relative">
-              <button
-                @click="switcherOpen = !switcherOpen"
-                class="flex items-center gap-2 bg-[#FAFAFF] border border-[#443E8D]/20 px-3.5 py-2 rounded-xl text-[0.8rem] font-semibold text-[#443E8D] hover:bg-[#F0EFF9] transition-colors"
-              >
-                <ArrowsRightLeftIcon class="w-4 h-4" />
-                <span class="hidden sm:inline">Ganti Kelas</span>
-                <ChevronDownIcon class="w-3.5 h-3.5 transition-transform" :class="{ 'rotate-180': switcherOpen }" />
-              </button>
+          <div v-if="enrolledClasses.length > 1" class="flex-shrink-0 relative" ref="switcherRef">
+            <button
+              type="button"
+              @click.stop="toggleSwitcher"
+              class="flex items-center gap-2 bg-[#FAFAFF] border border-[#443E8D]/20 px-3.5 py-2 rounded-xl text-[0.8rem] font-semibold text-[#443E8D] hover:bg-[#F0EFF9] transition-colors cursor-pointer select-none shadow-xs"
+            >
+              <ArrowsRightLeftIcon class="w-4 h-4" />
+              <span class="hidden sm:inline">Ganti Kelas</span>
+              <ChevronDownIcon class="w-3.5 h-3.5 transition-transform duration-200" :class="{ 'rotate-180': switcherOpen }" />
+            </button>
 
-              <!-- Dropdown -->
-              <Transition
-                enter-active-class="transition duration-150 ease-out"
-                enter-from-class="opacity-0 translate-y-1"
-                enter-to-class="opacity-100 translate-y-0"
-                leave-active-class="transition duration-100 ease-in"
-                leave-from-class="opacity-100 translate-y-0"
-                leave-to-class="opacity-0 translate-y-1"
+            <!-- Dropdown -->
+            <Transition
+              enter-active-class="transition duration-150 ease-out"
+              enter-from-class="opacity-0 translate-y-1 scale-95"
+              enter-to-class="opacity-100 translate-y-0 scale-100"
+              leave-active-class="transition duration-100 ease-in"
+              leave-from-class="opacity-100 translate-y-0 scale-100"
+              leave-to-class="opacity-0 translate-y-1 scale-95"
+            >
+              <div
+                v-if="switcherOpen"
+                @click.stop
+                class="absolute right-0 top-full mt-2 w-64 bg-white rounded-2xl border border-[#E4E4E7] shadow-2xl z-[150] overflow-hidden py-1.5"
               >
-                <div v-if="switcherOpen" class="absolute right-0 top-full mt-2 w-56 bg-white rounded-2xl border border-[#E4E4E7] shadow-xl z-50 overflow-hidden">
-                  <div class="p-2">
-                    <p class="text-[0.6rem] uppercase tracking-wider font-bold text-[#999] px-3 py-1.5">Kelas yang diikuti</p>
-                    <button
-                      v-for="cls in enrolledClasses"
-                      :key="cls.class_id"
-                      @click="selectClass(cls)"
-                      class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-[0.85rem] transition-colors"
-                      :class="activeClass?.class_id === cls.class_id
-                        ? 'bg-[#443E8D] text-white font-semibold'
-                        : 'text-[#333] hover:bg-[#F7F7F7]'"
-                    >
-                      <div
-                        class="w-7 h-7 rounded-lg flex items-center justify-center text-[0.6rem] font-black flex-shrink-0"
-                        :class="activeClass?.class_id === cls.class_id ? 'bg-white/20 text-white' : 'bg-[#443E8D]/10 text-[#443E8D]'"
-                      >
-                        {{ cls.name.charAt(0).toUpperCase() }}
-                      </div>
-                      <span class="truncate">{{ cls.name }}</span>
-                      <CheckCircleIcon v-if="activeClass?.class_id === cls.class_id" class="w-4 h-4 ml-auto flex-shrink-0" />
-                    </button>
-                  </div>
+                <div class="px-3 py-2 border-b border-[#F4F4F5]">
+                  <p class="text-[0.625rem] uppercase tracking-wider font-bold text-[#A1A1AA]">Kelas yang Diikuti</p>
                 </div>
-              </Transition>
-            </div>
+                <div class="p-1.5 flex flex-col gap-1 max-h-[300px] overflow-y-auto custom-scrollbar">
+                  <button
+                    v-for="cls in enrolledClasses"
+                    :key="cls.class_id"
+                    type="button"
+                    @click="selectClass(cls)"
+                    class="w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left text-[0.85rem] transition-colors cursor-pointer group"
+                    :class="activeClass?.class_id === cls.class_id
+                      ? 'bg-[#443E8D] text-white font-semibold shadow-sm'
+                      : 'text-[#27272A] hover:bg-[#F4F4F8]'"
+                  >
+                    <div
+                      class="w-8 h-8 rounded-lg flex items-center justify-center text-[0.7rem] font-black flex-shrink-0 transition-colors"
+                      :class="activeClass?.class_id === cls.class_id ? 'bg-white/20 text-white' : 'bg-[#443E8D]/10 text-[#443E8D] group-hover:bg-[#443E8D]/20'"
+                    >
+                      {{ cls.name.charAt(0).toUpperCase() }}
+                    </div>
+                    <div class="min-w-0 flex-1">
+                      <p class="truncate leading-tight font-medium" :class="activeClass?.class_id === cls.class_id ? 'text-white' : 'text-[#18181B]'">
+                        {{ cls.name }}
+                      </p>
+                      <p class="text-[0.6875rem] truncate mt-0.5" :class="activeClass?.class_id === cls.class_id ? 'text-white/70' : 'text-[#A1A1AA]'">
+                        {{ activeClass?.class_id === cls.class_id ? 'Kelas Aktif' : 'Pilih kelas' }}
+                      </p>
+                    </div>
+                    <CheckCircleIcon v-if="activeClass?.class_id === cls.class_id" class="w-4 h-4 ml-auto flex-shrink-0 text-white" />
+                  </button>
+                </div>
+              </div>
+            </Transition>
           </div>
         </div>
       </header>
@@ -101,50 +114,6 @@
         </div>
       </div>
 
-      <!-- ── CLASS SELECTION MODAL (jika lebih dari 1 kelas dan belum pilih) ── -->
-      <Teleport to="body">
-        <Transition
-          enter-active-class="transition duration-200 ease-out"
-          enter-from-class="opacity-0"
-          enter-to-class="opacity-100"
-          leave-active-class="transition duration-150 ease-in"
-          leave-from-class="opacity-100"
-          leave-to-class="opacity-0"
-        >
-          <div v-if="showClassPicker" class="fixed inset-0 z-[500] flex items-center justify-center p-4">
-            <div class="absolute inset-0 bg-gray-900/50 backdrop-blur-sm" />
-            <div class="relative w-full max-w-md bg-white rounded-3xl shadow-2xl border border-gray-100 overflow-hidden">
-              <!-- Header -->
-              <div class="px-6 pt-8 pb-6 text-center">
-                <div class="w-14 h-14 rounded-2xl bg-[#443E8D] flex items-center justify-center mx-auto mb-4">
-                  <AcademicCapIcon class="w-7 h-7 text-white" />
-                </div>
-                <h2 class="text-[1.1rem] font-bold text-[#18181B] mb-1">Pilih Kelas</h2>
-                <p class="text-[0.85rem] text-[#71717A]">Kamu terdaftar di {{ enrolledClasses.length }} kelas. Pilih mana yang ingin kamu akses.</p>
-              </div>
-              <!-- Class list -->
-              <div class="px-4 pb-6 space-y-2">
-                <button
-                  v-for="cls in enrolledClasses"
-                  :key="cls.class_id"
-                  @click="selectClass(cls)"
-                  class="w-full flex items-center gap-4 p-4 rounded-2xl border border-[#E4E4E7] hover:border-[#443E8D]/30 hover:bg-[#FAFAFF] transition-all text-left group"
-                >
-                  <div class="w-12 h-12 rounded-xl bg-gradient-to-br from-[#443E8D] to-indigo-500 flex items-center justify-center text-white text-[1.1rem] font-black shadow-sm flex-shrink-0">
-                    {{ cls.name.charAt(0).toUpperCase() }}
-                  </div>
-                  <div class="flex-1 min-w-0">
-                    <p class="text-[0.9rem] font-semibold text-[#18181B] truncate">{{ cls.name }}</p>
-                    <p class="text-[0.75rem] text-[#999] mt-0.5">Learning Path</p>
-                  </div>
-                  <ArrowRightIcon class="w-4 h-4 text-[#CCC] group-hover:text-[#443E8D] transition-colors flex-shrink-0" />
-                </button>
-              </div>
-            </div>
-          </div>
-        </Transition>
-      </Teleport>
-
       <!-- ── TAB SWITCHER (hanya tampil jika kelas sudah dipilih) ── -->
       <template v-if="activeClass">
         <div class="pt-7 px-8 max-[900px]:px-5 max-[900px]:pt-6">
@@ -153,7 +122,7 @@
               v-for="tab in tabs"
               :key="tab.id"
               @click="activeTab = tab.id"
-              class="relative flex items-center gap-2 px-5 py-2.5 rounded-[9px] text-[0.8rem] font-semibold transition-all duration-200 whitespace-nowrap"
+              class="relative flex items-center gap-2 px-5 py-2.5 rounded-[9px] text-[0.8rem] font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer"
               :class="activeTab === tab.id
                 ? 'bg-[#443E8D] text-white shadow-[0_1px_4px_rgba(68,62,141,0.2)]'
                 : 'text-[#71717A] hover:text-[#18181B] hover:bg-[#FAFAFC]'"
@@ -173,15 +142,15 @@
         </div>
 
         <!-- ── TAB CONTENT ── -->
-        <div class="flex-1" @click="switcherOpen = false">
+        <div class="flex-1">
           <!-- Tab: Modul Belajar -->
-          <ClassModules v-if="activeTab === 'modules'" :class-id="activeClass.class_id" />
+          <ClassModules v-if="activeTab === 'modules'" :key="'modules-' + activeClass.class_id" :class-id="activeClass.class_id" />
 
           <!-- Tab: Live Meeting -->
-          <ClassMeeting v-else-if="activeTab === 'meeting'" />
+          <ClassMeeting v-else-if="activeTab === 'meeting'" :key="'meeting-' + activeClass.class_id" />
 
           <!-- Tab: Sumber Daya -->
-          <ClassResources v-else-if="activeTab === 'resources'" :class-id="activeClass.class_id" />
+          <ClassResources v-else-if="activeTab === 'resources'" :key="'resources-' + activeClass.class_id" :class-id="activeClass.class_id" />
         </div>
       </template>
 
@@ -193,14 +162,11 @@
       class="fixed inset-0 bg-[rgba(15,23,42,0.15)] z-[150] hidden max-[900px]:block backdrop-blur-[2px]"
       @click="sidebarOpen = false"
     ></div>
-
-    <!-- Click outside switcher -->
-    <div v-if="switcherOpen" class="fixed inset-0 z-40" @click="switcherOpen = false" />
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, shallowRef, computed, onMounted } from 'vue'
+import { ref, onMounted, onBeforeUnmount } from 'vue'
 import StudentSidebar from '~/components/student/StudentSidebar.vue'
 import ClassModules from '~/components/student/class/ClassModules.vue'
 import ClassMeeting from '~/components/student/class/ClassMeeting.vue'
@@ -214,7 +180,6 @@ import {
   ArrowsRightLeftIcon,
   ChevronDownIcon,
   CheckCircleIcon,
-  ArrowRightIcon,
   ExclamationTriangleIcon,
 } from '@heroicons/vue/24/outline'
 
@@ -232,7 +197,18 @@ const initialTab = (route.query.tab as string) || 'modules'
 const activeTab = ref<'modules' | 'meeting' | 'resources'>(
   ['modules', 'meeting', 'resources'].includes(initialTab) ? initialTab as any : 'modules'
 )
+const switcherRef = ref<HTMLElement | null>(null)
 const switcherOpen = ref(false)
+
+function toggleSwitcher() {
+  switcherOpen.value = !switcherOpen.value
+}
+
+function onDocumentClick(e: MouseEvent) {
+  if (switcherOpen.value && switcherRef.value && !switcherRef.value.contains(e.target as Node)) {
+    switcherOpen.value = false
+  }
+}
 
 interface EnrolledClass {
   member_id: number
@@ -243,7 +219,6 @@ interface EnrolledClass {
 const enrolledClasses = ref<EnrolledClass[]>([])
 const activeClass = ref<EnrolledClass | null>(null)
 const isLoadingClasses = ref(true)
-const showClassPicker = ref(false)
 
 const supabase = useSupabaseClient()
 
@@ -254,25 +229,43 @@ const tabs = [
   { id: 'resources', label: 'Sumber Daya',   icon: FolderOpenIcon,    badge: null },
 ] as const
 
+// ── Resilient Auth Token ─────────────────────────────────────────
+async function getAuthToken(): Promise<string | null> {
+  try {
+    const { data: { session } } = await supabase.auth.getSession()
+    if (session?.access_token) return session.access_token
+
+    await new Promise(r => setTimeout(r, 250))
+    const { data: retryData } = await supabase.auth.getSession()
+    if (retryData?.session?.access_token) return retryData.session.access_token
+
+    const { data: refreshData } = await supabase.auth.refreshSession()
+    return refreshData?.session?.access_token || null
+  } catch {
+    return null
+  }
+}
+
 // ── Fetch enrolled classes ───────────────────────────────────────
 async function fetchEnrolledClasses() {
   isLoadingClasses.value = true
   try {
-    const { data: { session } } = await supabase.auth.getSession()
-    const token = session?.access_token
+    const token = await getAuthToken()
     if (!token) return
 
     const data = await $fetch<{ classes: EnrolledClass[] }>('/api/student/classes', {
       headers: { Authorization: `Bearer ${token}` }
     })
-    enrolledClasses.value = data.classes
+    enrolledClasses.value = data.classes || []
 
-    if (data.classes.length === 1) {
-      // Auto-select if only 1 class
-      activeClass.value = data.classes[0]
-    } else if (data.classes.length > 1) {
-      // Show picker modal
-      showClassPicker.value = true
+    if (enrolledClasses.value.length > 0) {
+      // Cek jika sebelumnya ada kelas yang tersimpan di localStorage
+      const savedClassId = import.meta.client ? localStorage.getItem('px_student_active_class_id') : null
+      const matched = savedClassId ? enrolledClasses.value.find(c => String(c.class_id) === savedClassId) : null
+      // Langsung munculkan kelas paling awal (atau kelas yang terakhir dipilih)
+      activeClass.value = matched || enrolledClasses.value[0]
+    } else {
+      activeClass.value = null
     }
   } catch (e) {
     console.error('Error fetching classes:', e)
@@ -283,11 +276,24 @@ async function fetchEnrolledClasses() {
 
 function selectClass(cls: EnrolledClass) {
   activeClass.value = cls
-  showClassPicker.value = false
+  if (import.meta.client) {
+    localStorage.setItem('px_student_active_class_id', String(cls.class_id))
+  }
   switcherOpen.value = false
   // Reset to modules tab on switch
   activeTab.value = 'modules'
 }
 
-onMounted(fetchEnrolledClasses)
+onMounted(() => {
+  fetchEnrolledClasses()
+  if (import.meta.client) {
+    document.addEventListener('click', onDocumentClick)
+  }
+})
+
+onBeforeUnmount(() => {
+  if (import.meta.client) {
+    document.removeEventListener('click', onDocumentClick)
+  }
+})
 </script>

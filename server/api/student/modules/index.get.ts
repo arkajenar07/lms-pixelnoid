@@ -87,8 +87,14 @@ export default defineEventHandler(async (event) => {
     const completedCount = lessons.filter((l: any) => completedLessonIds.has(l.id)).length
     const isCompleted = totalCount > 0 && completedCount === totalCount
 
+    const lessonsWithStatus = lessons.map((l: any) => ({
+      ...l,
+      is_completed: completedLessonIds.has(l.id)
+    }))
+
     return {
       ...mod,
+      module_lessons: lessonsWithStatus,
       total_lessons: totalCount,
       completed_lessons: completedCount,
       is_completed: isCompleted,

@@ -121,58 +121,54 @@ export default defineEventHandler(async (event) => {
 
   // Recalculate class progress and total XP for this user in the class
   try {
-    // Get modules for class
-    const { data: modules, error: modulesErr } = await adminClient
+    // Get modules and lessons for class
+    const { data: modulesWithLessons, error: modulesErr } = await adminClient
       .from('class_modules')
-      .select('id, xp_reward')
+      .select(`
+        id, xp_reward,
+        module_lessons ( id, xp_reward )
+      `)
       .eq('class_id', classId)
 
     if (modulesErr) {
       console.error('[update-progress] modulesErr:', modulesErr)
     }
 
-    const moduleIds = (modules || []).map((m: any) => m.id)
-    const moduleMap = new Map((modules || []).map((m: any) => [m.id, m]))
+    const lessons: { id: number; xp_reward: number | null; moduleId: number }[] = []
+    const moduleMap = new Map<number, any>()
+    const lessonsCountPerModule = new Map<number, number>()
 
-    // Fetch lessons for these modules and compute rewards per module
-    const { data: moduleLessons, error: moduleLessonsErr } = await adminClient
-      .from('module_lessons')
-      .select('id, xp_reward, class_modules(id)')
-      .in('class_modules.id', moduleIds)
+    ;(modulesWithLessons || []).forEach((m: any) => {
+      moduleMap.set(m.id, m)
+      const mLessons = m.module_lessons || []
+      lessonsCountPerModule.set(m.id, mLessons.length)
+      mLessons.forEach((l: any) => {
+        lessons.push({ id: l.id, xp_reward: l.xp_reward, moduleId: m.id })
+      })
+    })
 
-    if (moduleLessonsErr) {
-      console.error('[update-progress] moduleLessonsErr:', moduleLessonsErr)
-    }
-
-    const lessons = moduleLessons || []
     const lessonIds = lessons.map((l: any) => l.id)
     const totalLessons = lessonIds.length
 
     // Get completed lessons for this user within these lessons
-    const { data: completed, error: completedErr } = await adminClient
-      .from('user_lesson_progress')
-      .select('lesson_id')
-      .eq('user_id', user.id)
-      .eq('status', 'completed')
-      .in('lesson_id', lessonIds || [])
+    let completedIds = new Set<number>()
+    if (lessonIds.length > 0) {
+      const { data: completed, error: completedErr } = await adminClient
+        .from('user_lesson_progress')
+        .select('lesson_id')
+        .eq('user_id', user.id)
+        .eq('status', 'completed')
+        .in('lesson_id', lessonIds)
 
-    if (completedErr) {
-      console.error('[update-progress] completedErr:', completedErr)
+      if (completedErr) {
+        console.error('[update-progress] completedErr:', completedErr)
+      }
+
+      completedIds = new Set((completed || []).map((c: any) => c.lesson_id))
     }
 
-    const completedIds = new Set((completed || []).map((c: any) => c.lesson_id))
     const completedCount = completedIds.size
-
-    const progressPercentage = totalLessons > 0 ? Math.round((completedCount / totalLessons) * 100) : 0
-
-    // Count lessons per module for fallback proportional XP distribution
-    const lessonsCountPerModule = new Map<number, number>()
-    lessons.forEach((l: any) => {
-      const mid = Array.isArray(l.class_modules) ? l.class_modules[0]?.id : l.class_modules?.id
-      if (mid) {
-        lessonsCountPerModule.set(mid, (lessonsCountPerModule.get(mid) || 0) + 1)
-      }
-    })
+    const progressPercentage = totalLessons > 0 ? Math.min(100, Math.round((completedCount / totalLessons) * 100)) : 0
 
     // Calculate XP directly per completed lesson
     let totalXpEarned = 0
@@ -182,10 +178,9 @@ export default defineEventHandler(async (event) => {
         if (lessonXp > 0) {
           totalXpEarned += lessonXp
         } else {
-          const mid = Array.isArray(l.class_modules) ? l.class_modules[0]?.id : l.class_modules?.id
-          const mod = mid ? moduleMap.get(mid) : null
+          const mod = moduleMap.get(l.moduleId)
           const modXp = Number(mod?.xp_reward || 0)
-          const count = mid ? (lessonsCountPerModule.get(mid) || 1) : 1
+          const count = lessonsCountPerModule.get(l.moduleId) || 1
           if (modXp > 0 && count > 0) {
             totalXpEarned += Math.round(modXp / count)
           }

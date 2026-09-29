@@ -28,10 +28,10 @@ const PORTAL_DASHBOARD: Record<Portal, string> = {
 export const usePortalAuth = () => {
   const supabase = useSupabaseClient()
 
-  // Active portal state (reactive, read from sessionStorage)
+  // Active portal state (reactive, read from sessionStorage / localStorage)
   const activePortal = useState<Portal | null>('portal_auth_portal', () => {
     if (import.meta.client) {
-      const stored = sessionStorage.getItem(PORTAL_STORAGE_KEY) as Portal | null
+      const stored = (sessionStorage.getItem(PORTAL_STORAGE_KEY) || localStorage.getItem(PORTAL_STORAGE_KEY)) as Portal | null
       if (stored && ['admin', 'student', 'mentor'].includes(stored)) return stored
     }
     return null
@@ -53,7 +53,7 @@ export const usePortalAuth = () => {
    * Authenticates a user for a specific portal.
    * - Signs in via Supabase Auth
    * - Verifies the user has the required role from the users table
-   * - On success: stores activePortal in sessionStorage
+   * - On success: stores activePortal in sessionStorage and localStorage
    * - On role mismatch: signs out and returns an error
    */
   const loginForPortal = async (
@@ -93,9 +93,10 @@ export const usePortalAuth = () => {
     // E.g., if allowed is ['student', 'mentor'] and they are a 'mentor', they get assigned 'mentor'.
     const matchedPortal = rolesToCheck.find(role => roles.includes(role)) as Portal
 
-    // Step 4: Store active portal in sessionStorage
+    // Step 4: Store active portal in sessionStorage & localStorage
     if (import.meta.client) {
       sessionStorage.setItem(PORTAL_STORAGE_KEY, matchedPortal)
+      localStorage.setItem(PORTAL_STORAGE_KEY, matchedPortal)
     }
     activePortal.value = matchedPortal
 
@@ -111,6 +112,7 @@ export const usePortalAuth = () => {
 
     if (import.meta.client) {
       sessionStorage.removeItem(PORTAL_STORAGE_KEY)
+      localStorage.removeItem(PORTAL_STORAGE_KEY)
     }
     activePortal.value = null
 
@@ -126,7 +128,7 @@ export const usePortalAuth = () => {
 
   const restorePortal = () => {
     if (import.meta.client && !activePortal.value) {
-      const stored = sessionStorage.getItem(PORTAL_STORAGE_KEY) as Portal | null
+      const stored = (sessionStorage.getItem(PORTAL_STORAGE_KEY) || localStorage.getItem(PORTAL_STORAGE_KEY)) as Portal | null
       if (stored && ['admin', 'student', 'mentor'].includes(stored)) {
         activePortal.value = stored
       }

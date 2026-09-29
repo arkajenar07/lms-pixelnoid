@@ -78,11 +78,11 @@
 
         <!-- Resume CTA -->
         <NuxtLink
-          v-if="modules[0]"
-          :to="`/student/class/${modules[0].slug}`"
+          v-if="activeModuleToStudy"
+          :to="`/student/class/${activeModuleToStudy.slug}`"
           class="sm:ml-auto inline-flex items-center gap-2 px-6 py-3.5 rounded-lg bg-[#443E8D] text-white text-[0.9rem] font-semibold hover:bg-[#3A3478] transition-colors no-underline shadow-sm"
         >
-          Mulai Belajar: {{ modules[0].title }}
+          {{ (activeModuleToStudy.completed_lessons || 0) > 0 ? 'Lanjut Belajar:' : 'Mulai Belajar:' }} {{ activeModuleToStudy.title }}
           <ArrowRightIcon class="w-4 h-4" />
         </NuxtLink>
       </section>
@@ -216,6 +216,7 @@ interface LessonSummary {
   type: string
   sort_order: number
   xp_reward?: number | null
+  is_completed?: boolean
 }
 
 interface Module {
@@ -242,6 +243,9 @@ const isLoading = ref(false)
 const errorMsg = ref('')
 
 const totalLessons = computed(() => modules.value.reduce((s, m) => s + (m.module_lessons?.length ?? 0), 0))
+const completedLessons = computed(() => modules.value.reduce((s, m) => s + (m.completed_lessons ?? 0), 0))
+const activeModuleToStudy = computed(() => modules.value.find(m => !m.is_completed) || modules.value[0])
+
 const totalXp = computed(() => {
   let lessonsXpSum = 0
   let hasLessonXp = false
@@ -256,9 +260,39 @@ const totalXp = computed(() => {
   if (hasLessonXp && lessonsXpSum > 0) return lessonsXpSum
   return modules.value.reduce((s, m) => s + (m.xp_reward ?? 0), 0)
 })
-const progressPercentage = ref(0)
-const xpEarned = ref(0)
-const overallProgress = computed(() => progressPercentage.value)
+
+// Progress is derived directly from module lessons in this class (0-100%)
+const overallProgress = computed(() => {
+  if (totalLessons.value === 0) return 0
+  return Math.min(100, Math.round((completedLessons.value / totalLessons.value) * 100))
+})
+
+// XP earned is calculated directly from completed lessons
+const calculatedXpEarned = computed(() => {
+  let earned = 0
+  for (const m of modules.value) {
+    const lessons = m.module_lessons || []
+    const hasLessonXp = lessons.some((l: any) => Number(l.xp_reward || 0) > 0)
+    if (hasLessonXp) {
+      for (const l of lessons) {
+        if ((l as any).is_completed) {
+          earned += Number(l.xp_reward || 0)
+        }
+      }
+    } else {
+      const modXp = Number(m.xp_reward || 0)
+      const count = m.total_lessons || lessons.length || 1
+      const done = m.completed_lessons || 0
+      if (modXp > 0 && count > 0) {
+        earned += Math.round((done / count) * modXp)
+      }
+    }
+  }
+  return earned
+})
+
+const backendXp = ref<number | null>(null)
+const xpEarned = computed(() => backendXp.value !== null ? backendXp.value : calculatedXpEarned.value)
 
 function formatDuration(minutes: number) {
   if (minutes < 60) return `${minutes} menit`
@@ -299,8 +333,7 @@ async function fetchClassProgress(token: string) {
       headers: { Authorization: `Bearer ${token}` },
       body: { class_id: props.classId }
     })
-    progressPercentage.value = data.progressPercentage ?? 0
-    xpEarned.value = data.totalXpEarned ?? 0
+    backendXp.value = data.totalXpEarned ?? 0
   } catch (e) {
     console.error('[ClassModules] fetchClassProgress error', e)
   }

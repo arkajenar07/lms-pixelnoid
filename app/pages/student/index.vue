@@ -22,66 +22,15 @@
               <span class="sm:hidden">! 👋</span>
             </h1>
             <p class="mt-0.5 sm:mt-1 text-[0.7rem] sm:text-[0.82rem] leading-relaxed text-[#71717A]">
-              Phase {{ currentPhase }} of 3 · Bulan {{ currentMonth }}/4
+              {{ todayStr }}
             </p>
           </div>
-
-          <NuxtLink
-            to="/student/notifications"
-            class="relative inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#E4E4E7] bg-white text-[#52525B] transition-transform duration-200 hover:-translate-y-0.5 hover:border-[#CFCFE0] hover:text-[#443E8D]"
-            aria-label="Notifikasi"
-          >
-            <BellIcon class="h-5 w-5" />
-            <span
-              v-if="unreadNotifCount > 0"
-              class="absolute -right-1 -top-1 flex h-[18px] min-w-[18px] items-center justify-center rounded-full border-2 border-white bg-[#443E8D] px-1 text-[0.62rem] font-bold text-white"
-            >
-              {{ unreadNotifCount }}
-            </span>
-          </NuxtLink>
         </div>
       </header>
 
       <main class="mx-auto flex w-full max-w-[1440px] flex-col gap-6 p-8 max-[900px]:p-5">
-        <section>
-          <article class="rounded-2xl border border-[#E4E4E7] bg-white p-4 sm:p-6 lg:p-7 shadow-sm">
-            <div class="flex h-full flex-col justify-between gap-6">
-              <div>
-                <div class="flex items-center gap-2 text-[#71717A]">
-                  <PlayCircleIcon class="h-4 sm:h-5 w-4 sm:w-5 text-[#443E8D]" />
-                  <span class="text-[0.65rem] sm:text-[0.72rem] font-semibold uppercase tracking-[0.15em] sm:tracking-[0.18em]">Continue learning</span>
-                </div>
 
-                <h3 class="mt-2 sm:mt-3 text-[1.15rem] sm:text-[1.35rem] font-semibold tracking-[-0.03em] text-[#18181B] lg:text-[1.2rem]">
-                  {{ continueLearning.moduleName }}
-                </h3>
-              </div>
-
-              <div class="space-y-3 sm:space-y-4">
-                <div>
-                  <div class="mb-2 flex items-center justify-between text-[0.7rem] sm:text-[0.75rem] font-semibold text-[#71717A]">
-                    <span>Assignment progress</span>
-                    <span class="text-[#443E8D]">{{ continueLearning.assignmentProgress }}%</span>
-                  </div>
-                  <div class="h-2 rounded-full bg-[#F1F1F4]">
-                    <div
-                      class="h-full rounded-full bg-[#443E8D] transition-[width] duration-700 ease-out"
-                      :style="{ width: `${continueLearning.assignmentProgress}%` }"
-                    ></div>
-                  </div>
-                </div>
-
-                <NuxtLink
-                  to="/student/class"
-                  class="inline-flex w-full items-center justify-center rounded-2xl bg-[#443E8D] px-4 py-2 sm:py-3 text-[0.8rem] sm:text-[0.85rem] font-semibold text-white transition-transform duration-200 hover:-translate-y-0.5 hover:bg-[#3D3780]"
-                >
-                  Lanjut belajar
-                </NuxtLink>
-              </div>
-            </div>
-          </article>
-        </section>
-
+        <!-- Progress Cards -->
         <section class="grid gap-3 sm:gap-4 sm:grid-cols-2 xl:grid-cols-4">
           <article
             v-for="stat in summaryStats"
@@ -93,8 +42,9 @@
                 <p class="text-[0.65rem] sm:text-[0.72rem] font-semibold uppercase tracking-[0.14em] sm:tracking-[0.16em] text-[#71717A]">
                   {{ stat.label }}
                 </p>
-                <p class="mt-1.5 sm:mt-2 text-[1.15rem] sm:text-[1.35rem] font-semibold tracking-[-0.03em] text-[#18181B]">
-                  {{ stat.value }}
+                <p class="mt-1.5 sm:mt-2 text-[1.35rem] font-semibold tracking-[-0.03em] text-[#18181B]">
+                  <span v-if="loading" class="animate-pulse text-[#E4E4E7]">—</span>
+                  <span v-else>{{ stat.value }}</span>
                 </p>
                 <p class="mt-0.5 sm:mt-1 text-[0.75rem] sm:text-[0.8rem] text-[#71717A]">{{ stat.hint }}</p>
               </div>
@@ -102,213 +52,148 @@
                 <component :is="stat.icon" class="h-4 sm:h-5 w-4 sm:w-5" />
               </div>
             </div>
+            <div v-if="stat.progress !== undefined" class="mt-3">
+              <div class="h-1.5 rounded-full bg-[#F1F1F4]">
+                <div
+                  class="h-full rounded-full bg-[#443E8D] transition-[width] duration-700 ease-out"
+                  :style="{ width: `${stat.progress}%` }"
+                />
+              </div>
+            </div>
           </article>
         </section>
 
-        <section class="grid gap-5 md:grid-cols-2 lg:gap-4 xl:grid-cols-3">
+        <section class="grid gap-5 lg:grid-cols-2 lg:gap-4">
+          <!-- Reminders: Upcoming Sessions -->
           <article class="rounded-2xl border border-[#E4E4E7] bg-white p-4 sm:p-5 lg:p-6 shadow-sm">
-            <div class="flex items-center gap-2 text-[#443E8D]">
-              <MapIcon class="h-5 w-5" />
-              <h2 class="text-[0.95rem] font-semibold">Weekly Flow</h2>
-            </div>
-
-            <div class="relative mt-5 sm:mt-6 space-y-3 sm:space-y-5 pl-1">
-              <div class="absolute left-[11px] top-2 bottom-2 w-px bg-[#E7E7EB]"></div>
-
-              <div v-for="flow in weeklyFlow" :key="flow.id" class="relative flex items-start gap-3 sm:gap-4">
-                <div
-                  class="relative z-10 flex h-6 w-6 shrink-0 items-center justify-center rounded-full border bg-white"
-                  :class="flow.status === 'done'
-                    ? 'border-[#443E8D] bg-[#443E8D] text-white'
-                    : flow.status === 'doing'
-                      ? 'border-[#443E8D] text-[#443E8D]'
-                      : 'border-[#D7D7DE] text-[#A1A1AA]'"
-                >
-                  <CheckIcon v-if="flow.status === 'done'" class="h-3.5 w-3.5" />
-                  <span v-else-if="flow.status === 'doing'" class="h-2 w-2 rounded-full bg-[#443E8D]"></span>
-                </div>
-
-                <div class="pb-0.5">
-                  <p class="text-[0.8rem] sm:text-[0.88rem] font-medium" :class="flow.status === 'todo' ? 'text-[#52525B]' : 'text-[#18181B]'">
-                    {{ flow.label }}
-                  </p>
-                  <p class="mt-0.5 sm:mt-1 text-[0.7rem] sm:text-[0.76rem] text-[#71717A]">
-                    {{ flow.note }}
-                  </p>
-                </div>
-              </div>
-            </div>
-          </article>
-
-          <article class="rounded-2xl border border-[#E4E4E7] bg-white p-4 sm:p-5 lg:p-6 shadow-sm">
-            <div class="flex items-center gap-2 text-[#443E8D]">
+            <div class="flex items-center gap-2 text-[#443E8D] mb-5">
               <CalendarIcon class="h-5 w-5" />
-              <h2 class="text-[0.95rem] font-semibold">Upcoming Session</h2>
+              <h2 class="text-[0.95rem] font-semibold">Sesi Mendatang</h2>
+              <span v-if="!loading && upcomingSessions.length > 0" class="ml-auto text-[0.7rem] font-semibold bg-[#443E8D]/10 text-[#443E8D] px-2 py-0.5 rounded-full">
+                {{ upcomingSessions.length }} sesi
+              </span>
             </div>
 
-            <div class="mt-5 rounded-xl border border-[#D9D9E4] bg-[#443E8D] p-5 text-white">
-              <div class="flex items-start justify-between gap-3 sm:gap-4">
-                <div class="min-w-0 flex-1">
-                  <h3 class="text-[0.95rem] sm:text-[1.1rem] font-semibold tracking-[-0.03em]">
-                    {{ upcomingSessions[0]?.title || 'Tidak ada sesi' }}
-                  </h3>
-                </div>
-                <VideoCameraIcon class="h-8 sm:h-10 w-8 sm:w-10 shrink-0 text-white/20" />
-              </div>
-
-              <div class="mt-3 sm:mt-4 flex items-center gap-2 text-[0.75rem] sm:text-[0.8rem] text-white/75">
-                <ClockIcon class="h-3.5 sm:h-4 w-3.5 sm:w-4 shrink-0" />
-                <span class="truncate">{{ upcomingSessions[0]?.day }} {{ upcomingSessions[0]?.month }}, {{ upcomingSessions[0]?.time }}</span>
-              </div>
-
-              <button class="mt-3 sm:mt-4 inline-flex w-full items-center justify-center rounded-2xl bg-white px-4 py-2 sm:py-3 text-[0.75rem] sm:text-[0.82rem] font-semibold text-[#443E8D] transition-transform duration-200 hover:-translate-y-0.5">
-                Join session
-              </button>
+            <div v-if="loading" class="space-y-3">
+              <div v-for="i in 2" :key="i" class="h-16 rounded-xl bg-[#F4F4F6] animate-pulse" />
             </div>
 
-            <div class="mt-4 sm:mt-5 space-y-2">
-              <p class="text-[0.65rem] sm:text-[0.68rem] font-semibold uppercase tracking-[0.14em] sm:tracking-[0.16em] text-[#71717A]">
-                Flexible options
-              </p>
+            <div v-else-if="upcomingSessions.length === 0" class="flex flex-col items-center justify-center py-8 text-center">
+              <CalendarIcon class="h-10 w-10 text-[#D4D4D8] mb-3" />
+              <p class="text-[0.85rem] font-medium text-[#71717A]">Belum ada sesi terjadwal</p>
+              <p class="text-[0.75rem] text-[#A1A1AA] mt-1">Sesi baru akan muncul di sini</p>
+            </div>
 
-              <NuxtLink
-                to="/student/mentorship"
-                class="flex items-center gap-2 sm:gap-3 rounded-2xl border border-[#E4E4EA] bg-white p-2 sm:p-3 transition-transform duration-200 hover:-translate-y-0.5 hover:bg-[#FAFAFB]"
+            <div v-else class="space-y-3">
+              <div
+                v-for="session in upcomingSessions.slice(0, 4)"
+                :key="session.id"
+                class="group flex items-start gap-3 rounded-xl border border-[#ECECF1] bg-gradient-to-br from-[#FAFAFB] to-white p-3 transition-all duration-200 hover:border-[#443E8D]/20 hover:shadow-sm hover:-translate-y-0.5"
               >
-                <div class="flex h-8 sm:h-10 w-8 sm:w-10 items-center justify-center rounded-xl bg-[#F4F4F6] text-[#443E8D] shrink-0">
-                  <UserIcon class="h-4 sm:h-5 w-4 sm:w-5" />
+                <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-xl bg-[#443E8D]/10 text-[#443E8D] font-bold text-[0.8rem]">
+                  {{ session.mentor_initials || '?' }}
                 </div>
                 <div class="min-w-0 flex-1">
-                  <p class="text-[0.75rem] sm:text-[0.85rem] font-semibold text-[#18181B]">Mentor slot open</p>
-                  <p class="mt-0.5 text-[0.65rem] sm:text-[0.76rem] text-[#71717A]">Book 1:1 micro session</p>
+                  <p class="text-[0.85rem] font-semibold text-[#18181B] truncate">{{ session.topic }}</p>
+                  <p class="mt-0.5 text-[0.72rem] text-[#71717A]">{{ session.mentor_name }}</p>
+                  <div class="mt-1 flex items-center gap-1.5 text-[0.68rem] text-[#A1A1AA]">
+                    <ClockIcon class="h-3 w-3 shrink-0" />
+                    <span>{{ session.day }} · {{ session.time }}</span>
+                  </div>
                 </div>
-                <ChevronRightIcon class="h-3.5 sm:h-4 w-3.5 sm:w-4 text-[#A1A1AA] shrink-0" />
-              </NuxtLink>
+                <span class="mt-0.5 rounded-md bg-[#443E8D]/10 px-2 py-0.5 text-[0.6rem] font-semibold uppercase tracking-wide text-[#443E8D] whitespace-nowrap">
+                  {{ session.type === 'main_class' ? 'Main' : session.type === 'micro_session' ? 'Micro' : 'Casual' }}
+                </span>
+              </div>
             </div>
           </article>
 
+          <!-- Reminders: Pending Assignments -->
+          <article class="rounded-2xl border border-[#E4E4E7] bg-white p-4 sm:p-5 lg:p-6 shadow-sm">
+            <div class="flex items-center gap-2 text-[#443E8D] mb-5">
+              <ClipboardDocumentCheckIcon class="h-5 w-5" />
+              <h2 class="text-[0.95rem] font-semibold">Tugas Pending</h2>
+              <span v-if="!loading && pendingAssignments.length > 0" class="ml-auto text-[0.7rem] font-semibold bg-orange-100 text-orange-600 px-2 py-0.5 rounded-full">
+                {{ pendingAssignments.length }} tugas
+              </span>
+            </div>
+
+            <div v-if="loading" class="space-y-3">
+              <div v-for="i in 3" :key="i" class="h-14 rounded-xl bg-[#F4F4F6] animate-pulse" />
+            </div>
+
+            <div v-else-if="pendingAssignments.length === 0" class="flex flex-col items-center justify-center py-8 text-center">
+              <CheckCircleIcon class="h-10 w-10 text-emerald-300 mb-3" />
+              <p class="text-[0.85rem] font-medium text-[#71717A]">Semua tugas selesai! 🎉</p>
+              <p class="text-[0.75rem] text-[#A1A1AA] mt-1">Tidak ada tugas yang tertunda</p>
+            </div>
+
+            <div v-else class="space-y-2.5">
+              <div
+                v-for="task in pendingAssignments.slice(0, 5)"
+                :key="task.id"
+                class="group flex items-start gap-3 rounded-xl border border-[#ECECF1] bg-gradient-to-br from-[#FAFAFB] to-white p-3 transition-all duration-200 hover:border-orange-200 hover:shadow-sm hover:-translate-y-0.5"
+              >
+                <div class="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-orange-50 text-orange-500">
+                  <ClipboardDocumentCheckIcon class="h-4 w-4" />
+                </div>
+                <div class="min-w-0 flex-1">
+                  <p class="text-[0.85rem] font-semibold text-[#18181B] truncate">{{ task.assignments?.title || 'Tugas' }}</p>
+                  <div class="mt-0.5 flex items-center gap-2">
+                    <span class="text-[0.68rem] font-medium uppercase tracking-wide rounded px-1.5 py-0.5"
+                      :class="task.status === 'pending' ? 'bg-yellow-100 text-yellow-700' : 'bg-blue-100 text-blue-700'">
+                      {{ task.status === 'pending' ? 'Belum mulai' : 'Dikirim' }}
+                    </span>
+                    <span v-if="task.assignments?.due_date" class="text-[0.68rem] text-[#A1A1AA]">
+                      Tenggat: {{ formatDate(task.assignments.due_date) }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </article>
+        </section>
+
+        <!-- Assignment Progress Bar -->
+        <section>
           <article class="rounded-2xl border border-[#E4E4E7] bg-white p-4 sm:p-5 lg:p-6 shadow-sm">
             <div class="flex items-center justify-between gap-3 mb-5">
-              <div class="flex items-center gap-2 text-[#443E8D] min-w-0">
-                <ClipboardDocumentCheckIcon class="h-5 w-5 shrink-0" />
-                <h2 class="text-[0.95rem] font-semibold truncate">Brief & Challenge</h2>
+              <div class="flex items-center gap-2 text-[#443E8D]">
+                <ChartBarIcon class="h-5 w-5" />
+                <h2 class="text-[0.95rem] font-semibold">Progress Tugas</h2>
               </div>
-              <NuxtLink to="/student/tasks" class="text-[0.7rem] sm:text-[0.75rem] font-semibold text-[#71717A] transition-colors hover:text-[#443E8D] whitespace-nowrap">
-                Lihat semua →
-              </NuxtLink>
+              <span v-if="!loading" class="text-[0.75rem] font-semibold text-[#443E8D]">
+                {{ metrics.reviewed }}/{{ metrics.total }} selesai
+              </span>
             </div>
 
-            <div class="space-y-2 sm:space-y-3">
-              <div
-                v-for="task in urgentTasks"
-                :key="task.id"
-                class="group rounded-xl border border-[#ECECF1] bg-gradient-to-br from-[#FAFAFB] to-white p-3 sm:p-4 transition-all duration-200 hover:border-[#443E8D]/20 hover:shadow-sm hover:-translate-y-0.5"
-              >
-                <div class="flex items-start justify-between gap-2 sm:gap-3 mb-2 sm:mb-3">
-                  <div class="min-w-0 flex-1">
-                    <h3 class="text-[0.85rem] sm:text-[0.9rem] font-semibold tracking-[-0.01em] text-[#18181B]">
-                      {{ task.name }}
-                    </h3>
-                    <p class="mt-1 text-[0.7rem] sm:text-[0.75rem] text-[#999]">{{ task.project }}</p>
-                  </div>
-                  
-                  <span
-                    class="rounded-md px-2 sm:px-2.5 py-1 sm:py-1.5 text-[0.6rem] sm:text-[0.65rem] font-semibold uppercase tracking-[0.1em] sm:tracking-[0.14em] whitespace-nowrap flex-shrink-0"
-                    :class="task.status === 'doing'
-                      ? 'bg-[#443E8D] text-white shadow-sm'
-                      : task.status === 'revision'
-                        ? 'bg-orange-100 text-orange-700 font-medium'
-                        : 'bg-[#F0F0F0] text-[#666]'"
-                  >
-                    {{ task.status === 'doing' ? 'In progress' : task.status === 'revision' ? 'Review' : 'Todo' }}
-                  </span>
-                </div>
-
-                <div class="flex items-center justify-between pt-2 border-t border-[#F0F0F0]">
-                  <span class="text-[0.65rem] sm:text-[0.7rem] text-[#BBB]">Deadline</span>
-                  <span class="text-[0.7rem] sm:text-[0.75rem] font-semibold" :class="task.status === 'done' ? 'text-[#888]' : 'text-[#DC2626]'">
-                    {{ task.remaining }}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </article>
-        </section>
-
-        <section class="grid gap-5 md:grid-cols-2 lg:gap-4 lg:grid-cols-2 xl:grid-cols-[1.15fr_0.85fr]">
-          <article class="rounded-2xl border border-[#E4E4E7] bg-white p-4 sm:p-5 lg:p-6 shadow-sm">
-            <div class="flex items-center justify-between gap-3">
-              <div>
-                <h2 class="mt-2 text-[1.15rem] font-semibold tracking-[-0.03em] text-[#18181B] lg:text-[1.05rem]">Progress per skill</h2>
-              </div>
-              <div class="rounded-2xl border border-[#ECECF1] bg-[#FAFAFB] px-3 py-2 text-right shrink-0">
-                <p class="text-[0.68rem] font-semibold uppercase tracking-[0.16em] text-[#71717A]">Lowest skill</p>
-                <p class="mt-1 text-[0.88rem] font-semibold text-[#18181B]">{{ lowestSkill.name }}</p>
-              </div>
+            <div v-if="loading" class="space-y-4">
+              <div v-for="i in 3" :key="i" class="h-8 rounded-xl bg-[#F4F4F6] animate-pulse" />
             </div>
 
-            <div class="mt-4 sm:mt-5 space-y-3 sm:space-y-4">
-              <div v-for="skill in skills" :key="skill.name">
-                <div class="mb-2 flex items-center justify-between gap-2 sm:gap-3">
-                  <div>
-                    <p class="text-[0.8rem] sm:text-[0.88rem] font-medium text-[#18181B]">{{ skill.name }}</p>
-                    <p class="mt-0.5 text-[0.7rem] sm:text-[0.76rem] text-[#71717A]">
-                      +{{ skill.growth }} poin dari review sebelumnya
-                    </p>
-                  </div>
-                  <span class="text-[0.75rem] sm:text-[0.82rem] font-semibold text-[#443E8D] shrink-0">{{ skill.score }}%</span>
+            <div v-else class="space-y-4">
+              <div v-for="bar in progressBars" :key="bar.label">
+                <div class="mb-2 flex items-center justify-between text-[0.75rem] font-semibold text-[#71717A]">
+                  <span>{{ bar.label }}</span>
+                  <span :class="bar.color.replace('bg-', 'text-')">{{ bar.value }} ({{ bar.pct }}%)</span>
                 </div>
-
                 <div class="h-2 rounded-full bg-[#F1F1F4]">
                   <div
                     class="h-full rounded-full transition-[width] duration-700 ease-out"
-                    :class="getSkillBarColor(skill.score)"
-                    :style="{ width: `${skill.score}%` }"
-                  ></div>
+                    :class="bar.color"
+                    :style="{ width: `${bar.pct}%` }"
+                  />
                 </div>
               </div>
-            </div>
-          </article>
 
-          <article class="rounded-2xl border border-[#E4E4E7] bg-white p-4 sm:p-5 lg:p-6 shadow-sm">
-            <div class="flex items-center justify-between gap-3">
-              <div>
-                <h2 class="mt-2 text-[1.15rem] font-semibold tracking-[-0.03em] text-[#18181B] lg:text-[1.05rem]">Recent updates</h2>
+              <div v-if="metrics.averageGrade !== null" class="pt-3 border-t border-[#F1F1F4] flex items-center justify-between">
+                <span class="text-[0.78rem] text-[#71717A]">Rata-rata nilai</span>
+                <span class="text-[0.85rem] font-bold text-[#443E8D]">{{ metrics.averageGrade }}/100</span>
               </div>
-              <NuxtLink to="/student/notifications" class="text-[0.7rem] sm:text-[0.75rem] font-semibold text-[#71717A] transition-colors hover:text-[#443E8D] whitespace-nowrap">
-                Semua →
-              </NuxtLink>
-            </div>
-
-            <div class="mt-5 space-y-2 sm:space-y-3">
-              <div
-                v-for="n in recentNotifications"
-                :key="n.id"
-                class="relative flex items-start gap-2 sm:gap-3 rounded-2xl border p-2 sm:p-3 transition-transform duration-200 hover:-translate-y-0.5 hover:bg-[#FAFAFB]"
-                :class="n.read ? 'border-[#E4E4EA] bg-white' : 'border-[#D9D9E4] bg-[#FAFAFB]'"
-              >
-                <div class="flex h-8 sm:h-9 w-8 sm:w-9 shrink-0 items-center justify-center rounded-xl bg-[#F4F4F6]">
-                  <component :is="notifTypeStyle[n.type].icon" class="h-3.5 sm:h-4 w-3.5 sm:w-4 text-[#52525B]" />
-                </div>
-
-                <div class="min-w-0 flex-1">
-                  <p class="truncate text-[0.75rem] sm:text-[0.82rem] font-semibold text-[#18181B]">{{ n.title }}</p>
-                  <p class="mt-0.5 sm:mt-1 line-clamp-2 text-[0.7rem] sm:text-[0.75rem] leading-4 sm:leading-5 text-[#71717A]">{{ n.desc }}</p>
-                  <p class="mt-0.5 sm:mt-1 text-[0.65rem] sm:text-[0.7rem] font-medium text-[#A1A1AA]">{{ n.time }}</p>
-                </div>
-
-                <span v-if="!n.read" class="mt-1 h-2 w-2 shrink-0 rounded-full bg-[#443E8D]"></span>
-              </div>
-            </div>
-
-            <div class="mt-4 sm:mt-5 flex items-center justify-between border-t border-[#F1F1F4] pt-3 sm:pt-4">
-              <span class="text-[0.7rem] sm:text-[0.75rem] text-[#71717A]">{{ unreadNotifCount }} unread</span>
-              <NuxtLink to="/student/notifications" class="text-[0.7rem] sm:text-[0.75rem] font-semibold text-[#443E8D] hover:underline">
-                Mark all as read
-              </NuxtLink>
             </div>
           </article>
         </section>
+
       </main>
     </div>
 
@@ -316,214 +201,121 @@
       v-if="sidebarOpen"
       class="fixed inset-0 z-[150] bg-[rgba(15,23,42,0.14)] backdrop-blur-[2px] min-[900px]:hidden"
       @click="sidebarOpen = false"
-    ></div>
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
+import { computed, ref, onMounted } from 'vue'
 import Sidebar from '~/components/student/StudentSidebar.vue'
 import {
-  AcademicCapIcon,
-  ArrowPathIcon,
   Bars3Icon,
-  BellIcon,
   CalendarIcon,
+  ChartBarIcon,
   CheckCircleIcon,
-  CheckIcon,
-  ChatBubbleLeftRightIcon,
-  ChevronRightIcon,
   ClipboardDocumentCheckIcon,
   ClockIcon,
-  FireIcon,
-  FolderIcon,
-  MapIcon,
-  PlayCircleIcon,
-  TrophyIcon,
-  UserIcon,
-  VideoCameraIcon,
 } from '@heroicons/vue/24/outline'
+
+const supabase = useSupabaseClient()
 
 useSeoMeta({
   title: 'Dashboard – Pixelnoid Academy',
-  description: 'Pantau jadwal sesi, proyek, skill report, dan progress belajar di Pixelnoid Academy.',
+  description: 'Pantau jadwal sesi, tugas, dan progress belajar di Pixelnoid Academy.',
 })
 
 definePageMeta({ layout: 'dashboard' })
 
 const sidebarOpen = ref(false)
+const loading = ref(true)
 
-const studentName = ref('Arka')
+const studentName = ref('Siswa')
+
 const todayStr = new Date().toLocaleDateString('id-ID', {
-  weekday: 'long',
-  day: 'numeric',
-  month: 'long',
-  year: 'numeric',
-})
-const currentMonth = ref(2)
-const currentPhase = ref(2)
-
-const overallScore = ref(64)
-const weeklyStreak = ref(7)
-const currentLevel = ref('Level 2 - Machine Learning Starter')
-const currentXP = ref(1240)
-const nextLevelXP = ref(1800)
-const xpPercent = computed(() => Math.round((currentXP.value / nextLevelXP.value) * 100))
-
-const continueLearning = ref({
-  moduleName: 'Responsive Layout & Flexbox',
-  assignmentName: 'Build a responsive navbar',
-  assignmentProgress: 70,
+  weekday: 'long', day: 'numeric', month: 'long', year: 'numeric',
 })
 
-const weeklyFlow = ref([
-  { id: 1, label: 'Main session completed', note: 'Rabu, 14 Mei', status: 'done' },
-  { id: 2, label: 'Practice in progress', note: 'Fokus ke layout dan spacing', status: 'doing' },
-  { id: 3, label: 'Micro session Friday 19:00', note: 'Debug & review', status: 'todo' },
-  { id: 4, label: 'Weekly review', note: 'Ringkas progress minggu ini', status: 'todo' },
-])
+// Data from APIs
+const upcomingSessions = ref<any[]>([])
+const pendingAssignments = ref<any[]>([])
+const metrics = ref({ total: 0, pending: 0, submitted: 0, reviewed: 0, averageGrade: null as number | null })
 
-const tasks = ref([
-  { id: 1, name: 'Prototype UI — Checkout Flow', project: 'ThreadMark', status: 'doing', deadline: '2026-05-28' },
-  { id: 2, name: 'API Integration — Product List', project: 'ThreadMark', status: 'doing', deadline: '2026-05-30' },
-  { id: 3, name: 'Refactor State Management', project: 'ThreadMark', status: 'revision', deadline: '2026-06-02' },
-  { id: 4, name: 'Unit Test — Auth Module', project: 'ThreadMark', status: 'todo', deadline: '2026-06-05' },
-  { id: 5, name: 'Design System & Component Library', project: 'ThreadMark', status: 'done', deadline: '2026-05-20' },
-  { id: 6, name: 'Auth Flow — Login & Register', project: 'ThreadMark', status: 'done', deadline: '2026-05-18' },
-  { id: 7, name: 'Dashboard Admin — Analytics', project: 'CMS', status: 'doing', deadline: '2026-06-07' },
-  { id: 8, name: 'Deploy ke Vercel — Portfolio', project: 'Portfolio', status: 'done', deadline: '2026-05-16' },
-])
-
-const doneTasksCount = computed(() => tasks.value.filter((t) => t.status === 'done').length)
-const activeTasksCount = computed(() => tasks.value.filter((t) => t.status !== 'done').length)
-const overallTaskProgress = computed(() => Math.round((doneTasksCount.value / (tasks.value.length || 1)) * 100))
-
-const workloadStats = computed(() => [
-  { label: 'Done', value: doneTasksCount.value },
-  { label: 'Active', value: tasks.value.filter((t) => t.status === 'doing').length },
-  { label: 'Review', value: tasks.value.filter((t) => t.status === 'revision').length },
-  { label: 'Todo', value: tasks.value.filter((t) => t.status === 'todo').length },
-])
-
-const urgentTasks = computed(() => {
-  const today = new Date()
-  return tasks.value
-    .filter((t) => t.status !== 'done')
-    .map((t) => {
-      const diff = Math.ceil((new Date(t.deadline).getTime() - today.getTime()) / 86400000)
-      const remaining = diff < 0 ? 'Terlambat' : diff === 0 ? 'Hari ini' : `${diff} hari lagi`
-      return { ...t, remaining }
-    })
-    .sort((a, b) => new Date(a.deadline).getTime() - new Date(b.deadline).getTime())
-    .slice(0, 3)
-})
-
-const upcomingSessions = ref([
-  { id: 1, day: '29', month: 'Mei', title: 'Logic & Function Dasar', time: '16:00–17:30 WIB' },
-  { id: 2, day: '31', month: 'Mei', title: 'Micro Session — Debug & Review', time: '19:30–20:15 WIB' },
-])
-
-const skills = ref([
-  { name: 'UI/UX Design', score: 65, growth: 5 },
-  { name: 'Frontend Engineering (Vue/Nuxt)', score: 82, growth: 12 },
-  { name: 'Backend Integration', score: 45, growth: 10 },
-  { name: 'Problem Solving', score: 70, growth: -2 },
-  { name: 'Team Collaboration', score: 88, growth: 8 },
-])
-
-const lowestSkill = computed(() => [...skills.value].sort((a, b) => a.score - b.score)[0])
-
-const learningPace = ref('Consistent Learner')
-const learningPaceDescription = ref(
-  'Kamu belajar secara teratur dan terjadwal. Pola seperti ini biasanya lebih stabil untuk jangka panjang.'
-)
-
-const notifications = ref([
-  {
-    id: 1,
-    type: 'revision',
-    read: false,
-    title: 'Kak Yudha meminta revisi',
-    desc: 'Terdapat kendala state management pada cart saat checkout.',
-    time: '10:30 WIB',
-  },
-  {
-    id: 2,
-    type: 'deadline',
-    read: false,
-    title: 'Deadline tersisa 24 jam',
-    desc: 'Task integrasi payment gateway perlu disubmit sebelum besok.',
-    time: '08:00 WIB',
-  },
-  {
-    id: 3,
-    type: 'feedback',
-    read: true,
-    title: 'Feedback baru dari mentor',
-    desc: 'Visual hierarchy sudah membaik. Detail spacing masih bisa dirapikan.',
-    time: '14:20 WIB',
-  },
-  {
-    id: 4,
-    type: 'project',
-    read: true,
-    title: 'Assets ThreadMark diperbarui',
-    desc: 'Project manager menambahkan file design asset baru ke folder UI/UX.',
-    time: 'Kemarin',
-  },
-])
-
-const notifTypeStyle: Record<string, { icon: any }> = {
-  deadline: { icon: ClockIcon },
-  feedback: { icon: ChatBubbleLeftRightIcon },
-  revision: { icon: ArrowPathIcon },
-  project: { icon: FolderIcon },
+const formatDate = (d: string) => {
+  if (!d) return ''
+  return new Date(d).toLocaleDateString('id-ID', { day: '2-digit', month: 'short', year: 'numeric' })
 }
 
-const unreadNotifCount = computed(() => notifications.value.filter((n) => !n.read).length)
-const recentNotifications = computed(() => notifications.value.slice(0, 4))
+onMounted(async () => {
+  // Get session for auth headers
+  const { data: { session } } = await supabase.auth.getSession()
+  const user = session?.user
+  studentName.value = user?.user_metadata?.fullname || user?.user_metadata?.name || user?.email?.split('@')[0] || 'Siswa'
+  const token = session?.access_token
+  try {
+    const headers: Record<string, string> = token ? { Authorization: `Bearer ${token}` } : {}
+
+    const [sessionsRes, assignmentsRes] = await Promise.allSettled([
+      $fetch<any>('/api/student/mentorship-sessions', { headers }),
+      $fetch<any>('/api/student/assignments', { headers }),
+    ])
+
+    if (sessionsRes.status === 'fulfilled') {
+      upcomingSessions.value = sessionsRes.value?.upcomingSessions || []
+    }
+
+    if (assignmentsRes.status === 'fulfilled') {
+      const data = assignmentsRes.value
+      metrics.value = data?.metrics || metrics.value
+      pendingAssignments.value = (data?.assignments || []).filter(
+        (a: any) => a.status === 'pending' || a.status === 'submitted'
+      )
+    }
+  } catch (e) {
+    console.error('Dashboard fetch error:', e)
+  } finally {
+    loading.value = false
+  }
+})
+
+const progressBars = computed(() => {
+  const total = metrics.value.total || 1
+  return [
+    { label: 'Selesai (Reviewed)', value: metrics.value.reviewed, pct: Math.round((metrics.value.reviewed / total) * 100), color: 'bg-[#443E8D]' },
+    { label: 'Dikumpulkan', value: metrics.value.submitted, pct: Math.round((metrics.value.submitted / total) * 100), color: 'bg-blue-400' },
+    { label: 'Belum Dikerjakan', value: metrics.value.pending, pct: Math.round((metrics.value.pending / total) * 100), color: 'bg-orange-400' },
+  ]
+})
 
 const summaryStats = computed(() => [
   {
-    label: 'Roadmap',
-    value: `Bulan ${currentMonth.value}/4`,
-    hint: `Phase ${currentPhase.value} of 3`,
-    icon: CalendarIcon,
+    label: 'Total Tugas',
+    value: loading.value ? '—' : String(metrics.value.total),
+    hint: 'Semua tugas',
+    icon: ClipboardDocumentCheckIcon,
+    progress: metrics.value.total > 0 ? Math.round((metrics.value.reviewed / metrics.value.total) * 100) : 0,
   },
   {
-    label: 'Session',
-    value: '18 / 24',
-    hint: 'Kehadiran kelas',
+    label: 'Selesai',
+    value: loading.value ? '—' : String(metrics.value.reviewed),
+    hint: 'Tugas diulas mentor',
     icon: CheckCircleIcon,
   },
   {
-    label: 'Progress',
-    value: `${overallScore.value}%`,
-    hint: 'Overall mastery',
+    label: 'Pending',
+    value: loading.value ? '—' : String(metrics.value.pending),
+    hint: 'Belum dikerjakan',
     icon: ClipboardDocumentCheckIcon,
   },
   {
-    label: 'XP toward next',
-    value: `${xpPercent.value}%`,
-    hint: `${currentXP.value} / ${nextLevelXP.value} XP`,
-    icon: AcademicCapIcon,
+    label: 'Sesi Upcoming',
+    value: loading.value ? '—' : String(upcomingSessions.value.length),
+    hint: 'Sesi terjadwal',
+    icon: CalendarIcon,
   },
 ])
-
-const getSkillBarColor = (score: number) => {
-  if (score >= 80) return 'bg-[#443E8D]'
-  if (score >= 60) return 'bg-[#554DB3]'
-  return 'bg-[#71717A]'
-}
-
 </script>
 
 <style scoped>
-.scrollbar-none::-webkit-scrollbar {
-  display: none;
-}
-.scrollbar-none {
-  -ms-overflow-style: none;
-  scrollbar-width: none;
-}
+.scrollbar-none::-webkit-scrollbar { display: none; }
+.scrollbar-none { -ms-overflow-style: none; scrollbar-width: none; }
 </style>
