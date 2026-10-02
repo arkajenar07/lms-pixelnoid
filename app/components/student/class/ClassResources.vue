@@ -188,10 +188,12 @@ const resources = ref<any[]>([])
 const activeType = ref('all')
 const searchQuery = ref('')
 const copiedId = ref<number | null>(null)
+const lastFetchedClassId = ref<number | null | undefined>(undefined)
 
 // ── Fetch Resources ───────────────────────────────────────────────────
 async function fetchResources() {
   isLoading.value = true
+  lastFetchedClassId.value = props.classId // track agar tidak double-fetch
   try {
     const { data: { session } } = await supabase.auth.getSession()
     const token = session?.access_token
@@ -218,8 +220,11 @@ async function fetchResources() {
 
 onMounted(fetchResources)
 
-watch(() => props.classId, () => {
-  fetchResources()
+// Guard: hanya fetch ulang jika classId benar-benar berubah
+watch(() => props.classId, (newId) => {
+  if (newId !== lastFetchedClassId.value) {
+    fetchResources()
+  }
 })
 
 // ── Computed ──────────────────────────────────────────────────────────

@@ -116,7 +116,7 @@
 
       <!-- ── TAB SWITCHER (hanya tampil jika kelas sudah dipilih) ── -->
       <template v-if="activeClass">
-        <div class="pt-7 px-8 max-[900px]:px-5 max-[900px]:pt-6">
+        <div class="pt-7 pb-5 px-8 max-[900px]:px-5 max-[900px]:pt-6">
           <div class="flex items-center gap-1 bg-white border border-[#E4E4E7] rounded-[12px] p-1 w-fit overflow-x-auto max-w-full">
             <button
               v-for="tab in tabs"
@@ -166,11 +166,12 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, defineAsyncComponent, onMounted, onBeforeUnmount } from 'vue'
 import StudentSidebar from '~/components/student/StudentSidebar.vue'
 import ClassModules from '~/components/student/class/ClassModules.vue'
-import ClassMeeting from '~/components/student/class/ClassMeeting.vue'
-import ClassResources from '~/components/student/class/ClassResources.vue'
+// Lazy-load tab yang tidak ditampilkan saat pertama (hemat bundle awal)
+const ClassMeeting = defineAsyncComponent(() => import('~/components/student/class/ClassMeeting.vue'))
+const ClassResources = defineAsyncComponent(() => import('~/components/student/class/ClassResources.vue'))
 import {
   Bars3Icon,
   AcademicCapIcon,
@@ -230,15 +231,12 @@ const tabs = [
 ] as const
 
 // ── Resilient Auth Token ─────────────────────────────────────────
+// Hindari delay 250ms hardcoded — langsung refresh jika session kosong
 async function getAuthToken(): Promise<string | null> {
   try {
     const { data: { session } } = await supabase.auth.getSession()
     if (session?.access_token) return session.access_token
-
-    await new Promise(r => setTimeout(r, 250))
-    const { data: retryData } = await supabase.auth.getSession()
-    if (retryData?.session?.access_token) return retryData.session.access_token
-
+    // Session belum siap, coba refresh langsung tanpa blocking delay
     const { data: refreshData } = await supabase.auth.refreshSession()
     return refreshData?.session?.access_token || null
   } catch {

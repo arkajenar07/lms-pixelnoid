@@ -1,57 +1,104 @@
 <template>
-  <div class="flex min-h-screen bg-[#F7F7F9] text-gray-900 antialiased overflow-x-hidden" style="font-family: 'Instrument Sans', Raleway, sans-serif">
+  <div class="flex min-h-screen bg-[#F7F7F9] text-[#18181B] antialiased overflow-x-hidden" style="font-family: 'Instrument Sans', Raleway, sans-serif">
     <StudentSidebar :open="sidebarOpen" @update:open="sidebarOpen = $event" />
 
     <div class="flex-1 w-full min-w-0 min-[901px]:ml-[210px] relative z-[1]">
       <!-- Header -->
       <header class="sticky top-0 z-[100] flex w-full items-center justify-between gap-4 px-8 py-5 max-[900px]:px-5 max-[900px]:py-4 bg-white/[0.92] backdrop-blur-[14px] [-webkit-backdrop-filter:blur(14px)] border-b border-[#E4E4E7]">
-        <div class="flex items-center gap-4">
-          <button
-            class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#E4E4E7] text-[#52525B] transition-transform duration-200 hover:-translate-y-0.5 hover:border-[#CFCFE0] hover:text-[#443E8D] min-[901px]:hidden"
-            @click="sidebarOpen = !sidebarOpen"
-            aria-label="Toggle sidebar"
-          >
-            <Bars3Icon class="w-5 h-5" />
-          </button>
-          <div>
-            <h1 class="text-base font-semibold text-gray-900 leading-none">Absensi & Presensi</h1>
-            <p class="text-xs text-gray-500 mt-0.5">Kelola kehadiran siswa, bukti foto sesi bimbingan, dan persetujuan (approval)</p>
+        <div class="flex items-center justify-between gap-4 w-full max-w-[1440px] mx-auto">
+          <div class="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
+            <button
+              class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#E4E4E7] text-[#52525B] transition-transform duration-200 hover:-translate-y-0.5 hover:border-[#CFCFE0] hover:text-[#443E8D] min-[901px]:hidden cursor-pointer"
+              @click="sidebarOpen = !sidebarOpen"
+              aria-label="Toggle sidebar"
+            >
+              <Bars3Icon class="w-5 h-5" />
+            </button>
+            <div class="min-w-0 flex-1">
+              <h1 class="text-[0.95rem] sm:text-[1.1rem] font-semibold leading-snug tracking-[-0.02em] text-[#18181B] lg:text-[1.15rem]">
+                Absensi & Presensi
+              </h1>
+              <p class="mt-0.5 sm:mt-1 text-[0.7rem] sm:text-[0.82rem] leading-relaxed text-[#71717A]">
+                Kelola kehadiran siswa, bukti foto sesi bimbingan, dan persetujuan (approval)
+              </p>
+            </div>
           </div>
-        </div>
 
-        <button
-          @click="openAddModal"
-          class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-[0.875rem] font-medium transition-all hover:-translate-y-0.5 shadow-sm hover:shadow-emerald-600/30"
-        >
-          <PlusIcon class="w-4 h-4" />
-          Tambah Absensi
-        </button>
+          <button
+            @click="openAddModal"
+            class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#443E8D] hover:bg-[#373273] text-white text-[0.82rem] font-semibold transition-all hover:-translate-y-0.5 shadow-sm shadow-[#443E8D]/25 shrink-0 cursor-pointer"
+          >
+            <PlusIcon class="w-4 h-4" />
+            <span>Tambah Absensi</span>
+          </button>
+        </div>
       </header>
 
-      <main class="p-6 space-y-6 max-w-[1440px] mx-auto">
+      <main class="p-8 max-[900px]:p-5 flex flex-col gap-6 max-w-[1440px] mx-auto w-full">
         <!-- Stats Summary Cards -->
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-          <div class="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
-            <p class="text-[0.6875rem] font-medium text-gray-500 uppercase tracking-widest">Total Presensi</p>
-            <p class="text-2xl font-bold text-gray-900 mt-1">{{ absensiList.length }}</p>
+          <!-- Card: Total -->
+          <div class="bg-white p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between transition-all hover:border-[#D4D4D8] hover:-translate-y-0.5">
+            <div class="flex items-center justify-between">
+              <span class="text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A]">Total Presensi</span>
+              <div class="w-8 h-8 rounded-xl bg-[#F0EFF9] border border-[#D8D6F0] flex items-center justify-center text-[#443E8D]">
+                <ClipboardDocumentCheckIcon class="w-4 h-4" />
+              </div>
+            </div>
+            <div class="mt-3">
+              <div class="text-[1.75rem] font-black text-[#18181B] tracking-tight leading-none">
+                {{ absensiList.length }}
+              </div>
+              <p class="text-[0.7rem] text-[#A1A1AA] font-medium mt-1 mb-0">Semua sesi terdaftar</p>
+            </div>
           </div>
-          <div class="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
-            <p class="text-[0.6875rem] font-medium text-amber-600 uppercase tracking-widest">Menunggu Approval</p>
-            <p class="text-2xl font-bold text-amber-600 mt-1">
-              {{ absensiList.filter(a => a.status === 'pending').length }}
-            </p>
+
+          <!-- Card: Pending -->
+          <div class="bg-white p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between transition-all hover:border-[#D4D4D8] hover:-translate-y-0.5">
+            <div class="flex items-center justify-between">
+              <span class="text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A]">Menunggu Approval</span>
+              <div class="w-8 h-8 rounded-xl bg-[#FFFBEB] border border-[#FDE68A] flex items-center justify-center text-[#D97706]">
+                <ClockIcon class="w-4 h-4" />
+              </div>
+            </div>
+            <div class="mt-3">
+              <div class="text-[1.75rem] font-black text-[#D97706] tracking-tight leading-none">
+                {{ absensiList.filter(a => a.status === 'pending').length }}
+              </div>
+              <p class="text-[0.7rem] text-[#A1A1AA] font-medium mt-1 mb-0">Antre konfirmasi admin</p>
+            </div>
           </div>
-          <div class="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
-            <p class="text-[0.6875rem] font-medium text-emerald-600 uppercase tracking-widest">Disetujui (Approved)</p>
-            <p class="text-2xl font-bold text-emerald-600 mt-1">
-              {{ absensiList.filter(a => a.status === 'approved').length }}
-            </p>
+
+          <!-- Card: Approved -->
+          <div class="bg-white p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between transition-all hover:border-[#D4D4D8] hover:-translate-y-0.5">
+            <div class="flex items-center justify-between">
+              <span class="text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A]">Disetujui</span>
+              <div class="w-8 h-8 rounded-xl bg-[#ECFDF5] border border-[#A7F3D0] flex items-center justify-center text-[#059669]">
+                <CheckCircleIcon class="w-4 h-4" />
+              </div>
+            </div>
+            <div class="mt-3">
+              <div class="text-[1.75rem] font-black text-[#059669] tracking-tight leading-none">
+                {{ absensiList.filter(a => a.status === 'approved').length }}
+              </div>
+              <p class="text-[0.7rem] text-[#A1A1AA] font-medium mt-1 mb-0">Kehadiran terverifikasi</p>
+            </div>
           </div>
-          <div class="bg-white border border-gray-200 rounded-2xl p-4 shadow-sm">
-            <p class="text-[0.6875rem] font-medium text-rose-600 uppercase tracking-widest">Ditolak (Rejected)</p>
-            <p class="text-2xl font-bold text-rose-600 mt-1">
-              {{ absensiList.filter(a => a.status === 'rejected').length }}
-            </p>
+
+          <!-- Card: Rejected -->
+          <div class="bg-white p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between transition-all hover:border-[#D4D4D8] hover:-translate-y-0.5">
+            <div class="flex items-center justify-between">
+              <span class="text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A]">Ditolak</span>
+              <div class="w-8 h-8 rounded-xl bg-[#FEF2F2] border border-[#FECACA] flex items-center justify-center text-[#E11D48]">
+                <XCircleIcon class="w-4 h-4" />
+              </div>
+            </div>
+            <div class="mt-3">
+              <div class="text-[1.75rem] font-black text-[#E11D48] tracking-tight leading-none">
+                {{ absensiList.filter(a => a.status === 'rejected').length }}
+              </div>
+              <p class="text-[0.7rem] text-[#A1A1AA] font-medium mt-1 mb-0">Perlu perbaikan atau ditolak</p>
+            </div>
           </div>
         </div>
 
@@ -59,19 +106,19 @@
         <div class="flex flex-col sm:flex-row gap-3">
           <!-- Search Bar -->
           <div class="relative flex-1">
-            <MagnifyingGlassIcon class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400 pointer-events-none" />
+            <MagnifyingGlassIcon class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A1A1AA] pointer-events-none" />
             <input
               v-model="searchQuery"
               type="text"
-              placeholder="Cari nama mentor, nama murid, topik, atau catatan..."
-              class="w-full h-10 pl-10 pr-4 rounded-xl border border-gray-200 bg-white text-[0.9rem] text-gray-900 placeholder:text-gray-400 outline-none focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10 transition-all shadow-sm"
+              placeholder="Cari nama mentor, nama murid, topik, atau tanggal..."
+              class="w-full h-11 pl-10 pr-4 rounded-xl border border-[#E4E4E7] bg-white text-[0.875rem] text-[#18181B] placeholder:text-[#A1A1AA] outline-none focus:border-[#443E8D] focus:ring-2 focus:ring-[#443E8D]/15 transition-all shadow-xs"
             />
           </div>
 
           <!-- Status Filter -->
           <select
             v-model="filterStatus"
-            class="h-10 px-3.5 rounded-xl border border-gray-200 bg-white text-[0.875rem] text-gray-700 outline-none focus:border-emerald-500 transition-all cursor-pointer min-w-[160px] shadow-sm"
+            class="h-11 px-3.5 rounded-xl border border-[#E4E4E7] bg-white text-[0.85rem] font-medium text-[#3F3F46] outline-none focus:border-[#443E8D] focus:ring-2 focus:ring-[#443E8D]/15 transition-all cursor-pointer min-w-[170px] shadow-xs"
           >
             <option value="">Semua Status</option>
             <option value="pending">Menunggu Approval</option>
@@ -82,7 +129,7 @@
           <!-- Mentor Filter -->
           <select
             v-model="filterMentor"
-            class="h-10 px-3.5 rounded-xl border border-gray-200 bg-white text-[0.875rem] text-gray-700 outline-none focus:border-emerald-500 transition-all cursor-pointer min-w-[160px] shadow-sm"
+            class="h-11 px-3.5 rounded-xl border border-[#E4E4E7] bg-white text-[0.85rem] font-medium text-[#3F3F46] outline-none focus:border-[#443E8D] focus:ring-2 focus:ring-[#443E8D]/15 transition-all cursor-pointer min-w-[170px] shadow-xs"
           >
             <option value="">Semua Mentor</option>
             <option v-for="m in mentors" :key="m.id" :value="m.id">{{ m.fullname }}</option>
@@ -90,23 +137,23 @@
         </div>
 
         <!-- Main Table Card -->
-        <div class="bg-white border border-gray-200 rounded-2xl overflow-hidden shadow-sm">
+        <div class="bg-white border border-[#E4E4E7] rounded-2xl overflow-hidden shadow-xs">
           <!-- Loading State -->
           <div v-if="isLoading" class="flex flex-col items-center justify-center py-20">
-            <div class="w-8 h-8 border-2 border-gray-200 border-t-emerald-600 rounded-full animate-spin"></div>
-            <p class="text-xs text-gray-400 mt-3">Memuat data absensi...</p>
+            <div class="w-8 h-8 border-2 border-[#E4E4E7] border-t-[#443E8D] rounded-full animate-spin"></div>
+            <p class="text-xs text-[#71717A] mt-3">Memuat data absensi...</p>
           </div>
 
           <!-- Empty State -->
           <div v-else-if="filteredAbsensi.length === 0" class="flex flex-col items-center justify-center py-20 text-center px-4">
-            <div class="w-14 h-14 rounded-2xl bg-gray-50 flex items-center justify-center mb-3">
-              <CheckBadgeIcon class="w-7 h-7 text-gray-400" />
+            <div class="w-14 h-14 rounded-2xl bg-[#F0EFF9] text-[#443E8D] flex items-center justify-center mb-3">
+              <ClipboardDocumentCheckIcon class="w-7 h-7" />
             </div>
-            <p class="text-gray-700 font-semibold text-sm">Tidak ada data absensi</p>
-            <p class="text-gray-400 text-xs mt-1 max-w-sm">Belum ada rekapan absensi yang dibuat atau tidak ada data yang cocok dengan filter.</p>
+            <p class="text-[#18181B] font-semibold text-sm">Tidak ada data absensi</p>
+            <p class="text-[#71717A] text-xs mt-1 max-w-sm">Belum ada rekapan absensi yang dibuat atau tidak ada data yang cocok dengan filter.</p>
             <button
               @click="openAddModal"
-              class="mt-4 px-4 py-2 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white text-xs font-medium transition-all"
+              class="mt-4 px-4 py-2.5 rounded-xl bg-[#443E8D] hover:bg-[#373273] text-white text-xs font-semibold transition-all shadow-sm shadow-[#443E8D]/20 cursor-pointer"
             >
               Tambah Absensi Baru
             </button>
@@ -116,27 +163,27 @@
           <div v-else class="overflow-x-auto">
             <table class="w-full text-left border-collapse">
               <thead>
-                <tr class="border-b border-gray-100 bg-gray-50/50">
-                  <th class="px-5 py-3.5 text-[0.6875rem] font-semibold text-gray-500 uppercase tracking-wider">Tanggal & Sesi</th>
-                  <th class="px-5 py-3.5 text-[0.6875rem] font-semibold text-gray-500 uppercase tracking-wider">Mentor</th>
-                  <th class="px-5 py-3.5 text-[0.6875rem] font-semibold text-gray-500 uppercase tracking-wider">Murid yang Hadir</th>
-                  <th class="px-5 py-3.5 text-[0.6875rem] font-semibold text-gray-500 uppercase tracking-wider">Bukti Foto</th>
-                  <th class="px-5 py-3.5 text-[0.6875rem] font-semibold text-gray-500 uppercase tracking-wider">Approval</th>
-                  <th class="px-5 py-3.5 text-[0.6875rem] font-semibold text-gray-500 uppercase tracking-wider text-right">Aksi</th>
+                <tr class="border-b border-[#E4E4E7] bg-[#FAFAFC]">
+                  <th class="px-5 py-3.5 text-[0.6875rem] font-bold text-[#71717A] uppercase tracking-wider">Tanggal & Sesi</th>
+                  <th class="px-5 py-3.5 text-[0.6875rem] font-bold text-[#71717A] uppercase tracking-wider">Mentor</th>
+                  <th class="px-5 py-3.5 text-[0.6875rem] font-bold text-[#71717A] uppercase tracking-wider">Murid yang Hadir</th>
+                  <th class="px-5 py-3.5 text-[0.6875rem] font-bold text-[#71717A] uppercase tracking-wider">Bukti Foto</th>
+                  <th class="px-5 py-3.5 text-[0.6875rem] font-bold text-[#71717A] uppercase tracking-wider">Approval</th>
+                  <th class="px-5 py-3.5 text-[0.6875rem] font-bold text-[#71717A] uppercase tracking-wider text-right">Aksi</th>
                 </tr>
               </thead>
-              <tbody class="divide-y divide-gray-100 text-sm">
-                <tr v-for="item in filteredAbsensi" :key="item.id" class="hover:bg-gray-50/60 transition-colors">
+              <tbody class="divide-y divide-[#F4F4F5] text-sm">
+                <tr v-for="item in filteredAbsensi" :key="item.id" class="hover:bg-[#FAFAFD] transition-colors">
                   <!-- Tanggal & Jam -->
                   <td class="px-5 py-4">
-                    <div class="font-medium text-gray-900">
+                    <div class="font-semibold text-[#18181B]">
                       {{ formatDate(item.session_date) }}
                     </div>
-                    <div class="flex items-center gap-1.5 text-xs text-gray-500 mt-1">
-                      <ClockIcon class="w-3.5 h-3.5 text-gray-400 shrink-0" />
+                    <div class="flex items-center gap-1.5 text-xs text-[#71717A] mt-1">
+                      <ClockIcon class="w-3.5 h-3.5 text-[#A1A1AA] shrink-0" />
                       <span>{{ item.session_time }}</span>
                     </div>
-                    <div v-if="item.topic" class="text-xs text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md inline-block mt-1 font-medium">
+                    <div v-if="item.topic" class="text-[0.72rem] text-[#443E8D] bg-[#F0EFF9] border border-[#D8D6F0]/70 px-2 py-0.5 rounded-md inline-flex items-center gap-1 mt-1.5 font-medium">
                       {{ item.topic }}
                     </div>
                   </td>
@@ -144,13 +191,13 @@
                   <!-- Mentor -->
                   <td class="px-5 py-4">
                     <div class="flex items-center gap-2.5">
-                      <div class="w-8 h-8 rounded-full bg-blue-100 text-blue-700 font-semibold text-xs flex items-center justify-center shrink-0 overflow-hidden">
+                      <div class="w-8 h-8 rounded-full bg-[#F0EFF9] text-[#443E8D] border border-[#D8D6F0]/60 font-bold text-xs flex items-center justify-center shrink-0 overflow-hidden">
                         <img v-if="item.mentor?.avatar_url" :src="item.mentor.avatar_url" class="w-full h-full object-cover" />
                         <span v-else>{{ (item.mentor?.fullname || 'M').charAt(0).toUpperCase() }}</span>
                       </div>
                       <div>
-                        <div class="font-medium text-gray-900 leading-tight">{{ item.mentor?.fullname || 'Mentor tidak ditemukan' }}</div>
-                        <div class="text-[0.6875rem] text-gray-400">@{{ item.mentor?.username || '-' }}</div>
+                        <div class="font-semibold text-[#18181B] leading-tight">{{ item.mentor?.fullname || 'Mentor tidak ditemukan' }}</div>
+                        <div class="text-[0.6875rem] text-[#A1A1AA]">@{{ item.mentor?.username || '-' }}</div>
                       </div>
                     </div>
                   </td>
@@ -161,9 +208,9 @@
                       <div
                         v-for="st in (item.students || []).slice(0, 3)"
                         :key="st.id"
-                        class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-gray-100 text-gray-800 text-xs font-medium border border-gray-200/60"
+                        class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#FAFAFC] text-[#27272A] text-xs font-medium border border-[#E4E4E7]"
                       >
-                        <span class="w-4 h-4 rounded-full bg-emerald-100 text-emerald-700 text-[9px] font-bold flex items-center justify-center shrink-0">
+                        <span class="w-4 h-4 rounded-full bg-[#F0EFF9] text-[#443E8D] text-[9px] font-bold flex items-center justify-center shrink-0">
                           {{ (st.fullname || 'S').charAt(0).toUpperCase() }}
                         </span>
                         <span class="truncate max-w-[110px]">{{ st.fullname }}</span>
@@ -172,12 +219,12 @@
                       <button
                         v-if="(item.students || []).length > 3"
                         @click="showAllStudents(item)"
-                        class="text-xs font-medium text-emerald-700 hover:text-emerald-800 bg-emerald-50 hover:bg-emerald-100 px-2 py-1 rounded-lg transition-colors"
+                        class="text-xs font-semibold text-[#443E8D] hover:text-[#373273] bg-[#F0EFF9] hover:bg-[#E5E3F7] px-2.5 py-1 rounded-lg transition-colors cursor-pointer"
                       >
                         +{{ (item.students || []).length - 3 }} lainnya
                       </button>
 
-                      <span v-if="(!item.students || item.students.length === 0)" class="text-xs text-gray-400 italic">
+                      <span v-if="(!item.students || item.students.length === 0)" class="text-xs text-[#A1A1AA] italic">
                         Belum ada murid dipilih
                       </span>
                     </div>
@@ -188,7 +235,7 @@
                     <div v-if="item.bukti_foto" class="flex items-center gap-2">
                       <button
                         @click="previewImage(item.bukti_foto, item)"
-                        class="group relative w-12 h-12 rounded-xl overflow-hidden border border-gray-200 hover:ring-2 hover:ring-emerald-500 transition-all shrink-0 bg-gray-100 shadow-sm"
+                        class="group relative w-12 h-12 rounded-xl overflow-hidden border border-[#E4E4E7] hover:border-[#443E8D] hover:ring-2 hover:ring-[#443E8D]/20 transition-all shrink-0 bg-[#FAFAFC] shadow-xs cursor-pointer"
                       >
                         <img :src="item.bukti_foto" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-200" alt="Bukti Foto" />
                         <div class="absolute inset-0 bg-black/20 group-hover:bg-black/40 flex items-center justify-center transition-colors">
@@ -197,13 +244,13 @@
                       </button>
                       <button
                         @click="previewImage(item.bukti_foto, item)"
-                        class="text-xs text-emerald-600 hover:text-emerald-700 font-medium hover:underline"
+                        class="text-xs text-[#443E8D] hover:text-[#373273] font-semibold hover:underline cursor-pointer"
                       >
                         Lihat Foto
                       </button>
                     </div>
-                    <div v-else class="text-xs text-gray-400 flex items-center gap-1 italic">
-                      <PhotoIcon class="w-4 h-4 text-gray-300" />
+                    <div v-else class="text-xs text-[#A1A1AA] flex items-center gap-1 italic">
+                      <PhotoIcon class="w-4 h-4 text-[#D4D4D8]" />
                       Tidak ada foto
                     </div>
                   </td>
@@ -214,19 +261,19 @@
                       <span
                         class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold"
                         :class="[
-                          item.status === 'approved' ? 'bg-emerald-50 text-emerald-700 border border-emerald-200' :
-                          item.status === 'rejected' ? 'bg-rose-50 text-rose-700 border border-rose-200' :
-                          'bg-amber-50 text-amber-700 border border-amber-200'
+                          item.status === 'approved' ? 'bg-[#ECFDF5] text-[#059669] border border-[#A7F3D0]' :
+                          item.status === 'rejected' ? 'bg-[#FEF2F2] text-[#E11D48] border border-[#FECACA]' :
+                          'bg-[#FFFBEB] text-[#D97706] border border-[#FDE68A]'
                         ]"
                       >
-                        <CheckCircleIcon v-if="item.status === 'approved'" class="w-3.5 h-3.5 text-emerald-600" />
-                        <XCircleIcon v-else-if="item.status === 'rejected'" class="w-3.5 h-3.5 text-rose-600" />
-                        <ClockIcon v-else class="w-3.5 h-3.5 text-amber-600" />
+                        <CheckCircleIcon v-if="item.status === 'approved'" class="w-3.5 h-3.5 text-[#059669]" />
+                        <XCircleIcon v-else-if="item.status === 'rejected'" class="w-3.5 h-3.5 text-[#E11D48]" />
+                        <ClockIcon v-else class="w-3.5 h-3.5 text-[#D97706]" />
                         {{ item.status === 'approved' ? 'Disetujui' : item.status === 'rejected' ? 'Ditolak' : 'Menunggu Approval' }}
                       </span>
 
                       <!-- Rejection reason preview -->
-                      <p v-if="item.status === 'rejected' && item.rejection_reason" class="text-[0.6875rem] text-rose-600 max-w-[180px] truncate" :title="item.rejection_reason">
+                      <p v-if="item.status === 'rejected' && item.rejection_reason" class="text-[0.6875rem] text-[#E11D48] max-w-[180px] truncate" :title="item.rejection_reason">
                         Alasan: {{ item.rejection_reason }}
                       </p>
                     </div>
@@ -239,7 +286,7 @@
                       <button
                         @click="openEditModal(item)"
                         title="Edit Absensi"
-                        class="p-1.5 text-gray-500 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors"
+                        class="p-2 text-[#71717A] hover:text-[#443E8D] hover:bg-[#F0EFF9] rounded-xl transition-colors cursor-pointer"
                       >
                         <PencilSquareIcon class="w-4 h-4" />
                       </button>
@@ -258,18 +305,18 @@
     <!-- ============================================================== -->
     <div
       v-if="isModalOpen"
-      class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm overflow-y-auto"
+      class="fixed inset-0 z-[200] flex items-center justify-center p-4 bg-[#18181B]/50 backdrop-blur-sm overflow-y-auto"
     >
-      <div class="relative w-full max-w-2xl bg-white rounded-2xl shadow-xl overflow-hidden my-8">
+      <div class="relative w-full max-w-2xl bg-white rounded-2xl shadow-xl overflow-hidden my-8 border border-[#E4E4E7]">
         <!-- Modal Header -->
-        <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-[#F4F4F5]">
           <div>
-            <h2 class="text-base font-semibold text-gray-900">
+            <h2 class="text-base font-bold text-[#18181B]">
               {{ editingId ? 'Edit Data Absensi' : 'Tambah Absensi & Presensi' }}
             </h2>
-            <p class="text-xs text-gray-500">Pilih mentor, jadwal sesi, dan unggah bukti foto kehadiran sesi belajar.</p>
+            <p class="text-xs text-[#71717A]">Pilih mentor, jadwal sesi, dan unggah bukti foto kehadiran sesi belajar.</p>
           </div>
-          <button @click="closeModal" class="text-gray-400 hover:text-gray-600 p-1 rounded-lg">
+          <button @click="closeModal" class="text-[#71717A] hover:text-[#18181B] hover:bg-[#F4F4F5] p-1.5 rounded-xl transition-colors cursor-pointer">
             <XMarkIcon class="w-5 h-5" />
           </button>
         </div>
@@ -278,13 +325,13 @@
         <form @submit.prevent="saveAbsensi" class="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
           <!-- 1. Pilih Mentor -->
           <div>
-            <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">
+            <label class="block text-[0.7rem] font-bold text-[#52525B] uppercase tracking-wider mb-1.5">
               Pilih Mentor <span class="text-rose-500">*</span>
             </label>
             <select
               v-model="form.mentor_id"
               required
-              class="w-full h-10 px-3 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10 outline-none"
+              class="w-full h-11 px-3.5 rounded-xl border border-[#E4E4E7] bg-white text-sm text-[#18181B] focus:border-[#443E8D] focus:ring-2 focus:ring-[#443E8D]/15 outline-none transition-all cursor-pointer"
             >
               <option value="" disabled>-- Pilih Mentor --</option>
               <option v-for="m in mentors" :key="m.id" :value="m.id">
@@ -295,18 +342,18 @@
 
           <!-- 2. Murid (Otomatis akun siswa yang login) -->
           <div>
-            <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">
+            <label class="block text-[0.7rem] font-bold text-[#52525B] uppercase tracking-wider mb-1.5">
               Murid
             </label>
-            <div class="flex items-center gap-3 p-3 rounded-xl bg-gray-50 border border-gray-200">
-              <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 text-xs font-bold flex items-center justify-center shrink-0">
+            <div class="flex items-center gap-3 p-3.5 rounded-xl bg-[#FAFAFC] border border-[#E4E4E7]">
+              <div class="w-8 h-8 rounded-full bg-[#F0EFF9] text-[#443E8D] border border-[#D8D6F0]/60 text-xs font-bold flex items-center justify-center shrink-0">
                 {{ currentStudentInitials }}
               </div>
               <div class="flex-1 min-w-0">
-                <p class="text-xs font-semibold text-gray-900 truncate">{{ currentStudentName }}</p>
-                <p class="text-[11px] text-gray-500">@{{ currentStudentUsername }} · Otomatis akun Anda</p>
+                <p class="text-xs font-semibold text-[#18181B] truncate">{{ currentStudentName }}</p>
+                <p class="text-[11px] text-[#71717A]">@{{ currentStudentUsername }} · Otomatis akun Anda</p>
               </div>
-              <span class="text-[10px] font-semibold text-emerald-700 bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200 shrink-0">
+              <span class="text-[10px] font-bold text-[#443E8D] bg-[#F0EFF9] px-2.5 py-1 rounded-full border border-[#D8D6F0] shrink-0">
                 Otomatis Terpilih
               </span>
             </div>
@@ -315,18 +362,18 @@
           <!-- 3. Tanggal Sesi & Jam Sesi -->
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div>
-              <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">
+              <label class="block text-[0.7rem] font-bold text-[#52525B] uppercase tracking-wider mb-1.5">
                 Tanggal Sesi <span class="text-rose-500">*</span>
               </label>
               <input
                 v-model="form.session_date"
                 type="date"
                 required
-                class="w-full h-10 px-3 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10 outline-none"
+                class="w-full h-11 px-3.5 rounded-xl border border-[#E4E4E7] bg-white text-sm text-[#18181B] focus:border-[#443E8D] focus:ring-2 focus:ring-[#443E8D]/15 outline-none transition-all"
               />
             </div>
             <div>
-              <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">
+              <label class="block text-[0.7rem] font-bold text-[#52525B] uppercase tracking-wider mb-1.5">
                 Jam Sesi <span class="text-rose-500">*</span>
               </label>
               <input
@@ -334,34 +381,34 @@
                 type="text"
                 placeholder="Contoh: 14:00 - 15:30 WIB"
                 required
-                class="w-full h-10 px-3 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10 outline-none"
+                class="w-full h-11 px-3.5 rounded-xl border border-[#E4E4E7] bg-white text-sm text-[#18181B] placeholder:text-[#A1A1AA] focus:border-[#443E8D] focus:ring-2 focus:ring-[#443E8D]/15 outline-none transition-all"
               />
             </div>
           </div>
 
           <!-- Topik / Materi Pembahasan (Opsional) -->
           <div>
-            <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">
+            <label class="block text-[0.7rem] font-bold text-[#52525B] uppercase tracking-wider mb-1.5">
               Topik / Materi (Opsional)
             </label>
             <input
               v-model="form.topic"
               type="text"
               placeholder="Contoh: Mentoring Project Nuxt 3 & Integrasi Supabase"
-              class="w-full h-10 px-3 rounded-xl border border-gray-200 bg-white text-sm text-gray-900 focus:border-emerald-500 focus:ring-2 focus:ring-emerald-500/10 outline-none"
+              class="w-full h-11 px-3.5 rounded-xl border border-[#E4E4E7] bg-white text-sm text-[#18181B] placeholder:text-[#A1A1AA] focus:border-[#443E8D] focus:ring-2 focus:ring-[#443E8D]/15 outline-none transition-all"
             />
           </div>
 
           <!-- 4. Bukti Foto Absen -->
           <div>
-            <label class="block text-xs font-semibold text-gray-700 uppercase tracking-wider mb-1.5">
+            <label class="block text-[0.7rem] font-bold text-[#52525B] uppercase tracking-wider mb-1.5">
               Bukti Foto Absen
             </label>
 
             <!-- Image Upload Zone -->
             <div class="space-y-3">
               <div
-                class="border-2 border-dashed border-gray-200 hover:border-emerald-500 rounded-2xl p-4 flex flex-col items-center justify-center text-center cursor-pointer transition-colors bg-gray-50/50 hover:bg-emerald-50/20"
+                class="border-2 border-dashed border-[#D4D4D8] hover:border-[#443E8D] rounded-2xl p-5 flex flex-col items-center justify-center text-center cursor-pointer transition-colors bg-[#FAFAFC] hover:bg-[#F0EFF9]/30"
                 @click="triggerFileInput"
               >
                 <input
@@ -373,24 +420,24 @@
                 />
 
                 <div v-if="isUploadingPhoto" class="flex flex-col items-center py-2">
-                  <div class="w-6 h-6 border-2 border-emerald-600 border-t-transparent rounded-full animate-spin"></div>
-                  <p class="text-xs text-gray-700 font-medium mt-2">{{ uploadStatusText || 'Mengompresi & mengunggah bukti foto...' }}</p>
+                  <div class="w-7 h-7 border-2 border-[#443E8D] border-t-transparent rounded-full animate-spin"></div>
+                  <p class="text-xs text-[#18181B] font-semibold mt-2">{{ uploadStatusText || 'Mengompresi & mengunggah bukti foto...' }}</p>
                 </div>
 
                 <div v-else-if="form.bukti_foto" class="flex flex-col items-center">
-                  <img :src="form.bukti_foto" class="h-32 object-contain rounded-xl border border-gray-200 shadow-sm" alt="Preview Foto" />
-                  <div v-if="compressionInfo" class="mt-2 text-[11px] text-emerald-700 font-medium bg-emerald-50 px-2.5 py-1 rounded-full border border-emerald-200">
+                  <img :src="form.bukti_foto" class="h-32 object-contain rounded-xl border border-[#E4E4E7] shadow-xs" alt="Preview Foto" />
+                  <div v-if="compressionInfo" class="mt-2.5 text-[11px] text-[#443E8D] font-semibold bg-[#F0EFF9] px-2.5 py-1 rounded-full border border-[#D8D6F0]">
                     Format: WebP · Ukuran: {{ compressionInfo }} (Terkonversi)
                   </div>
-                  <p class="text-xs text-emerald-600 font-medium mt-1.5">Klik untuk mengganti foto</p>
+                  <p class="text-xs text-[#443E8D] font-semibold mt-2">Klik untuk mengganti foto</p>
                 </div>
 
                 <div v-else class="flex flex-col items-center py-3">
-                  <div class="w-10 h-10 rounded-full bg-emerald-50 flex items-center justify-center mb-2">
-                    <ArrowUpTrayIcon class="w-5 h-5 text-emerald-600" />
+                  <div class="w-10 h-10 rounded-xl bg-[#F0EFF9] flex items-center justify-center mb-2.5 text-[#443E8D]">
+                    <ArrowUpTrayIcon class="w-5 h-5" />
                   </div>
-                  <p class="text-xs font-medium text-gray-700">Klik untuk unggah Bukti Foto</p>
-                  <p class="text-[0.6875rem] text-gray-400 mt-0.5">Otomatis dikonversi ke WebP & dikompres maks. 150 KB</p>
+                  <p class="text-xs font-semibold text-[#18181B]">Klik untuk unggah Bukti Foto</p>
+                  <p class="text-[0.6875rem] text-[#71717A] mt-0.5">Otomatis dikonversi ke WebP &amp; dikompres maks. 150 KB</p>
                 </div>
               </div>
 
@@ -400,13 +447,13 @@
                   v-model="form.bukti_foto"
                   type="url"
                   placeholder="Atau masukkan URL gambar langsung..."
-                  class="flex-1 h-9 px-3 rounded-xl border border-gray-200 text-xs bg-white focus:border-emerald-500 outline-none"
+                  class="flex-1 h-10 px-3.5 rounded-xl border border-[#E4E4E7] text-xs bg-white text-[#18181B] placeholder:text-[#A1A1AA] focus:border-[#443E8D] focus:ring-2 focus:ring-[#443E8D]/15 outline-none transition-all"
                 />
                 <button
                   v-if="form.bukti_foto"
                   type="button"
                   @click="form.bukti_foto = ''"
-                  class="px-2.5 py-1.5 text-xs text-rose-600 hover:bg-rose-50 rounded-lg transition-colors font-medium"
+                  class="px-3 py-2 text-xs text-rose-600 hover:bg-rose-50 rounded-xl transition-colors font-semibold cursor-pointer"
                 >
                   Hapus Foto
                 </button>
@@ -415,18 +462,18 @@
           </div>
 
           <!-- Modal Footer Actions -->
-          <div class="flex items-center justify-end gap-3 pt-4 border-t border-gray-100">
+          <div class="flex items-center justify-end gap-3 pt-4 border-t border-[#F4F4F5]">
             <button
               type="button"
               @click="closeModal"
-              class="px-4 py-2.5 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 text-xs font-medium transition-colors"
+              class="px-4 py-2.5 rounded-xl border border-[#E4E4E7] text-[#52525B] hover:bg-[#F4F4F5] text-xs font-semibold transition-colors cursor-pointer"
             >
               Batal
             </button>
             <button
               type="submit"
               :disabled="isSubmitting"
-              class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 disabled:opacity-50 text-white text-xs font-medium transition-all shadow-sm"
+              class="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#443E8D] hover:bg-[#373273] disabled:opacity-50 text-white text-xs font-semibold transition-all shadow-sm shadow-[#443E8D]/25 cursor-pointer"
             >
               <div v-if="isSubmitting" class="w-3.5 h-3.5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
               <span>{{ editingId ? 'Simpan Perubahan' : 'Tambah Absensi' }}</span>
@@ -448,7 +495,7 @@
       <div class="relative max-w-3xl w-full max-h-[90vh] flex flex-col items-center" @click.stop>
         <button
           @click="previewPhotoUrl = ''"
-          class="absolute -top-12 right-0 text-white hover:text-gray-300 p-2 text-sm flex items-center gap-1 font-medium"
+          class="absolute -top-12 right-0 text-white hover:text-gray-300 p-2 text-sm flex items-center gap-1 font-medium cursor-pointer"
         >
           <XMarkIcon class="w-6 h-6" /> Tutup
         </button>
@@ -466,7 +513,7 @@
           <a
             :href="previewPhotoUrl"
             target="_blank"
-            class="text-emerald-300 underline font-medium hover:text-emerald-200"
+            class="text-[#C4C1E8] underline font-semibold hover:text-white"
           >
             Buka Tab Baru
           </a>
@@ -479,16 +526,16 @@
     <!-- ============================================================== -->
     <div
       v-if="showStudentModalItem"
-      class="fixed inset-0 z-[215] flex items-center justify-center p-4 bg-gray-900/60 backdrop-blur-sm"
+      class="fixed inset-0 z-[215] flex items-center justify-center p-4 bg-[#18181B]/50 backdrop-blur-sm"
       @click="showStudentModalItem = null"
     >
-      <div class="w-full max-w-md bg-white rounded-2xl p-6 shadow-xl space-y-4" @click.stop>
-        <div class="flex items-center justify-between border-b border-gray-100 pb-3">
+      <div class="w-full max-w-md bg-white rounded-2xl p-6 shadow-xl space-y-4 border border-[#E4E4E7]" @click.stop>
+        <div class="flex items-center justify-between border-b border-[#F4F4F5] pb-3">
           <div>
-            <h3 class="text-base font-semibold text-gray-900">Daftar Murid yang Hadir</h3>
-            <p class="text-xs text-gray-500">Total {{ (showStudentModalItem.students || []).length }} murid pada sesi ini</p>
+            <h3 class="text-base font-bold text-[#18181B]">Daftar Murid yang Hadir</h3>
+            <p class="text-xs text-[#71717A]">Total {{ (showStudentModalItem.students || []).length }} murid pada sesi ini</p>
           </div>
-          <button @click="showStudentModalItem = null" class="text-gray-400 hover:text-gray-600">
+          <button @click="showStudentModalItem = null" class="text-[#71717A] hover:text-[#18181B] hover:bg-[#F4F4F5] p-1.5 rounded-xl transition-colors cursor-pointer">
             <XMarkIcon class="w-5 h-5" />
           </button>
         </div>
@@ -497,14 +544,14 @@
           <div
             v-for="st in showStudentModalItem.students"
             :key="st.id"
-            class="flex items-center gap-3 p-2.5 rounded-xl bg-gray-50 border border-gray-100"
+            class="flex items-center gap-3 p-2.5 rounded-xl bg-[#FAFAFC] border border-[#E4E4E7]"
           >
-            <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 font-bold text-xs flex items-center justify-center shrink-0">
+            <div class="w-8 h-8 rounded-full bg-[#F0EFF9] text-[#443E8D] border border-[#D8D6F0]/60 font-bold text-xs flex items-center justify-center shrink-0">
               {{ (st.fullname || 'S').charAt(0).toUpperCase() }}
             </div>
             <div>
-              <p class="text-xs font-semibold text-gray-900 leading-tight">{{ st.fullname }}</p>
-              <p class="text-[11px] text-gray-400">@{{ st.username }}</p>
+              <p class="text-xs font-semibold text-[#18181B] leading-tight">{{ st.fullname }}</p>
+              <p class="text-[11px] text-[#A1A1AA]">@{{ st.username }}</p>
             </div>
           </div>
         </div>
@@ -512,7 +559,7 @@
         <div class="pt-2 text-right">
           <button
             @click="showStudentModalItem = null"
-            class="px-4 py-2 rounded-xl bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-medium"
+            class="px-4 py-2 rounded-xl bg-[#F4F4F5] hover:bg-[#E4E4E7] text-[#27272A] text-xs font-semibold transition-colors cursor-pointer"
           >
             Tutup
           </button>
@@ -529,6 +576,7 @@ import {
   PlusIcon,
   MagnifyingGlassIcon,
   CheckBadgeIcon,
+  ClipboardDocumentCheckIcon,
   ClockIcon,
   CheckCircleIcon,
   XCircleIcon,

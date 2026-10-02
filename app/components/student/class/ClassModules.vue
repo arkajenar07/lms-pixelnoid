@@ -1,5 +1,5 @@
 <template>
-  <main class="py-8 px-8 max-[900px]:px-5 flex flex-col gap-10 mx-auto w-full">
+  <main class="py-5 px-8 max-[900px]:px-5 flex flex-col gap-6 mx-auto w-full">
 
     <!-- Loading State -->
     <div v-if="isLoading" class="flex flex-col items-center justify-center py-24 gap-4">
@@ -30,57 +30,48 @@
 
     <!-- Content -->
     <template v-else>
-      <!-- Progress strip -->
-      <section class="flex flex-col sm:flex-row sm:items-center gap-8 py-8 px-6 rounded-2xl bg-[#FAFAFF] border border-[#443E8D]/10">
-        <div class="flex items-center gap-10">
-          <!-- Ring -->
-          <div class="relative w-32 h-32 flex-shrink-0">
-            <svg class="w-full h-full -rotate-90" viewBox="0 0 56 56">
-              <circle cx="28" cy="28" r="22" stroke="#F0F0F0" stroke-width="4" fill="none" />
-              <circle cx="28" cy="28" r="22" stroke="#443E8D" stroke-width="4" fill="none"
-                stroke-dasharray="138.2"
-                :stroke-dashoffset="138.2 * (1 - overallProgress / 100)"
-                stroke-linecap="round" class="transition-all duration-700" />
-            </svg>
-            <div class="absolute inset-0 flex flex-col items-center justify-center gap-1">
-              <span class="text-[1.5rem] font-bold text-[#443E8D]">{{ overallProgress }}%</span>
-              <span class="text-[0.65rem] text-[#999] font-medium">Selesai</span>
-            </div>
-          </div>
-          
-          <!-- Stats -->
-          <div class="flex gap-4 flex-wrap">
-            <div class="rounded-lg bg-[#FAFAFF] border border-[#443E8D]/10 px-4 py-3 min-w-[140px]">
-              <p class="text-[0.65rem] text-[#999] uppercase tracking-wider font-semibold mb-1">Modul Tersedia</p>
-              <p class="text-[1.5rem] font-bold text-[#443E8D]">{{ modules.length }}<span class="text-[0.9rem] text-[#CCC] font-normal ml-1">modul</span></p>
-              <p class="text-[0.7rem] text-[#BBB] mt-1">Dalam kelas ini</p>
-            </div>
-            
-            <div class="rounded-lg bg-[#FAFAFF] border border-[#443E8D]/10 px-4 py-3 min-w-[140px]">
-              <p class="text-[0.65rem] text-[#999] uppercase tracking-wider font-semibold mb-1">Total Pelajaran</p>
-              <p class="text-[1.5rem] font-bold text-[#443E8D]">{{ totalLessons }}</p>
-              <p class="text-[0.7rem] text-[#BBB] mt-1">Di semua modul</p>
-            </div>
-            
-            <div class="rounded-lg bg-[#FAFAFF] border border-[#443E8D]/10 px-4 py-3 min-w-[140px]">
-              <p class="text-[0.65rem] text-[#999] uppercase tracking-wider font-semibold mb-1">Total XP</p>
-              <p class="text-[1.5rem] font-bold text-[#443E8D]">{{ totalXp }}</p>
-              <p class="text-[0.7rem] text-[#BBB] mt-1">Bisa didapatkan</p>
-            </div>
+      <!-- Progress + Stats + CTA -->
+      <section class="flex flex-col gap-5 py-6 px-6 rounded-2xl bg-[#FAFAFF] border border-[#443E8D]/10">
 
-            <div class="rounded-lg bg-[#FAFAFF] border border-[#443E8D]/10 px-4 py-3 min-w-[140px]">
-              <p class="text-[0.65rem] text-[#999] uppercase tracking-wider font-semibold mb-1">XP Didapat</p>
-              <p class="text-[1.5rem] font-bold text-[#443E8D]">{{ xpEarned }} / {{ totalXp }}</p>
-              <p class="text-[0.7rem] text-[#BBB] mt-1">Dari progres kelas</p>
-            </div>
+        <!-- ① Progress Bar -->
+        <div class="flex flex-col gap-2">
+          <div class="flex items-center justify-between">
+            <span class="text-[0.72rem] font-semibold text-[#443E8D] uppercase tracking-wider">Progress Belajar</span>
+            <span class="text-[0.72rem] font-bold text-[#443E8D]">{{ overallProgress }}%</span>
+          </div>
+          <div class="w-full h-2.5 rounded-full bg-[#E8E6F5] overflow-hidden">
+            <div
+              class="h-full rounded-full bg-[#443E8D] transition-all duration-700"
+              :style="{ width: overallProgress + '%' }"
+            />
+          </div>
+          <p class="text-[0.7rem] text-[#AAA]">{{ completedLessons }} dari {{ totalLessons }} pelajaran selesai</p>
+        </div>
+
+        <!-- ② Stats Row -->
+        <div class="flex gap-3 flex-wrap">
+          <div class="rounded-lg bg-white border border-[#443E8D]/10 px-4 py-3 min-w-[130px] flex-1">
+            <p class="text-[0.62rem] text-[#999] uppercase tracking-wider font-semibold mb-1">Modul Tersedia</p>
+            <p class="text-[1.4rem] font-bold text-[#443E8D] leading-tight">{{ modules.length }}<span class="text-[0.85rem] text-[#CCC] font-normal ml-1">modul</span></p>
+            <p class="text-[0.68rem] text-[#BBB] mt-1">Dalam kelas ini</p>
+          </div>
+          <div class="rounded-lg bg-white border border-[#443E8D]/10 px-4 py-3 min-w-[130px] flex-1">
+            <p class="text-[0.62rem] text-[#999] uppercase tracking-wider font-semibold mb-1">Total Pelajaran</p>
+            <p class="text-[1.4rem] font-bold text-[#443E8D] leading-tight">{{ totalLessons }}</p>
+            <p class="text-[0.68rem] text-[#BBB] mt-1">Di semua modul</p>
+          </div>
+          <div class="rounded-lg bg-white border border-[#443E8D]/10 px-4 py-3 min-w-[130px] flex-1">
+            <p class="text-[0.62rem] text-[#999] uppercase tracking-wider font-semibold mb-1">XP Didapat</p>
+            <p class="text-[1.4rem] font-bold text-[#443E8D] leading-tight">{{ xpEarned }} <span class="text-[0.85rem] text-[#CCC] font-normal">/ {{ totalXp }}</span></p>
+            <p class="text-[0.68rem] text-[#BBB] mt-1">Dari progres kelas</p>
           </div>
         </div>
 
-        <!-- Resume CTA -->
+        <!-- ③ Lanjut Belajar CTA -->
         <NuxtLink
           v-if="activeModuleToStudy"
           :to="`/student/class/${activeModuleToStudy.slug}`"
-          class="sm:ml-auto inline-flex items-center gap-2 px-6 py-3.5 rounded-lg bg-[#443E8D] text-white text-[0.9rem] font-semibold hover:bg-[#3A3478] transition-colors no-underline shadow-sm"
+          class="inline-flex items-center gap-2 self-start px-6 py-3 rounded-xl bg-[#443E8D] text-white text-[0.88rem] font-semibold hover:bg-[#3A3478] transition-colors no-underline shadow-sm"
         >
           {{ (activeModuleToStudy.completed_lessons || 0) > 0 ? 'Lanjut Belajar:' : 'Mulai Belajar:' }} {{ activeModuleToStudy.title }}
           <ArrowRightIcon class="w-4 h-4" />
@@ -313,11 +304,14 @@ async function fetchModules() {
       return
     }
 
-    const data = await $fetch<{ modules: Module[] }>(`/api/student/modules?class_id=${props.classId}`, {
-      headers: { Authorization: `Bearer ${token}` }
-    })
-    modules.value = data.modules
-    await fetchClassProgress(token)
+    // Jalankan modules + progress secara PARALEL (bukan sequential)
+    const [modulesData] = await Promise.all([
+      $fetch<{ modules: Module[] }>(`/api/student/modules?class_id=${props.classId}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      }),
+      fetchClassProgress(token),
+    ])
+    modules.value = modulesData.modules
   } catch (e: any) {
     errorMsg.value = e?.data?.statusMessage || e?.message || 'Terjadi kesalahan.'
   } finally {

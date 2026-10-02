@@ -8,7 +8,7 @@
       <div class="bg-white rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.03)] overflow-hidden flex flex-col">
 
         <!-- Header -->
-        <div class="flex items-center justify-between px-6 py-4.5 border-b border-[#F4F4F5] bg-white">
+        <div class="flex items-center justify-between px-6 py-4 border-b border-[#F4F4F5] bg-white">
           <div class="flex items-center gap-2.5">
             <div class="w-8 h-8 rounded-lg bg-[#F0EFF9] flex items-center justify-center text-[#443E8D] flex-shrink-0">
               <CalendarDaysIcon class="w-4 h-4" />
@@ -99,7 +99,7 @@
                 class="hover:bg-[#FAFAFC]/80 transition-colors group"
               >
                 <!-- 1. Judul Column -->
-                <td class="py-4.5 px-6 align-top">
+                <td class="py-4 px-6 align-top">
                   <div class="flex items-start gap-3">
                     <!-- Color Dot -->
                     <span
@@ -141,16 +141,15 @@
                       </div>
 
                       <!-- Notification badge -->
-                      <div v-if="formatNotification(item.notifications)" class="mt-1.5 inline-flex items-center gap-1 text-[0.65rem] text-[#6B7280] bg-[#F4F4F5] px-2 py-0.5 rounded-md font-medium">
-                        <span>🔔</span>
-                        <span>{{ formatNotification(item.notifications) }}</span>
+                      <div v-if="formatNotification(item.notifications)" class="mt-1.5 inline-flex items-center text-[0.65rem] text-[#6B7280] bg-[#F4F4F5] px-2 py-0.5 rounded-md font-medium">
+                        {{ formatNotification(item.notifications) }}
                       </div>
                     </div>
                   </div>
                 </td>
 
                 <!-- 2. Waktu Column -->
-                <td class="py-4.5 px-6 align-top">
+                <td class="py-4 px-6 align-top">
                   <!-- Recurring: tampilkan label perulangan (setiap hari / setiap jumat / dll) -->
                   <template v-if="isRecurring(item.recurrence)">
                     <div class="flex items-center gap-1.5 text-[0.82rem] font-semibold text-[#443E8D] leading-tight">
@@ -173,7 +172,7 @@
                 </td>
 
                 <!-- 3. Mentor / Student Column -->
-                <td class="py-4.5 px-6 align-top">
+                <td class="py-4 px-6 align-top">
                   <!-- Mentor Email -->
                   <div class="text-[0.8rem] font-medium text-[#18181B] truncate max-w-[220px]" :title="item.mentor_email">
                     {{ item.mentor_email || '-' }}
@@ -189,7 +188,7 @@
                 </td>
 
                 <!-- 4. Google Sync Column -->
-                <td class="py-4.5 px-6 align-top text-center">
+                <td class="py-4 px-6 align-top text-center">
                   <span
                     v-if="item.google_sync_status === 'synced'"
                     class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[0.72rem] font-semibold bg-[#ECFDF5] text-[#059669] border border-[#A7F3D0]/60 shadow-2xs"
@@ -350,9 +349,10 @@ const userEmail = ref<string | null>(null)
 const copiedId = ref<string | null>(null)
 
 // ── Calendar Navigation State ─────────────────────────────────────────
-// Default to September 2026 as per database schedules, or current date
-const currentYear = ref(2026)
-const currentMonth = ref(8) // 0-indexed: 8 = September
+// Default ke bulan saat ini (bukan hardcode 2026)
+const today = new Date()
+const currentYear = ref(today.getFullYear())
+const currentMonth = ref(today.getMonth()) // 0-indexed
 const selectedDate = ref<Date | null>(null)
 
 const monthNames = [
