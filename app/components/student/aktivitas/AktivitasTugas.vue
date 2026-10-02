@@ -546,21 +546,38 @@ import {
 
 const emit = defineEmits<{
   (e: 'open-feedback', task: any): void
+  (e: 'stats-updated', metrics: any): void
 }>()
 
 const supabase = useSupabaseClient()
 
-// ── State ─────────────────────────────────────────────────────────────
-const isLoading = ref(true)
-const isSubmitting = ref(false)
-const assignments = ref<any[]>([])
-const metrics = ref({
+// ── SWR Cache Initialization ──────────────────────────────────────────
+const CACHE_ASSIGNMENTS_KEY = 'px_cached_student_assignments'
+const CACHE_METRICS_KEY = 'px_cached_student_metrics'
+
+let initialAssignments: any[] = []
+let initialMetrics = {
   total: 0,
   pending: 0,
   submitted: 0,
   reviewed: 0,
   averageGrade: null as number | null
-})
+}
+
+if (import.meta.client) {
+  try {
+    const rawA = sessionStorage.getItem(CACHE_ASSIGNMENTS_KEY)
+    if (rawA) initialAssignments = JSON.parse(rawA)
+    const rawM = sessionStorage.getItem(CACHE_METRICS_KEY)
+    if (rawM) initialMetrics = JSON.parse(rawM)
+  } catch {}
+}
+
+// ── State ─────────────────────────────────────────────────────────────
+const isLoading = ref(initialAssignments.length === 0)
+const isSubmitting = ref(false)
+const assignments = ref<any[]>(initialAssignments)
+const metrics = ref(initialMetrics)
 
 const activeStatusFilter = ref('all')
 const activeTypeFilter = ref('all')
@@ -579,8 +596,10 @@ const submissionForm = reactive({
 })
 
 // ── Data Fetching ─────────────────────────────────────────────────────
-async function fetchAssignments() {
-  isLoading.value = true
+async function fetchAssignments(silent = false) {
+  if (!silent && assignments.value.length === 0) {
+    isLoading.value = true
+  }
   try {
     const { data: { session } } = await supabase.auth.getSession()
     const token = session?.access_token
@@ -604,6 +623,17 @@ async function fetchAssignments() {
       reviewed: 0,
       averageGrade: null
     }
+
+    // Emit to parent to keep badges in sync
+    emit('stats-updated', metrics.value)
+
+    // Save to session cache
+    if (import.meta.client) {
+      try {
+        sessionStorage.setItem(CACHE_ASSIGNMENTS_KEY, JSON.stringify(assignments.value))
+        sessionStorage.setItem(CACHE_METRICS_KEY, JSON.stringify(metrics.value))
+      } catch {}
+    }
   } catch (error) {
     console.error('Error fetching assignments:', error)
   } finally {
@@ -612,7 +642,7 @@ async function fetchAssignments() {
 }
 
 onMounted(() => {
-  fetchAssignments()
+  fetchAssignments(assignments.value.length > 0)
 })
 
 // ── Computed & Filters ────────────────────────────────────────────────

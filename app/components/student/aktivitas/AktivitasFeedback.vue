@@ -273,18 +273,40 @@ const props = defineProps<{
   highlightTaskId?: number | null
 }>()
 
+const emit = defineEmits<{
+  (e: 'feedback-count-updated', count: number): void
+}>()
+
 const supabase = useSupabaseClient()
 
+// ── SWR Cache Initialization ──────────────────────────────────────────
+const CACHE_MENTORS_KEY = 'px_cached_mentors'
+const CACHE_REVIEWS_KEY = 'px_cached_mentor_reviews'
+
+let initialMentors: any[] = []
+let initialReviews: any[] = []
+
+if (import.meta.client) {
+  try {
+    const rawM = sessionStorage.getItem(CACHE_MENTORS_KEY)
+    if (rawM) initialMentors = JSON.parse(rawM)
+    const rawR = sessionStorage.getItem(CACHE_REVIEWS_KEY)
+    if (rawR) initialReviews = JSON.parse(rawR)
+  } catch {}
+}
+
 // ── State ─────────────────────────────────────────────────────────────
-const isLoading = ref(true)
-const mentors = ref<any[]>([])
-const reviews = ref<any[]>([])
+const isLoading = ref(initialReviews.length === 0 && initialMentors.length === 0)
+const mentors = ref<any[]>(initialMentors)
+const reviews = ref<any[]>(initialReviews)
 const searchQuery = ref('')
 const mentorFilter = ref('all')
 
 // ── Data Fetching ─────────────────────────────────────────────────────
-async function fetchMentorData() {
-  isLoading.value = true
+async function fetchMentorData(silent = false) {
+  if (!silent && reviews.value.length === 0) {
+    isLoading.value = true
+  }
   try {
     const { data: { session } } = await supabase.auth.getSession()
     const token = session?.access_token
@@ -301,6 +323,16 @@ async function fetchMentorData() {
 
     mentors.value = res.mentors || []
     reviews.value = res.allStudentReviews || []
+
+    emit('feedback-count-updated', reviews.value.length)
+
+    // Save to session cache
+    if (import.meta.client) {
+      try {
+        sessionStorage.setItem(CACHE_MENTORS_KEY, JSON.stringify(mentors.value))
+        sessionStorage.setItem(CACHE_REVIEWS_KEY, JSON.stringify(reviews.value))
+      } catch {}
+    }
   } catch (err) {
     console.error('Error fetching mentor data:', err)
   } finally {
@@ -309,7 +341,7 @@ async function fetchMentorData() {
 }
 
 onMounted(() => {
-  fetchMentorData()
+  fetchMentorData(reviews.value.length > 0)
 })
 
 // ── Computed & Helpers ────────────────────────────────────────────────

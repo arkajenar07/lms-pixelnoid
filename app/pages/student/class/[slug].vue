@@ -574,23 +574,70 @@ async function copyCode(content: string | undefined, idx: number) {
   try { await navigator.clipboard.writeText(content); copiedIdx.value = idx; setTimeout(() => { copiedIdx.value = null }, 2000) } catch {}
 }
 
+// In-memory cache for lessons so switching between lessons is 0ms instant
+const lessonCache = new Map<number, LessonDetail>()
+
+function prefetchNextLesson() {
+  const nextMeta = moduleData.value?.module_lessons[currentLessonIdx.value + 1]
+  if (nextMeta && !lessonCache.has(nextMeta.id)) {
+    getValidToken().then(token => {
+      if (!token) return
+      $fetch<{ lesson: LessonDetail }>(`/api/student/lessons/${nextMeta.id}`, {
+        headers: { Authorization: `Bearer ${token}` }
+      }).then(data => {
+        if (data?.lesson) {
+          if (typeof data.lesson.content === 'string') {
+            try { data.lesson.content = JSON.parse(data.lesson.content) } catch {}
+          }
+          lessonCache.set(nextMeta.id, data.lesson)
+        }
+      }).catch(() => {})
+    })
+  }
+}
+
 async function fetchModule() {
   isLoading.value = true; errorMsg.value = ''
   try {
     const token = await getValidToken()
     if (!token) { errorMsg.value = 'Sesi tidak ditemukan. Silakan login ulang.'; return }
-    const data = await $fetch<{ module: ModuleData }>(`/api/student/modules/${slug.value}`, { headers: { Authorization: `Bearer ${token}` } })
+    const data = await $fetch<{ module: ModuleData; initial_lesson?: LessonDetail }>(`/api/student/modules/${slug.value}`, { headers: { Authorization: `Bearer ${token}` } })
     moduleData.value = data.module
     const completedLessons = (data.module.module_lessons || []).filter((l: LessonMeta) => l.progress_status === 'completed').map((l: LessonMeta) => l.id)
     doneSet.value = new Set(completedLessons)
-    const firstLessonId = Number(data?.module?.module_lessons?.[0]?.id ?? 0)
-    if (firstLessonId > 0) await fetchLessonDetail(firstLessonId)
+
+    // Fast Path: If initial_lesson is returned in the same payload, render in 0ms!
+    if (data.initial_lesson) {
+      lessonDetail.value = data.initial_lesson
+      lessonCache.set(data.initial_lesson.id, data.initial_lesson)
+      const foundIdx = (data.module.module_lessons || []).findIndex(l => l.id === data.initial_lesson!.id)
+      if (foundIdx >= 0) currentLessonIdx.value = foundIdx
+      if (data.initial_lesson.progress_status === 'completed') doneSet.value.add(data.initial_lesson.id)
+      if (data.initial_lesson.type === 'video' && data.initial_lesson.video_url) initYouTubePlayer(data.initial_lesson.video_url)
+      isLessonLoading.value = false
+    } else {
+      const firstLessonId = Number(data?.module?.module_lessons?.[0]?.id ?? 0)
+      if (firstLessonId > 0) await fetchLessonDetail(firstLessonId)
+    }
+
     useSeoMeta({ title: `${data.module.title} — Pixelnoid Academy` })
+    // Background prefetch next lesson
+    prefetchNextLesson()
   } catch (e: any) { errorMsg.value = e?.data?.statusMessage || e?.message || 'Gagal memuat modul.' }
   finally { isLoading.value = false }
 }
 
 async function fetchLessonDetail(lessonId: number) {
+  // Check memory cache first (0ms instantaneous switch)
+  if (lessonCache.has(lessonId)) {
+    lessonDetail.value = lessonCache.get(lessonId)!
+    isLessonLoading.value = false
+    if (lessonDetail.value.progress_status === 'completed') doneSet.value.add(lessonDetail.value.id)
+    if (lessonDetail.value.type === 'video' && lessonDetail.value.video_url) initYouTubePlayer(lessonDetail.value.video_url)
+    prefetchNextLesson()
+    return
+  }
+
   isLessonLoading.value = true; lessonDetail.value = null
   try {
     const token = await getValidToken()
@@ -600,8 +647,10 @@ async function fetchLessonDetail(lessonId: number) {
     if (typeof lessonDetail.value?.content === 'string') {
       try { lessonDetail.value.content = JSON.parse(lessonDetail.value.content) } catch (e) {}
     }
+    lessonCache.set(lessonId, lessonDetail.value)
     if (lessonDetail.value.progress_status === 'completed') doneSet.value.add(lessonDetail.value.id)
     if (lessonDetail.value.type === 'video' && lessonDetail.value.video_url) initYouTubePlayer(lessonDetail.value.video_url)
+    prefetchNextLesson()
   } catch (e) {} finally { isLessonLoading.value = false }
 }
 

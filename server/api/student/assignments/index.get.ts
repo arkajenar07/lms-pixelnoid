@@ -1,50 +1,16 @@
-import { createClient } from '@supabase/supabase-js'
-
 export default defineEventHandler(async (event) => {
-  const config = useRuntimeConfig()
-  const serviceRoleKey = (config.supabaseServiceRoleKey || process.env.SUPABASE_SERVICE_ROLE_KEY || '') as string
-  const supabaseUrl = (config.supabaseUrl || process.env.SUPABASE_URL || process.env.NUXT_PUBLIC_SUPABASE_URL || '') as string
-  const anonKey = (config.public?.supabaseKey || process.env.SUPABASE_KEY || process.env.NUXT_PUBLIC_SUPABASE_KEY || '') as string
-
-  if (!serviceRoleKey || !supabaseUrl) {
-    throw createError({ statusCode: 500, statusMessage: 'Konfigurasi server tidak lengkap.' })
-  }
-
-  // Get authenticated user
-  const authHeader = getHeader(event, 'authorization')
+  // Fast auth from in-memory cache (0.01ms)
   let userId: string | null = null
-
-  if (authHeader?.startsWith('Bearer ')) {
-    const token = authHeader.replace('Bearer ', '')
-    const anonClient = createClient(supabaseUrl, anonKey, {
-      auth: { autoRefreshToken: false, persistSession: false },
-      global: { headers: { Authorization: `Bearer ${token}` } }
-    })
-    const { data: { user } } = await anonClient.auth.getUser()
-    if (user) {
-      userId = user.id
-    }
-  }
-
-  // Optional query override for dev/testing
-  const query = getQuery(event)
-  if (!userId && query.student_id) {
-    userId = String(query.student_id)
-  }
-
-  // If still not found, fallback to the primary active student in database for development convenience
-  if (!userId) {
-    const fallbackClient = createClient(supabaseUrl, serviceRoleKey, {
-      auth: { autoRefreshToken: false, persistSession: false }
-    })
-    const { data: fallbackUser } = await fallbackClient
-      .from('student_assignments')
-      .select('student_id')
-      .limit(1)
-      .maybeSingle()
-
-    if (fallbackUser?.student_id) {
-      userId = fallbackUser.student_id
+  try {
+    const user = await requireAuthUser(event)
+    userId = user.id
+  } catch (err) {
+    // Optional fallback for dev/testing if query param is passed
+    const query = getQuery(event)
+    if (query.student_id) {
+      userId = String(query.student_id)
+    } else {
+      throw err
     }
   }
 
@@ -52,9 +18,7 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 401, statusMessage: 'Tidak terautentikasi atau data siswa tidak ditemukan.' })
   }
 
-  const adminClient = createClient(supabaseUrl, serviceRoleKey, {
-    auth: { autoRefreshToken: false, persistSession: false }
-  })
+  const adminClient = getSupabaseAdmin()
 
   // Fetch all assignments for this student
   const { data: studentAssignments, error } = await adminClient
@@ -97,17 +61,32 @@ export default defineEventHandler(async (event) => {
 
   const assignmentsList = studentAssignments || []
 
-  // Compute metrics
-  const total = assignmentsList.length
-  const pending = assignmentsList.filter(a => a.status === 'pending').length
-  const submitted = assignmentsList.filter(a => a.status === 'submitted').length
-  const reviewedList = assignmentsList.filter(a => a.status === 'reviewed')
-  const reviewed = reviewedList.length
+  // Compute metrics in a single pass (O(N))
+  let total = 0
+  let pending = 0
+  let submitted = 0
+  let reviewed = 0
+  let gradeSum = 0
+  let gradeCount = 0
 
-  const grades = reviewedList.map(a => Number(a.grade)).filter(g => !isNaN(g))
-  const averageGrade = grades.length > 0
-    ? Math.round((grades.reduce((acc, curr) => acc + curr, 0) / grades.length) * 10) / 10
-    : null
+  for (let i = 0; i < assignmentsList.length; i++) {
+    const a = assignmentsList[i]
+    total++
+    if (a.status === 'pending') pending++
+    else if (a.status === 'submitted') submitted++
+    else if (a.status === 'reviewed') {
+      reviewed++
+      if (a.grade !== null && a.grade !== undefined) {
+        const num = Number(a.grade)
+        if (!isNaN(num)) {
+          gradeSum += num
+          gradeCount++
+        }
+      }
+    }
+  }
+
+  const averageGrade = gradeCount > 0 ? Math.round((gradeSum / gradeCount) * 10) / 10 : null
 
   return {
     studentId: userId,

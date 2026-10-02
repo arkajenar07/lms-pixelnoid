@@ -1,44 +1,16 @@
-import { createClient } from '@supabase/supabase-js'
-
 export default defineEventHandler(async (event) => {
-  const config = useRuntimeConfig()
-  const serviceRoleKey = (config.supabaseServiceRoleKey || process.env.SUPABASE_SERVICE_ROLE_KEY || '') as string
-  const supabaseUrl = (config.supabaseUrl || process.env.SUPABASE_URL || process.env.NUXT_PUBLIC_SUPABASE_URL || '') as string
+  const adminClient = getSupabaseAdmin()
 
-  if (!serviceRoleKey || !supabaseUrl) {
-    throw createError({ statusCode: 500, statusMessage: 'Konfigurasi server tidak lengkap.' })
-  }
-
-  const adminClient = createClient(supabaseUrl, serviceRoleKey, {
-    auth: { autoRefreshToken: false, persistSession: false }
-  })
-
-  // Get current student user if available
-  const authHeader = getHeader(event, 'authorization')
+  // Get current student user if available (from cache or token)
   let studentId: string | null = null
-
-  if (authHeader?.startsWith('Bearer ')) {
-    const token = authHeader.replace('Bearer ', '')
-    const anonKey = (config.public?.supabaseKey || process.env.SUPABASE_KEY || process.env.NUXT_PUBLIC_SUPABASE_KEY || '') as string
-    const anonClient = createClient(supabaseUrl, anonKey, {
-      auth: { autoRefreshToken: false, persistSession: false },
-      global: { headers: { Authorization: `Bearer ${token}` } }
-    })
-    const { data: { user } } = await anonClient.auth.getUser()
-    if (user) studentId = user.id
+  try {
+    const user = await requireAuthUser(event)
+    studentId = user.id
+  } catch {
+    // Optional fallback
   }
 
-  // Fetch all mentors
-  const { data: mentors, error: mentorErr } = await adminClient
-    .from('users')
-    .select('id, fullname, username, avatar_url, roles, created_at')
-    .contains('roles', ['mentor'])
-
-  if (mentorErr) {
-    throw createError({ statusCode: 500, statusMessage: `Gagal mengambil daftar mentor: ${mentorErr.message}` })
-  }
-
-  // Fetch all reviewed assignments (and mentor feedbacks) for this student
+  // Fetch mentors and student reviews in PARALLEL
   let reviewsQuery = adminClient
     .from('student_assignments')
     .select(`
@@ -66,13 +38,35 @@ export default defineEventHandler(async (event) => {
     reviewsQuery = reviewsQuery.eq('student_id', studentId)
   }
 
-  const { data: reviews } = await reviewsQuery.order('feedback_at', { ascending: false })
+  const [mentorsRes, reviewsRes] = await Promise.all([
+    adminClient
+      .from('users')
+      .select('id, fullname, username, avatar_url, roles, created_at')
+      .contains('roles', ['mentor']),
+    reviewsQuery.order('feedback_at', { ascending: false })
+  ])
 
-  const allReviews = reviews || []
+  if (mentorsRes.error) {
+    throw createError({ statusCode: 500, statusMessage: `Gagal mengambil daftar mentor: ${mentorsRes.error.message}` })
+  }
+
+  const mentors = mentorsRes.data || []
+  const allReviews = reviewsRes.data || []
+
+  // Pre-index reviews by mentor for O(1) lookups
+  const reviewsByMentor = new Map<string, any[]>()
+  for (const r of allReviews) {
+    if (r.feedback_by) {
+      if (!reviewsByMentor.has(r.feedback_by)) {
+        reviewsByMentor.set(r.feedback_by, [])
+      }
+      reviewsByMentor.get(r.feedback_by)!.push(r)
+    }
+  }
 
   // Enhance mentors with review history
-  const enrichedMentors = (mentors || []).map((m: any) => {
-    const mentorReviews = allReviews.filter((r: any) => r.feedback_by === m.id)
+  const enrichedMentors = mentors.map((m: any) => {
+    const mentorReviews = reviewsByMentor.get(m.id) || []
     return {
       id: m.id,
       fullname: m.fullname || m.username || 'Mentor Pixelnoid',

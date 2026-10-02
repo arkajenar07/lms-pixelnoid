@@ -228,9 +228,38 @@ interface Module {
   is_completed?: boolean
 }
 
+interface CachedModuleData {
+  modules: Module[]
+  progressPercentage?: number
+  totalXpEarned?: number
+  savedAt: number
+}
+
+// Module-level in-memory cache shared across component mounts
+const memoryModulesCache = new Map<number, CachedModuleData>()
+
+function getCachedData(classId: number): CachedModuleData | null {
+  if (memoryModulesCache.has(classId)) {
+    return memoryModulesCache.get(classId)!
+  }
+  if (import.meta.client) {
+    try {
+      const raw = sessionStorage.getItem(`px_mod_cache_${classId}`)
+      if (raw) {
+        const parsed = JSON.parse(raw)
+        memoryModulesCache.set(classId, parsed)
+        return parsed
+      }
+    } catch {}
+  }
+  return null
+}
+
 const supabase = useSupabaseClient()
-const modules = ref<Module[]>([])
-const isLoading = ref(false)
+const initialCached = getCachedData(props.classId)
+const modules = ref<Module[]>(initialCached?.modules || [])
+const backendXp = ref<number | null>(initialCached?.totalXpEarned ?? null)
+const isLoading = ref(!initialCached || initialCached.modules.length === 0)
 const errorMsg = ref('')
 
 const totalLessons = computed(() => modules.value.reduce((s, m) => s + (m.module_lessons?.length ?? 0), 0))
@@ -282,7 +311,6 @@ const calculatedXpEarned = computed(() => {
   return earned
 })
 
-const backendXp = ref<number | null>(null)
 const xpEarned = computed(() => backendXp.value !== null ? backendXp.value : calculatedXpEarned.value)
 
 function formatDuration(minutes: number) {
@@ -292,46 +320,69 @@ function formatDuration(minutes: number) {
   return m ? `${h} jam ${m} menit` : `${h} jam`
 }
 
-async function fetchModules() {
+async function fetchModules(showLoading = true) {
   if (!props.classId) return
-  isLoading.value = true
+  if (showLoading && modules.value.length === 0) {
+    isLoading.value = true
+  }
   errorMsg.value = ''
   try {
     const { data: { session } } = await supabase.auth.getSession()
     const token = session?.access_token
     if (!token) {
-      errorMsg.value = 'Sesi tidak ditemukan. Silakan login ulang.'
+      if (modules.value.length === 0) {
+        errorMsg.value = 'Sesi tidak ditemukan. Silakan login ulang.'
+      }
       return
     }
 
-    // Jalankan modules + progress secara PARALEL (bukan sequential)
-    const [modulesData] = await Promise.all([
-      $fetch<{ modules: Module[] }>(`/api/student/modules?class_id=${props.classId}`, {
-        headers: { Authorization: `Bearer ${token}` }
-      }),
-      fetchClassProgress(token),
-    ])
-    modules.value = modulesData.modules
+    // Single unified API endpoint: returns modules + progress + XP in 1 fast query
+    const data = await $fetch<{
+      modules: Module[]
+      progressPercentage?: number
+      totalXpEarned?: number
+    }>(`/api/student/modules?class_id=${props.classId}`, {
+      headers: { Authorization: `Bearer ${token}` }
+    })
+
+    modules.value = data.modules || []
+    if (data.totalXpEarned !== undefined) {
+      backendXp.value = data.totalXpEarned
+    }
+
+    // Save to memory and session storage
+    const cachePayload: CachedModuleData = {
+      modules: modules.value,
+      progressPercentage: data.progressPercentage,
+      totalXpEarned: data.totalXpEarned,
+      savedAt: Date.now()
+    }
+    memoryModulesCache.set(props.classId, cachePayload)
+    if (import.meta.client) {
+      try {
+        sessionStorage.setItem(`px_mod_cache_${props.classId}`, JSON.stringify(cachePayload))
+      } catch {}
+    }
   } catch (e: any) {
-    errorMsg.value = e?.data?.statusMessage || e?.message || 'Terjadi kesalahan.'
+    if (modules.value.length === 0) {
+      errorMsg.value = e?.data?.statusMessage || e?.message || 'Terjadi kesalahan.'
+    }
   } finally {
     isLoading.value = false
   }
 }
 
-async function fetchClassProgress(token: string) {
-  if (!props.classId) return
-  try {
-    const data = await $fetch<{ progressPercentage: number; totalXpEarned: number }>(`/api/student/class-progress`, {
-      method: 'POST',
-      headers: { Authorization: `Bearer ${token}` },
-      body: { class_id: props.classId }
-    })
-    backendXp.value = data.totalXpEarned ?? 0
-  } catch (e) {
-    console.error('[ClassModules] fetchClassProgress error', e)
+watch(() => props.classId, (newId) => {
+  if (!newId) return
+  const cached = getCachedData(newId)
+  if (cached && cached.modules.length > 0) {
+    modules.value = cached.modules
+    backendXp.value = cached.totalXpEarned ?? null
+    isLoading.value = false
+    // Background revalidation
+    fetchModules(false)
+  } else {
+    fetchModules(true)
   }
-}
-
-watch(() => props.classId, () => fetchModules(), { immediate: true })
+}, { immediate: true })
 </script>

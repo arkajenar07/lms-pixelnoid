@@ -109,15 +109,16 @@
 
         <!-- ── TAB CONTENT ── -->
         <Transition name="tab-slide" mode="out-in">
-          <!-- TUGAS TAB -->
-          <div v-if="activeTab === 'tugas'" key="tab-tugas">
-            <AktivitasTugas @open-feedback="handleOpenFeedback" />
-          </div>
-
-          <!-- FEEDBACK TAB -->
-          <div v-else key="tab-feedback">
-            <AktivitasFeedback :highlight-task-id="feedbackFromTask?.id ?? null" />
-          </div>
+          <KeepAlive>
+            <component
+              :is="activeTab === 'tugas' ? AktivitasTugas : AktivitasFeedback"
+              :key="activeTab"
+              :highlight-task-id="activeTab === 'feedback' ? (feedbackFromTask?.id ?? null) : undefined"
+              @open-feedback="handleOpenFeedback"
+              @stats-updated="onStatsUpdated"
+              @feedback-count-updated="onFeedbackCountUpdated"
+            />
+          </KeepAlive>
         </Transition>
 
       </main>
@@ -158,9 +159,40 @@ const sidebarOpen = ref(false)
 const activeTab = ref<'tugas' | 'feedback'>('tugas')
 const feedbackFromTask = ref<any | null>(null)
 
-// Stats from API
-const assignmentStats = ref({ total: 0, pending: 0, submitted: 0, reviewed: 0 })
-const feedbackCount = ref(0)
+// Stats with instant SWR cache from sessionStorage
+const STATS_CACHE_KEY = 'px_cached_aktivitas_stats'
+const FEEDBACK_CACHE_KEY = 'px_cached_feedback_count'
+
+let initialStats = { total: 0, pending: 0, submitted: 0, reviewed: 0 }
+let initialFeedbackCount = 0
+
+if (import.meta.client) {
+  try {
+    const rawStats = sessionStorage.getItem(STATS_CACHE_KEY)
+    if (rawStats) initialStats = JSON.parse(rawStats)
+    const rawFb = sessionStorage.getItem(FEEDBACK_CACHE_KEY)
+    if (rawFb) initialFeedbackCount = Number(rawFb) || 0
+  } catch {}
+}
+
+const assignmentStats = ref(initialStats)
+const feedbackCount = ref(initialFeedbackCount)
+
+function onStatsUpdated(newMetrics: typeof initialStats) {
+  if (newMetrics) {
+    assignmentStats.value = newMetrics
+    if (import.meta.client) {
+      try { sessionStorage.setItem(STATS_CACHE_KEY, JSON.stringify(newMetrics)) } catch {}
+    }
+  }
+}
+
+function onFeedbackCountUpdated(count: number) {
+  feedbackCount.value = count
+  if (import.meta.client) {
+    try { sessionStorage.setItem(FEEDBACK_CACHE_KEY, String(count)) } catch {}
+  }
+}
 
 async function fetchStats() {
   try {
@@ -175,10 +207,10 @@ async function fetchStats() {
     ])
 
     if (assignRes.status === 'fulfilled' && assignRes.value.metrics) {
-      assignmentStats.value = assignRes.value.metrics
+      onStatsUpdated(assignRes.value.metrics)
     }
     if (mentorRes.status === 'fulfilled' && mentorRes.value.allStudentReviews) {
-      feedbackCount.value = mentorRes.value.allStudentReviews.length
+      onFeedbackCountUpdated(mentorRes.value.allStudentReviews.length)
     }
   } catch (err) {
     console.error('Error fetching tab stats:', err)

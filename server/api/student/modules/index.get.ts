@@ -1,31 +1,6 @@
-import { createClient } from '@supabase/supabase-js'
 
 export default defineEventHandler(async (event) => {
-  const config = useRuntimeConfig()
-  const serviceRoleKey = config.supabaseServiceRoleKey || process.env.SUPABASE_SERVICE_ROLE_KEY || ''
-  const supabaseUrl = config.supabaseUrl || process.env.SUPABASE_URL || process.env.NUXT_PUBLIC_SUPABASE_URL || ''
-
-  if (!serviceRoleKey || !supabaseUrl) {
-    throw createError({ statusCode: 500, statusMessage: 'Konfigurasi server tidak lengkap.' })
-  }
-
-  // Verify auth token
-  const authHeader = getHeader(event, 'authorization')
-  if (!authHeader?.startsWith('Bearer ')) {
-    throw createError({ statusCode: 401, statusMessage: 'Tidak terautentikasi.' })
-  }
-  const token = authHeader.replace('Bearer ', '')
-
-  const anonKey = config.public?.supabaseKey || process.env.SUPABASE_KEY || process.env.NUXT_PUBLIC_SUPABASE_KEY || ''
-  const anonClient = createClient(supabaseUrl, anonKey, {
-    auth: { autoRefreshToken: false, persistSession: false },
-    global: { headers: { Authorization: `Bearer ${token}` } }
-  })
-
-  const { data: { user }, error: authError } = await anonClient.auth.getUser()
-  if (authError || !user) {
-    throw createError({ statusCode: 401, statusMessage: 'Token tidak valid.' })
-  }
+  const user = await requireAuthUser(event)
 
   const query = getQuery(event)
   const classId = query.class_id ? Number(query.class_id) : null
@@ -33,41 +8,53 @@ export default defineEventHandler(async (event) => {
     throw createError({ statusCode: 400, statusMessage: 'Parameter class_id wajib diisi.' })
   }
 
-  // Check student is a member of this class
-  const adminClient = createClient(supabaseUrl, serviceRoleKey, {
-    auth: { autoRefreshToken: false, persistSession: false }
-  })
+  const adminClient = getSupabaseAdmin()
 
-  const { data: membership } = await adminClient
-    .from('class_member')
-    .select('id')
-    .eq('user_id', user.id)
-    .eq('class_id', classId)
-    .maybeSingle()
+  // 1. Fetch membership & modules in PARALLEL to reduce query latency by 50%
+  const [membershipRes, modulesRes] = await Promise.all([
+    adminClient
+      .from('class_member')
+      .select('id, progress_percentage, total_xp_earned')
+      .eq('user_id', user.id)
+      .eq('class_id', classId)
+      .maybeSingle(),
+    adminClient
+      .from('class_modules')
+      .select(`
+        id, title, slug, description, thumbnail_url, xp_reward,
+        estimated_minutes, sort_order, is_locked_default, is_published, class_id,
+        module_lessons ( id, title, slug, type, sort_order, xp_reward )
+      `)
+      .eq('class_id', classId)
+      .eq('is_published', true)
+      .order('sort_order', { ascending: true })
+      .order('sort_order', { referencedTable: 'module_lessons', ascending: true })
+  ])
 
-  if (!membership) {
+  if (!membershipRes.data) {
     throw createError({ statusCode: 403, statusMessage: 'Kamu tidak terdaftar di kelas ini.' })
   }
 
-  // Fetch published modules for this class
-  const { data, error } = await adminClient
-    .from('class_modules')
-    .select(`
-      id, title, slug, description, thumbnail_url, xp_reward,
-      estimated_minutes, sort_order, is_locked_default, is_published, class_id,
-      module_lessons ( id, title, slug, type, sort_order, xp_reward )
-    `)
-    .eq('class_id', classId)
-    .eq('is_published', true)
-    .order('sort_order', { ascending: true })
-    .order('sort_order', { referencedTable: 'module_lessons', ascending: true })
-
-  if (error) {
-    throw createError({ statusCode: 500, statusMessage: `Gagal mengambil modul: ${error.message}` })
+  if (modulesRes.error) {
+    throw createError({ statusCode: 500, statusMessage: `Gagal mengambil modul: ${modulesRes.error.message}` })
   }
 
-  // Fetch progress for all lessons in these modules
-  const allLessonIds = (data ?? []).flatMap((m: any) => (m.module_lessons ?? []).map((l: any) => l.id))
+  const modulesRaw = modulesRes.data ?? []
+
+  // 2. Fetch progress for all lessons in these modules
+  const allLessons: { id: number; xp_reward: number | null; moduleId: number }[] = []
+  const allLessonIds: number[] = []
+
+  for (const m of modulesRaw) {
+    for (const l of (m.module_lessons ?? [])) {
+      allLessonIds.push(l.id)
+      allLessons.push({
+        id: l.id,
+        xp_reward: l.xp_reward,
+        moduleId: m.id
+      })
+    }
+  }
 
   let completedLessonIds = new Set<number>()
   if (allLessonIds.length > 0) {
@@ -81,16 +68,24 @@ export default defineEventHandler(async (event) => {
     completedLessonIds = new Set((progressRows ?? []).map((p: any) => p.lesson_id))
   }
 
-  const modulesWithProgress = (data ?? []).map((mod: any) => {
+  // 3. Compute progress & XP directly on the server (eliminates extra POST class-progress)
+  let calculatedXp = 0
+  const modulesWithProgress = modulesRaw.map((mod: any) => {
     const lessons = mod.module_lessons ?? []
     const totalCount = lessons.length
     const completedCount = lessons.filter((l: any) => completedLessonIds.has(l.id)).length
     const isCompleted = totalCount > 0 && completedCount === totalCount
 
-    const lessonsWithStatus = lessons.map((l: any) => ({
-      ...l,
-      is_completed: completedLessonIds.has(l.id)
-    }))
+    const lessonsWithStatus = lessons.map((l: any) => {
+      const isDone = completedLessonIds.has(l.id)
+      if (isDone) {
+        calculatedXp += Number(l.xp_reward || 0)
+      }
+      return {
+        ...l,
+        is_completed: isDone
+      }
+    })
 
     return {
       ...mod,
@@ -101,5 +96,28 @@ export default defineEventHandler(async (event) => {
     }
   })
 
-  return { modules: modulesWithProgress }
+  const totalLessonsCount = allLessonIds.length
+  const completedLessonsCount = completedLessonIds.size
+  const progressPercentage = totalLessonsCount > 0
+    ? Math.min(100, Math.round((completedLessonsCount / totalLessonsCount) * 100))
+    : 0
+
+  // Asynchronously update class_member in background without blocking response
+  if (membershipRes.data) {
+    adminClient
+      .from('class_member')
+      .update({
+        progress_percentage: progressPercentage,
+        total_xp_earned: calculatedXp
+      })
+      .eq('id', membershipRes.data.id)
+      .then(() => {})
+      .catch(() => {})
+  }
+
+  return {
+    modules: modulesWithProgress,
+    progressPercentage,
+    totalXpEarned: calculatedXp
+  }
 })

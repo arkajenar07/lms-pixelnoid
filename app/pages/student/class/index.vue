@@ -217,9 +217,26 @@ interface EnrolledClass {
   name: string
 }
 
-const enrolledClasses = ref<EnrolledClass[]>([])
-const activeClass = ref<EnrolledClass | null>(null)
-const isLoadingClasses = ref(true)
+const CACHE_CLASSES_KEY = 'px_cached_enrolled_classes'
+const CACHE_ACTIVE_CLASS_ID = 'px_student_active_class_id'
+
+// Instant SWR: restore cached classes immediately so UI renders in 0ms without waterfall
+let initialClasses: EnrolledClass[] = []
+let initialActiveClass: EnrolledClass | null = null
+if (import.meta.client) {
+  try {
+    const raw = sessionStorage.getItem(CACHE_CLASSES_KEY) || localStorage.getItem(CACHE_CLASSES_KEY)
+    if (raw) {
+      initialClasses = JSON.parse(raw)
+      const savedClassId = localStorage.getItem(CACHE_ACTIVE_CLASS_ID)
+      initialActiveClass = (savedClassId ? initialClasses.find(c => String(c.class_id) === savedClassId) : null) || initialClasses[0] || null
+    }
+  } catch {}
+}
+
+const enrolledClasses = ref<EnrolledClass[]>(initialClasses)
+const activeClass = ref<EnrolledClass | null>(initialActiveClass)
+const isLoadingClasses = ref(initialClasses.length === 0)
 
 const supabase = useSupabaseClient()
 
@@ -231,12 +248,10 @@ const tabs = [
 ] as const
 
 // ── Resilient Auth Token ─────────────────────────────────────────
-// Hindari delay 250ms hardcoded — langsung refresh jika session kosong
 async function getAuthToken(): Promise<string | null> {
   try {
     const { data: { session } } = await supabase.auth.getSession()
     if (session?.access_token) return session.access_token
-    // Session belum siap, coba refresh langsung tanpa blocking delay
     const { data: refreshData } = await supabase.auth.refreshSession()
     return refreshData?.session?.access_token || null
   } catch {
@@ -246,7 +261,9 @@ async function getAuthToken(): Promise<string | null> {
 
 // ── Fetch enrolled classes ───────────────────────────────────────
 async function fetchEnrolledClasses() {
-  isLoadingClasses.value = true
+  if (enrolledClasses.value.length === 0) {
+    isLoadingClasses.value = true
+  }
   try {
     const token = await getAuthToken()
     if (!token) return
@@ -254,14 +271,20 @@ async function fetchEnrolledClasses() {
     const data = await $fetch<{ classes: EnrolledClass[] }>('/api/student/classes', {
       headers: { Authorization: `Bearer ${token}` }
     })
-    enrolledClasses.value = data.classes || []
+    const fetched = data.classes || []
+    enrolledClasses.value = fetched
 
-    if (enrolledClasses.value.length > 0) {
-      // Cek jika sebelumnya ada kelas yang tersimpan di localStorage
-      const savedClassId = import.meta.client ? localStorage.getItem('px_student_active_class_id') : null
-      const matched = savedClassId ? enrolledClasses.value.find(c => String(c.class_id) === savedClassId) : null
-      // Langsung munculkan kelas paling awal (atau kelas yang terakhir dipilih)
-      activeClass.value = matched || enrolledClasses.value[0]
+    if (import.meta.client) {
+      try {
+        sessionStorage.setItem(CACHE_CLASSES_KEY, JSON.stringify(fetched))
+        localStorage.setItem(CACHE_CLASSES_KEY, JSON.stringify(fetched))
+      } catch {}
+    }
+
+    if (fetched.length > 0) {
+      const savedClassId = import.meta.client ? localStorage.getItem(CACHE_ACTIVE_CLASS_ID) : null
+      const matched = savedClassId ? fetched.find(c => String(c.class_id) === savedClassId) : null
+      activeClass.value = matched || fetched[0]
     } else {
       activeClass.value = null
     }
@@ -275,7 +298,8 @@ async function fetchEnrolledClasses() {
 function selectClass(cls: EnrolledClass) {
   activeClass.value = cls
   if (import.meta.client) {
-    localStorage.setItem('px_student_active_class_id', String(cls.class_id))
+    localStorage.setItem(CACHE_ACTIVE_CLASS_ID, String(cls.class_id))
+    sessionStorage.setItem(CACHE_ACTIVE_CLASS_ID, String(cls.class_id))
   }
   switcherOpen.value = false
   // Reset to modules tab on switch
