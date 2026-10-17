@@ -94,7 +94,8 @@ import {
   Square3Stack3DIcon,
   BellIcon,
   CheckBadgeIcon,
-  ArrowRightOnRectangleIcon
+  ArrowRightOnRectangleIcon,
+  UserCircleIcon,
 } from '@heroicons/vue/24/outline'
 
 const props = defineProps<{
@@ -149,6 +150,7 @@ const navItems = [
   { to: '/student/class', label: 'Kelas', icon: BookOpenIcon, badge: null },
   { to: '/student/aktivitas', label: 'Aktivitas', icon: ClipboardDocumentCheckIcon, badge: '3' },
   { to: '/student/absensi', label: 'Absensi', icon: CheckBadgeIcon, badge: null },
+  { to: '/student/profil', label: 'Profil', icon: UserCircleIcon, badge: null },
 ]
 </script>
 
