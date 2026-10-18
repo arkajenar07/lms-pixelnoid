@@ -1,312 +1,282 @@
 <template>
-  <main class="py-6 px-8 max-[900px]:px-5 flex flex-col gap-6 mx-auto w-full max-w-[1400px]">
+  <main class="py-6 px-4 sm:px-6 lg:px-8 flex flex-col gap-6 mx-auto w-full max-w-[1400px]">
 
-    <!-- ── MAIN TWO-COLUMN LAYOUT ── -->
-    <div class="grid grid-cols-1 xl:grid-cols-[1fr_320px] gap-6 items-start">
+    <!-- ── TOP: WEEKLY CALENDAR STRIP CARD ── -->
+    <div class="bg-white rounded-2xl border border-[#E4E4E7] p-4 sm:p-6 shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col gap-4">
 
-      <!-- ── LEFT: TABLE CARD (SEMUA JADWAL) ── -->
-      <div class="bg-white rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.03)] overflow-hidden flex flex-col">
-
-        <!-- Header -->
-        <div class="flex items-center justify-between px-6 py-4 border-b border-[#F4F4F5] bg-white">
-          <div class="flex items-center gap-2.5">
-            <div class="w-8 h-8 rounded-lg bg-[#F0EFF9] flex items-center justify-center text-[#443E8D] flex-shrink-0">
-              <CalendarDaysIcon class="w-4 h-4" />
-            </div>
-            <div>
-              <h2 class="text-[0.92rem] font-bold text-[#18181B] m-0 leading-tight">
-                {{ selectedDate ? `Jadwal: ${formatDateOnly(selectedDate)}` : 'Semua Jadwal' }}
-              </h2>
-              <p class="text-[0.7rem] text-[#71717A] m-0 mt-0.5">
-                {{ filteredSchedules.length }} sesi ditemukan
-                <span v-if="userEmail" class="text-[#443E8D] font-medium">· untuk {{ userEmail }}</span>
-              </p>
-            </div>
+      <!-- Week Header: Navigation Controls & CTA -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+        <!-- Week Range Title -->
+        <div class="flex items-center gap-3">
+          <div class="w-10 h-10 rounded-xl bg-[#F0EFF9] flex items-center justify-center text-[#443E8D] shrink-0">
+            <CalendarDaysIcon class="w-5 h-5" />
           </div>
+          <div>
+            <h2 class="text-base sm:text-[1.05rem] font-bold text-[#18181B] m-0 leading-tight">
+              {{ weekRangeLabel }}
+            </h2>
+            <p class="text-xs text-[#71717A] m-0 mt-0.5">
+              Pilih tanggal dalam minggu ini untuk memfilter jadwal bimbingan
+            </p>
+          </div>
+        </div>
 
-          <!-- Reset Filter Button if date selected -->
+        <!-- Controls: Prev, Current, Next, New Schedule -->
+        <div class="flex items-center gap-2 self-start sm:self-auto flex-wrap">
+          <!-- Reset Selected Date (if filtered) -->
           <button
             v-if="selectedDate"
             @click="selectedDate = null"
-            class="text-[0.72rem] font-semibold text-[#443E8D] hover:bg-[#F0EFF9] px-3 py-1.5 rounded-lg transition-colors flex items-center gap-1.5"
+            class="h-9 px-3 rounded-xl border border-[#443E8D]/30 bg-[#F0EFF9] text-xs font-semibold text-[#443E8D] hover:bg-[#E5E3F5] transition-colors flex items-center gap-1.5 cursor-pointer"
           >
             <ArrowPathIcon class="w-3.5 h-3.5" />
-            <span>Lihat Semua Jadwal</span>
+            <span>Semua Jadwal</span>
           </button>
-        </div>
 
-        <!-- Table Container -->
-        <div class="overflow-x-auto">
-          <table class="w-full text-left border-collapse min-w-[680px]">
-            <!-- Table Header -->
-            <thead>
-              <tr class="border-b border-[#F4F4F5] bg-[#FAFAFC]">
-                <th class="py-3 px-6 text-[0.68rem] font-bold text-[#A1A1AA] uppercase tracking-wider w-[36%]">
-                  Judul
-                </th>
-                <th class="py-3 px-6 text-[0.68rem] font-bold text-[#A1A1AA] uppercase tracking-wider w-[24%]">
-                  Waktu
-                </th>
-                <th class="py-3 px-6 text-[0.68rem] font-bold text-[#A1A1AA] uppercase tracking-wider w-[24%]">
-                  Mentor / Student
-                </th>
-                <th class="py-3 px-6 text-[0.68rem] font-bold text-[#A1A1AA] uppercase tracking-wider w-[16%] text-center">
-                  Google Sync
-                </th>
-              </tr>
-            </thead>
-
-            <!-- Table Body -->
-            <tbody class="divide-y divide-[#F4F4F5]">
-              <!-- Loading State -->
-              <tr v-if="isLoading">
-                <td colspan="4" class="py-16 text-center">
-                  <div class="inline-flex items-center gap-3">
-                    <div class="w-5 h-5 border-2 border-[#443E8D] border-t-transparent rounded-full animate-spin"></div>
-                    <span class="text-[0.8rem] text-[#71717A] font-medium">Memuat jadwal mengajar...</span>
-                  </div>
-                </td>
-              </tr>
-
-              <!-- Empty State -->
-              <tr v-else-if="filteredSchedules.length === 0">
-                <td colspan="4" class="py-16 text-center px-6">
-                  <div class="flex flex-col items-center gap-2 max-w-sm mx-auto">
-                    <div class="w-12 h-12 rounded-2xl bg-[#F0EFF9] flex items-center justify-center text-xl text-[#443E8D]">
-                      📅
-                    </div>
-                    <p class="text-[0.88rem] font-bold text-[#18181B] m-0">Tidak ada jadwal pada tanggal ini</p>
-                    <p class="text-[0.75rem] text-[#71717A] m-0">
-                      {{ selectedDate
-                          ? 'Coba pilih tanggal lain pada kalender atau klik tombol di bawah untuk melihat seluruh jadwal.'
-                          : 'Belum ada jadwal sesi yang ditujukan untuk email akun kamu.' }}
-                    </p>
-                    <button
-                      v-if="selectedDate"
-                      @click="selectedDate = null"
-                      class="mt-2 text-[0.75rem] font-semibold px-3.5 py-1.5 rounded-lg bg-[#443E8D] text-white hover:bg-[#3A3478] transition-colors"
-                    >
-                      Tampilkan Semua Jadwal
-                    </button>
-                  </div>
-                </td>
-              </tr>
-
-              <!-- Data Rows -->
-              <tr
-                v-for="item in filteredSchedules"
-                :key="item.id"
-                class="hover:bg-[#FAFAFC]/80 transition-colors group"
-              >
-                <!-- 1. Judul Column -->
-                <td class="py-4 px-6 align-top">
-                  <div class="flex items-start gap-3">
-                    <!-- Color Dot -->
-                    <span
-                      class="w-2.5 h-2.5 rounded-full mt-1.5 flex-shrink-0 shadow-xs"
-                      :style="{ backgroundColor: getDotColor(item.color) }"
-                    ></span>
-
-                    <div class="min-w-0 flex-1">
-                      <h4 class="text-[0.88rem] font-bold text-[#18181B] m-0 leading-snug group-hover:text-[#443E8D] transition-colors">
-                        {{ item.title }}
-                      </h4>
-
-                      <!-- Description -->
-                      <p
-                        v-if="item.description"
-                        class="text-[0.75rem] text-[#71717A] m-0 mt-0.5 leading-relaxed line-clamp-1"
-                        :title="item.description"
-                      >
-                        {{ item.description }}
-                      </p>
-
-                      <!-- Meet Link Button if available -->
-                      <div v-if="item.meet_link" class="flex items-center gap-2 mt-2">
-                        <a
-                          :href="item.meet_link"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          class="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg bg-[#443E8D] text-white text-[0.7rem] font-semibold hover:bg-[#3A3478] transition-colors"
-                        >
-                          <VideoCameraIcon class="w-3.5 h-3.5" />
-                          <span>Join Meet</span>
-                        </a>
-                        <button
-                          @click="copyLink(item.meet_link, item.id)"
-                          class="text-[0.68rem] text-[#71717A] hover:text-[#18181B] px-2 py-0.5 rounded border border-[#E4E4E7] bg-white transition-colors"
-                        >
-                          {{ copiedId === item.id ? 'Tersalin!' : 'Copy' }}
-                        </button>
-                      </div>
-
-                      <!-- Notification badge -->
-                      <div v-if="formatNotification(item.notifications)" class="mt-1.5 inline-flex items-center text-[0.65rem] text-[#6B7280] bg-[#F4F4F5] px-2 py-0.5 rounded-md font-medium">
-                        {{ formatNotification(item.notifications) }}
-                      </div>
-                    </div>
-                  </div>
-                </td>
-
-                <!-- 2. Waktu Column -->
-                <td class="py-4 px-6 align-top">
-                  <!-- Recurring: tampilkan label perulangan (setiap hari / setiap jumat / dll) -->
-                  <template v-if="isRecurring(item.recurrence)">
-                    <div class="flex items-center gap-1.5 text-[0.82rem] font-semibold text-[#443E8D] leading-tight">
-                      <ArrowPathIcon class="w-3.5 h-3.5 flex-shrink-0 text-[#443E8D]" />
-                      <span>{{ formatRecurrenceLabel(item) }}</span>
-                    </div>
-                    <div class="text-[0.75rem] text-[#71717A] mt-0.5">
-                      {{ formatTimeRange(item.start_at, item.end_at) }}
-                    </div>
-                  </template>
-                  <!-- Non-recurring: tampilkan tanggal asli -->
-                  <template v-else>
-                    <div class="text-[0.82rem] font-semibold text-[#18181B] leading-tight">
-                      {{ formatScheduleDate(item.start_at) }}
-                    </div>
-                    <div class="text-[0.75rem] text-[#71717A] mt-0.5">
-                      {{ formatTimeRange(item.start_at, item.end_at) }}
-                    </div>
-                  </template>
-                </td>
-
-                <!-- 3. Mentor / Student Column -->
-                <td class="py-4 px-6 align-top">
-                  <!-- Mentor Email -->
-                  <div class="text-[0.8rem] font-medium text-[#18181B] truncate max-w-[220px]" :title="item.mentor_email">
-                    {{ item.mentor_email || '-' }}
-                  </div>
-
-                  <!-- Student Emails -->
-                  <div
-                    class="text-[0.72rem] text-[#71717A] truncate max-w-[220px] mt-0.5"
-                    :title="(item.student_emails || []).join(', ')"
-                  >
-                    {{ (item.student_emails && item.student_emails.length > 0) ? item.student_emails.join(', ') : '-' }}
-                  </div>
-                </td>
-
-                <!-- 4. Google Sync Column -->
-                <td class="py-4 px-6 align-top text-center">
-                  <span
-                    v-if="item.google_sync_status === 'synced'"
-                    class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[0.72rem] font-semibold bg-[#ECFDF5] text-[#059669] border border-[#A7F3D0]/60 shadow-2xs"
-                  >
-                    <CheckCircleIcon class="w-3.5 h-3.5 text-[#059669]" />
-                    <span>Synced</span>
-                  </span>
-                  <span
-                    v-else
-                    class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[0.7rem] font-medium bg-gray-100 text-gray-600"
-                  >
-                    {{ item.google_sync_status || 'Pending' }}
-                  </span>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-
-      </div>
-
-      <!-- ── RIGHT: MINI CALENDAR CARD ── -->
-      <div class="bg-white rounded-2xl border border-[#E4E4E7] p-5 shadow-[0_1px_3px_rgba(0,0,0,0.03)] flex flex-col gap-4 sticky top-24">
-
-        <!-- Calendar Month Header -->
-        <div class="flex items-center justify-between">
-          <h3 class="text-[0.92rem] font-bold text-[#18181B] m-0">
-            {{ currentMonthName }} {{ currentYear }}
-          </h3>
-          <div class="flex items-center gap-1">
-            <button
-              @click="prevMonth"
-              class="w-7 h-7 rounded-lg flex items-center justify-center text-[#71717A] hover:bg-[#F4F4F5] hover:text-[#18181B] transition-colors"
-              aria-label="Bulan Sebelumnya"
-            >
-              <ChevronLeftIcon class="w-4 h-4" />
-            </button>
-            <button
-              @click="nextMonth"
-              class="w-7 h-7 rounded-lg flex items-center justify-center text-[#71717A] hover:bg-[#F4F4F5] hover:text-[#18181B] transition-colors"
-              aria-label="Bulan Selanjutnya"
-            >
-              <ChevronRightIcon class="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-
-        <!-- Weekday Headers -->
-        <div class="grid grid-cols-7 text-center">
-          <span
-            v-for="d in ['Min', 'Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab']"
-            :key="d"
-            class="text-[0.7rem] font-semibold text-[#A1A1AA] py-1"
-          >
-            {{ d }}
-          </span>
-        </div>
-
-        <!-- Calendar Day Grid -->
-        <div class="grid grid-cols-7 gap-1 text-center">
-          <!-- Leading empty blanks -->
-          <div
-            v-for="b in firstDayOfMonth"
-            :key="'blank-' + b"
-            class="h-8"
-          />
-
-          <!-- Day Cells -->
-          <div
-            v-for="day in daysInMonth"
-            :key="'day-' + day"
-            class="flex flex-col items-center justify-center h-8 relative cursor-pointer group"
-            @click="toggleSelectDate(day)"
-          >
-            <div
-              class="w-7 h-7 rounded-full flex items-center justify-center text-[0.78rem] font-semibold transition-all relative"
-              :class="[
-                isDateSelected(day)
-                  ? 'bg-[#443E8D] text-white shadow-xs font-bold'
-                  : isToday(day)
-                    ? 'bg-[#F0EFF9] text-[#443E8D] font-bold ring-1 ring-[#443E8D]/30'
-                    : 'text-[#3F3F46] hover:bg-[#F4F4F5]'
-              ]"
-            >
-              <span>{{ day }}</span>
-
-              <!-- Blue/Theme Dot for Dates with Schedules -->
-              <span
-                v-if="hasSchedule(day)"
-                class="absolute -bottom-1 w-1.5 h-1.5 rounded-full transition-colors"
-                :class="isDateSelected(day) ? 'bg-[#A5B4FC]' : 'bg-[#443E8D]'"
-              ></span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Bottom CTA -->
-        <div class="pt-2 border-t border-[#F4F4F5] mt-1">
+          <!-- Prev Week -->
           <button
-            v-if="selectedDate"
-            @click="selectedDate = null"
-            class="w-full py-2.5 rounded-xl border border-[#E4E4E7] text-[0.75rem] font-semibold text-[#52525B] hover:bg-[#F4F4F5] hover:text-[#18181B] transition-colors flex items-center justify-center gap-1.5"
+            @click="prevWeek"
+            class="h-9 px-2.5 sm:px-3 rounded-xl border border-[#E4E4E7] text-[#52525B] hover:text-[#18181B] hover:bg-[#F4F4F5] transition-all flex items-center gap-1 text-xs font-semibold cursor-pointer"
+            title="Minggu Sebelumnya"
           >
-            <ArrowPathIcon class="w-3.5 h-3.5" />
-            <span>Tampilkan Semua Jadwal</span>
+            <ChevronLeftIcon class="w-4 h-4" />
+            <span class="hidden sm:inline">Sebelumnya</span>
           </button>
 
+          <!-- Current Week -->
+          <button
+            @click="goToCurrentWeek"
+            class="h-9 px-3 rounded-xl border border-[#E4E4E7] text-[#52525B] hover:text-[#18181B] hover:bg-[#F4F4F5] transition-all text-xs font-semibold cursor-pointer"
+          >
+            Minggu Ini
+          </button>
+
+          <!-- Next Week -->
+          <button
+            @click="nextWeek"
+            class="h-9 px-2.5 sm:px-3 rounded-xl border border-[#E4E4E7] text-[#52525B] hover:text-[#18181B] hover:bg-[#F4F4F5] transition-all flex items-center gap-1 text-xs font-semibold cursor-pointer"
+            title="Minggu Selanjutnya"
+          >
+            <span class="hidden sm:inline">Selanjutnya</span>
+            <ChevronRightIcon class="w-4 h-4" />
+          </button>
+
+          <!-- + Buat Jadwal Baru -->
           <NuxtLink
-            v-else
             to="/student/casual-session-booking"
-            class="w-full py-2.5 rounded-xl border border-[#E4E4E7] bg-white text-[0.75rem] font-semibold text-[#18181B] hover:bg-[#F4F4F5] hover:border-[#D4D4D8] transition-colors flex items-center justify-center gap-1.5 no-underline shadow-2xs"
+            class="h-9 px-3.5 rounded-xl bg-[#443E8D] hover:bg-[#373273] text-white text-xs font-semibold transition-all flex items-center gap-1.5 no-underline shadow-xs hover:-translate-y-0.5 cursor-pointer ml-auto sm:ml-0"
           >
-            <span>+ Buat Jadwal Baru</span>
+            <PlusIcon class="w-4 h-4" />
+            <span>Buat Jadwal Baru</span>
           </NuxtLink>
         </div>
-
       </div>
 
+      <!-- 7 Days Grid (Senin s/d Minggu) -->
+      <div class="grid grid-cols-7 gap-1.5 sm:gap-2 text-center pt-2">
+        <button
+          v-for="d in weekDays"
+          :key="d.date.toISOString()"
+          type="button"
+          @click="toggleSelectWeekDate(d.date)"
+          class="flex flex-col items-center justify-center py-2.5 px-1 rounded-2xl transition-all cursor-pointer relative group border"
+          :class="[
+            d.isSelected
+              ? 'bg-[#443E8D] text-white border-[#443E8D] shadow-sm shadow-[#443E8D]/25 font-bold scale-[1.02]'
+              : d.isToday
+                ? 'bg-[#F0EFF9] text-[#443E8D] border-[#D8D6F0] font-bold'
+                : 'bg-[#FAFAFC] text-[#3F3F46] border-[#E4E4E7] hover:bg-white hover:border-[#D4D4D8]'
+          ]"
+        >
+          <!-- Day Name (Sen, Sel, Rab, Kam, Jum, Sab, Min) -->
+          <span
+            class="text-[0.68rem] font-semibold uppercase tracking-wider mb-1"
+            :class="d.isSelected ? 'text-white/80' : d.isToday ? 'text-[#443E8D]' : 'text-[#71717A]'"
+          >
+            {{ d.dayName }}
+          </span>
+
+          <!-- Day Number (14, 15, 16, ...) -->
+          <span
+            class="text-base sm:text-lg font-bold leading-none"
+            :class="d.isSelected ? 'text-white' : d.isToday ? 'text-[#443E8D]' : 'text-[#18181B]'"
+          >
+            {{ d.dayNumber }}
+          </span>
+
+          <!-- Dot indicator for schedules -->
+          <div class="h-2 flex items-center justify-center mt-1">
+            <span
+              v-if="d.hasSchedule"
+              class="w-1.5 h-1.5 rounded-full transition-transform group-hover:scale-125"
+              :class="d.isSelected ? 'bg-white' : 'bg-[#443E8D]'"
+            ></span>
+          </div>
+        </button>
+      </div>
+    </div>
+
+    <!-- ── BOTTOM: SCHEDULE CARDS SECTION (MOBILE-FRIENDLY) ── -->
+    <div class="flex flex-col gap-4">
+
+      <!-- Section Header -->
+      <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-2 px-1">
+        <div>
+          <h3 class="text-[0.95rem] sm:text-base font-bold text-[#18181B] m-0">
+            {{ selectedDate ? `Jadwal: ${formatDateOnly(selectedDate)}` : 'Semua Jadwal' }}
+          </h3>
+          <p class="text-xs text-[#71717A] m-0 mt-0.5">
+            {{ filteredSchedules.length }} sesi ditemukan
+            <span v-if="userEmail" class="text-[#443E8D] font-medium">· untuk {{ userEmail }}</span>
+          </p>
+        </div>
+
+        <button
+          v-if="selectedDate"
+          @click="selectedDate = null"
+          class="text-xs font-semibold text-[#443E8D] hover:underline self-start sm:self-auto cursor-pointer flex items-center gap-1"
+        >
+          <ArrowPathIcon class="w-3.5 h-3.5" />
+          <span>Lihat Semua Jadwal</span>
+        </button>
+      </div>
+
+      <!-- Loading State -->
+      <div v-if="isLoading" class="bg-white rounded-2xl border border-[#E4E4E7] p-12 flex flex-col items-center justify-center gap-3">
+        <div class="w-6 h-6 border-2 border-[#443E8D] border-t-transparent rounded-full animate-spin"></div>
+        <p class="text-xs text-[#71717A] font-medium">Memuat jadwal mengajar...</p>
+      </div>
+
+      <!-- Empty State -->
+      <div v-else-if="filteredSchedules.length === 0" class="bg-white rounded-2xl border border-[#E4E4E7] p-10 sm:p-14 text-center">
+        <div class="w-14 h-14 rounded-2xl bg-[#F0EFF9] flex items-center justify-center text-2xl text-[#443E8D] mx-auto mb-3">
+          📅
+        </div>
+        <p class="text-sm font-bold text-[#18181B] m-0">Tidak ada jadwal pada tanggal ini</p>
+        <p class="text-xs text-[#71717A] mt-1 max-w-sm mx-auto leading-relaxed">
+          {{ selectedDate
+              ? 'Coba pilih tanggal lain pada kalender mingguan atau klik tombol di bawah untuk melihat seluruh jadwal.'
+              : 'Belum ada jadwal sesi yang ditujukan untuk email akun kamu.' }}
+        </p>
+        <button
+          v-if="selectedDate"
+          @click="selectedDate = null"
+          class="mt-4 text-xs font-semibold px-4 py-2 rounded-xl bg-[#443E8D] text-white hover:bg-[#373273] transition-colors cursor-pointer"
+        >
+          Tampilkan Semua Jadwal
+        </button>
+      </div>
+
+      <!-- Schedule Cards List -->
+      <div v-else class="grid grid-cols-1 gap-3.5">
+        <div
+          v-for="item in filteredSchedules"
+          :key="item.id"
+          class="bg-white rounded-2xl border border-[#E4E4E7] p-4 sm:p-5 shadow-[0_1px_3px_rgba(0,0,0,0.02)] hover:border-[#D4D4D8] hover:shadow-md transition-all flex flex-col gap-4 group"
+        >
+          <!-- Top Row: Time Badge, Recurring Info & Google Sync Status -->
+          <div class="flex items-center justify-between gap-2 flex-wrap">
+            <div class="flex items-center gap-2 flex-wrap">
+              <!-- Color Indicator Dot -->
+              <span
+                class="w-2.5 h-2.5 rounded-full shrink-0 shadow-xs"
+                :style="{ backgroundColor: getDotColor(item.color) }"
+              ></span>
+
+              <!-- Waktu / Recurring Badge -->
+              <span class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-xs font-semibold bg-[#F0EFF9] text-[#443E8D]">
+                <ArrowPathIcon v-if="isRecurring(item.recurrence)" class="w-3.5 h-3.5 shrink-0" />
+                <CalendarDaysIcon v-else class="w-3.5 h-3.5 shrink-0" />
+                <span>{{ isRecurring(item.recurrence) ? formatRecurrenceLabel(item) : formatScheduleDate(item.start_at) }}</span>
+              </span>
+
+              <!-- Clock Time Range -->
+              <span class="text-xs text-[#71717A] font-medium flex items-center gap-1">
+                <ClockIcon class="w-3.5 h-3.5 text-[#A1A1AA] shrink-0" />
+                <span>{{ formatTimeRange(item.start_at, item.end_at) }}</span>
+              </span>
+            </div>
+
+            <!-- Google Sync Badge -->
+            <div class="shrink-0">
+              <span
+                v-if="item.google_sync_status === 'synced'"
+                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[0.7rem] font-semibold bg-[#ECFDF5] text-[#059669] border border-[#A7F3D0]/60 shadow-2xs"
+              >
+                <CheckCircleIcon class="w-3.5 h-3.5 text-[#059669]" />
+                <span>Synced</span>
+              </span>
+              <span
+                v-else
+                class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[0.7rem] font-medium bg-gray-100 text-gray-600"
+              >
+                {{ item.google_sync_status || 'Pending' }}
+              </span>
+            </div>
+          </div>
+
+          <!-- Middle Row: Title & Description -->
+          <div>
+            <h4 class="text-sm sm:text-base font-bold text-[#18181B] leading-snug group-hover:text-[#443E8D] transition-colors m-0">
+              {{ item.title }}
+            </h4>
+            <p v-if="item.description" class="text-xs text-[#71717A] mt-1.5 leading-relaxed m-0">
+              {{ item.description }}
+            </p>
+          </div>
+
+          <!-- Subtle Divider -->
+          <div class="h-px bg-[#F4F4F5] -mx-4 sm:-mx-5"></div>
+
+          <!-- Bottom Row: Mentor/Student Details & Action Buttons -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-0.5">
+            <!-- Email Details -->
+            <div class="flex flex-col gap-1 text-xs min-w-0">
+              <div v-if="item.mentor_email" class="flex items-center gap-2 text-[#3F3F46] min-w-0">
+                <span class="text-[0.68rem] font-bold uppercase tracking-wider text-[#A1A1AA] w-14 shrink-0">Mentor:</span>
+                <span class="font-medium text-[#18181B] truncate" :title="item.mentor_email">{{ item.mentor_email }}</span>
+              </div>
+              <div v-if="item.student_emails && item.student_emails.length > 0" class="flex items-center gap-2 text-[#3F3F46] min-w-0">
+                <span class="text-[0.68rem] font-bold uppercase tracking-wider text-[#A1A1AA] w-14 shrink-0">Student:</span>
+                <span class="text-[#71717A] truncate" :title="item.student_emails.join(', ')">
+                  {{ item.student_emails.join(', ') }}
+                </span>
+              </div>
+            </div>
+
+            <!-- Action Buttons: Notification Badge, Meet Link & Copy -->
+            <div class="flex items-center gap-2 flex-wrap sm:shrink-0 pt-1 sm:pt-0">
+              <!-- Notification Pill -->
+              <span
+                v-if="formatNotification(item.notifications)"
+                class="inline-flex items-center text-[0.68rem] text-[#6B7280] bg-[#F4F4F5] px-2.5 py-1.5 rounded-xl font-medium"
+              >
+                {{ formatNotification(item.notifications) }}
+              </span>
+
+              <!-- Join Meet & Copy Buttons -->
+              <div v-if="item.meet_link" class="flex items-center gap-2">
+                <a
+                  :href="item.meet_link"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#443E8D] text-white text-xs font-semibold hover:bg-[#373273] transition-all shadow-xs hover:-translate-y-0.5 no-underline"
+                >
+                  <VideoCameraIcon class="w-4 h-4" />
+                  <span>Join Meet</span>
+                </a>
+                <button
+                  type="button"
+                  @click="copyLink(item.meet_link, item.id)"
+                  class="px-3 py-2 rounded-xl border border-[#E4E4E7] bg-white text-xs font-semibold text-[#52525B] hover:text-[#18181B] hover:bg-[#F4F4F5] transition-colors cursor-pointer"
+                >
+                  {{ copiedId === item.id ? 'Tersalin!' : 'Copy' }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
 
   </main>
@@ -320,7 +290,9 @@ import {
   ChevronRightIcon,
   CheckCircleIcon,
   ArrowPathIcon,
-  VideoCameraIcon
+  VideoCameraIcon,
+  ClockIcon,
+  PlusIcon
 } from '@heroicons/vue/24/outline'
 
 interface ScheduleItem {
@@ -348,11 +320,19 @@ const schedules = ref<ScheduleItem[]>([])
 const userEmail = ref<string | null>(null)
 const copiedId = ref<string | null>(null)
 
-// ── Calendar Navigation State ─────────────────────────────────────────
-// Default ke bulan saat ini (bukan hardcode 2026)
-const today = new Date()
-const currentYear = ref(today.getFullYear())
-const currentMonth = ref(today.getMonth()) // 0-indexed
+// ── Weekly Calendar Navigation State ───────────────────────────────────
+// Mengambil awal minggu (Senin sebagai hari pertama)
+function getStartOfWeek(d: Date): Date {
+  const date = new Date(d.getFullYear(), d.getMonth(), d.getDate())
+  const day = date.getDay() // 0 = Sun, 1 = Mon, ..., 6 = Sat
+  // Menjadikan Senin sebagai hari pertama (0 = Mon, 6 = Sun)
+  const diff = (day === 0 ? -6 : 1) - day
+  date.setDate(date.getDate() + diff)
+  date.setHours(0, 0, 0, 0)
+  return date
+}
+
+const currentWeekStart = ref<Date>(getStartOfWeek(new Date()))
 const selectedDate = ref<Date | null>(null)
 
 const monthNames = [
@@ -360,75 +340,80 @@ const monthNames = [
   'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
 ]
 
-const currentMonthName = computed(() => monthNames[currentMonth.value])
+// Label rentang minggu (misal: "14 – 20 September 2026")
+const weekRangeLabel = computed(() => {
+  const start = currentWeekStart.value
+  const end = new Date(start)
+  end.setDate(end.getDate() + 6)
 
-// Number of days in current view month
-const daysInMonth = computed(() => {
-  return new Date(currentYear.value, currentMonth.value + 1, 0).getDate()
+  const startMonth = monthNames[start.getMonth()]
+  const endMonth = monthNames[end.getMonth()]
+
+  if (start.getFullYear() !== end.getFullYear()) {
+    return `${start.getDate()} ${startMonth} ${start.getFullYear()} – ${end.getDate()} ${endMonth} ${end.getFullYear()}`
+  }
+  if (start.getMonth() !== end.getMonth()) {
+    return `${start.getDate()} ${startMonth} – ${end.getDate()} ${endMonth} ${start.getFullYear()}`
+  }
+  return `${start.getDate()} – ${end.getDate()} ${startMonth} ${start.getFullYear()}`
 })
 
-// Day index for the 1st of current month (0 = Sunday, 1 = Monday, ...)
-const firstDayOfMonth = computed(() => {
-  return new Date(currentYear.value, currentMonth.value, 1).getDay()
+// Daftar 7 hari dalam minggu aktif
+const weekDays = computed(() => {
+  const days: {
+    date: Date
+    dayName: string
+    dayNumber: number
+    isToday: boolean
+    isSelected: boolean
+    hasSchedule: boolean
+  }[] = []
+
+  const dayNames = ['Sen', 'Sel', 'Rab', 'Kam', 'Jum', 'Sab', 'Min']
+  const todayStr = new Date().toDateString()
+  const selectedStr = selectedDate.value ? selectedDate.value.toDateString() : null
+
+  for (let i = 0; i < 7; i++) {
+    const d = new Date(currentWeekStart.value)
+    d.setDate(d.getDate() + i)
+    days.push({
+      date: d,
+      dayName: dayNames[i],
+      dayNumber: d.getDate(),
+      isToday: d.toDateString() === todayStr,
+      isSelected: selectedStr === d.toDateString(),
+      hasSchedule: schedules.value.some(s => matchScheduleWithDate(s, d))
+    })
+  }
+  return days
 })
 
-function prevMonth() {
-  if (currentMonth.value === 0) {
-    currentMonth.value = 11
-    currentYear.value--
-  } else {
-    currentMonth.value--
-  }
+function prevWeek() {
+  const d = new Date(currentWeekStart.value)
+  d.setDate(d.getDate() - 7)
+  currentWeekStart.value = d
 }
 
-function nextMonth() {
-  if (currentMonth.value === 11) {
-    currentMonth.value = 0
-    currentYear.value++
-  } else {
-    currentMonth.value++
-  }
+function nextWeek() {
+  const d = new Date(currentWeekStart.value)
+  d.setDate(d.getDate() + 7)
+  currentWeekStart.value = d
 }
 
-function toggleSelectDate(dayNum: number) {
-  const clicked = new Date(currentYear.value, currentMonth.value, dayNum)
-  if (
-    selectedDate.value &&
-    selectedDate.value.getFullYear() === clicked.getFullYear() &&
-    selectedDate.value.getMonth() === clicked.getMonth() &&
-    selectedDate.value.getDate() === clicked.getDate()
-  ) {
-    // Deselect if already selected
+function goToCurrentWeek() {
+  currentWeekStart.value = getStartOfWeek(new Date())
+}
+
+function toggleSelectWeekDate(targetDate: Date) {
+  if (selectedDate.value && selectedDate.value.toDateString() === targetDate.toDateString()) {
+    // Klik lagi untuk reset ke semua jadwal
     selectedDate.value = null
   } else {
-    selectedDate.value = clicked
+    selectedDate.value = targetDate
   }
 }
 
-function isDateSelected(dayNum: number): boolean {
-  if (!selectedDate.value) return false
-  return (
-    selectedDate.value.getFullYear() === currentYear.value &&
-    selectedDate.value.getMonth() === currentMonth.value &&
-    selectedDate.value.getDate() === dayNum
-  )
-}
-
-function isToday(dayNum: number): boolean {
-  const today = new Date()
-  return (
-    today.getFullYear() === currentYear.value &&
-    today.getMonth() === currentMonth.value &&
-    today.getDate() === dayNum
-  )
-}
-
-// Check if a specific date in current calendar view has a schedule
-function hasSchedule(dayNum: number): boolean {
-  const date = new Date(currentYear.value, currentMonth.value, dayNum)
-  return schedules.value.some(s => matchScheduleWithDate(s, date))
-}
-
+// ── Match Schedule with Date ──────────────────────────────────────────
 function isRecurring(recurrence?: string | null): boolean {
   if (!recurrence) return false
   const rec = recurrence.toLowerCase().trim()
@@ -439,7 +424,7 @@ function matchScheduleWithDate(s: ScheduleItem, targetDate: Date): boolean {
   if (!s.start_at) return false
   const sDate = new Date(s.start_at)
 
-  // Normalize both to start of day (midnight) in local time
+  // Normalize to start of day (midnight) in local time
   const targetDay = new Date(targetDate.getFullYear(), targetDate.getMonth(), targetDate.getDate()).getTime()
   const sDay = new Date(sDate.getFullYear(), sDate.getMonth(), sDate.getDate()).getTime()
 
@@ -559,7 +544,6 @@ function formatRecurrenceLabel(item: ScheduleItem): string {
   if (!item.recurrence) return '-'
   const rec = item.recurrence.toLowerCase().trim()
 
-  // Every day
   if (
     rec === 'daily' ||
     rec === 'every day' ||
@@ -571,7 +555,6 @@ function formatRecurrenceLabel(item: ScheduleItem): string {
     return 'Setiap hari'
   }
 
-  // Every weekday (Mon–Fri)
   if (
     rec === 'weekday' ||
     rec === 'weekdays' ||
@@ -584,7 +567,6 @@ function formatRecurrenceLabel(item: ScheduleItem): string {
     return 'Setiap hari kerja (Sen–Jum)'
   }
 
-  // Every week
   if (
     rec === 'weekly' ||
     rec === 'every week' ||
@@ -594,7 +576,6 @@ function formatRecurrenceLabel(item: ScheduleItem): string {
     return `Setiap ${getDayName(item.start_at)}`
   }
 
-  // Every month
   if (
     rec === 'monthly' ||
     rec === 'every month' ||
@@ -608,7 +589,6 @@ function formatRecurrenceLabel(item: ScheduleItem): string {
     return 'Setiap bulan'
   }
 
-  // Every year
   if (
     rec === 'yearly' ||
     rec === 'every year' ||
@@ -699,11 +679,10 @@ async function fetchSchedules() {
     schedules.value = res.schedules || []
     userEmail.value = res.userEmail || null
 
-    // If schedules exist, sync calendar view to the month of the first schedule
+    // Jika ada jadwal, arahkan kalender mingguan ke minggu terdekat yang memiliki jadwal
     if (schedules.value.length > 0 && schedules.value[0].start_at) {
       const firstDate = new Date(schedules.value[0].start_at)
-      currentYear.value = firstDate.getFullYear()
-      currentMonth.value = firstDate.getMonth()
+      currentWeekStart.value = getStartOfWeek(firstDate)
     }
   } catch (err) {
     console.error('Gagal mengambil jadwal pengajaran:', err)

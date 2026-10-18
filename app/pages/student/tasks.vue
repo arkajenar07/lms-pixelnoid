@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex min-h-screen bg-[#F7F7F9] antialiased relative overflow-x-hidden"
+    class="flex min-h-screen bg-[#F7F7F9] antialiased relative overflow-x-clip"
     style="font-family: 'Instrument Sans', Raleway, sans-serif"
   >
     <!-- Sidebar -->
@@ -10,37 +10,45 @@
     <div class="flex-1 lg:ml-[260px] flex flex-col relative z-[1]">
 
       <!-- ── TOPBAR ── -->
-      <header class="sticky top-0 z-[100] flex items-center gap-4 px-10 py-5 max-[900px]:px-6 max-[900px]:py-4 bg-white/[0.92] backdrop-blur-[14px] [-webkit-backdrop-filter:blur(14px)] border-b border-[#EBEBEE]">
-        <button
-          class="hidden max-[900px]:flex w-9 h-9 border border-[#E4E4E7] bg-white cursor-pointer rounded-[10px] items-center justify-center text-[#71717A] hover:bg-[#F4F4F5] hover:text-[#18181B] transition-colors"
-          @click="sidebarOpen = !sidebarOpen"
-          aria-label="Toggle sidebar"
-        >
-          <Bars3Icon class="w-5 h-5" />
-        </button>
+      <header class="sticky top-0 z-[100] flex w-full flex-col min-[901px]:flex-row min-[901px]:items-center min-[901px]:justify-between gap-3 min-[901px]:gap-4 px-4 py-3.5 sm:px-6 sm:py-4 lg:px-8 lg:py-5 bg-white/[0.92] backdrop-blur-[14px] [-webkit-backdrop-filter:blur(14px)] border-b border-[#EBEBEE]">
+        <div class="flex flex-col min-[901px]:flex-row min-[901px]:items-center min-[901px]:justify-between gap-3 min-[901px]:gap-4 w-full max-w-[1440px] mx-auto min-w-0">
+          <!-- Baris 1 & 2: Menu + Judul, lalu Deskripsi selebar layar -->
+          <div class="flex flex-col gap-1 min-w-0 flex-1">
+            <!-- Baris 1: Tombol menu di kiri, judul di sebelahnya -->
+            <div class="flex items-center gap-3 min-w-0">
+              <button
+                class="inline-flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-[#E4E4E7] text-[#52525B] transition-transform duration-200 hover:-translate-y-0.5 hover:border-[#CFCFE0] hover:text-[#443E8D] min-[901px]:hidden cursor-pointer"
+                @click="sidebarOpen = !sidebarOpen"
+                aria-label="Toggle sidebar"
+              >
+                <Bars3Icon class="w-5 h-5" />
+              </button>
+              <h1 class="text-[1.05rem] sm:text-[1.15rem] font-semibold leading-snug tracking-[-0.02em] text-[#18181B] truncate">
+                Kelola Workload & Brief
+              </h1>
+            </div>
 
-        <div class="flex-1 min-w-0">
-          <h1 class="text-[1.15rem] font-bold text-[#18181B] m-0 tracking-[-0.02em]">
-            Kelola Workload & Brief
-          </h1>
-          <p class="text-[0.8rem] text-[#A1A1AA] mt-1 mb-0 font-medium tracking-[0.01em] hidden sm:block">
-            Lihat dan atur semua tugas yang perlu diselesaikan.
-          </p>
-        </div>
-
-        <div class="flex items-center gap-3">
-          <div class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-[10px] bg-[#FAFAFC] border border-[#E4E4E7] text-[#18181B]">
-            <div class="w-2 h-2 rounded-full bg-[#3F3F46]"></div>
-            <span class="text-[0.75rem] font-bold">{{ doneCount }}/{{ totalTasks }} Brief Selesai</span>
+            <!-- Baris 2: Deskripsi selebar layar -->
+            <p class="text-[0.75rem] sm:text-[0.82rem] leading-relaxed text-[#71717A] w-full m-0">
+              Lihat dan atur semua tugas yang perlu diselesaikan.
+            </p>
           </div>
 
-          <button
-            class="px-4 py-2 rounded-[10px] bg-[#18181B] text-white text-[0.8rem] font-semibold hover:bg-[#3F3F46] transition-colors flex items-center gap-2 shadow-[0_2px_10px_rgba(0,0,0,0.08)]"
-            @click="showAddModal = true"
-          >
-            <PlusIcon class="w-4 h-4" />
-            <span class="hidden sm:inline">Tambah Brief</span>
-          </button>
+          <!-- Baris 3: Tombol aksi selebar layar di mobile -->
+          <div class="flex items-center gap-2.5 w-full min-[901px]:w-auto shrink-0">
+            <div class="hidden min-[901px]:flex items-center gap-2 px-3 py-1.5 rounded-[10px] bg-[#FAFAFC] border border-[#E4E4E7] text-[#18181B]">
+              <div class="w-2 h-2 rounded-full bg-[#3F3F46]"></div>
+              <span class="text-[0.75rem] font-bold">{{ doneCount }}/{{ totalTasks }} Brief Selesai</span>
+            </div>
+
+            <button
+              class="w-full min-[901px]:w-auto justify-center px-4 py-2.5 rounded-xl bg-[#18181B] text-white text-[0.82rem] font-semibold hover:bg-[#3F3F46] transition-colors flex items-center gap-2 shadow-[0_2px_10px_rgba(0,0,0,0.08)] cursor-pointer"
+              @click="showAddModal = true"
+            >
+              <PlusIcon class="w-4 h-4" />
+              <span>Tambah Brief</span>
+            </button>
+          </div>
         </div>
       </header>
 

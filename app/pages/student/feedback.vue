@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex min-h-screen bg-[#F5F5F8] antialiased relative overflow-x-hidden"
+    class="flex min-h-screen bg-[#F5F5F8] antialiased relative overflow-x-clip"
     style="font-family: 'Instrument Sans', Raleway, sans-serif"
   >
     <!-- Sidebar -->
@@ -10,30 +10,30 @@
     <div class="flex-1 lg:ml-[260px] flex flex-col relative z-[1]">
 
       <!-- ── TOPBAR ── -->
-      <header class="sticky top-0 z-[100] flex items-center gap-4 px-10 py-4 max-[900px]:px-6 bg-white border-b border-[#EEEDF5]">
-        <button
-          class="hidden max-[900px]:flex w-9 h-9 border border-[#E8E7F2] bg-white cursor-pointer rounded-xl items-center justify-center text-[#443E8D] hover:bg-[#F0EFF9] transition-colors"
-          @click="sidebarOpen = !sidebarOpen"
-          aria-label="Toggle sidebar"
-        >
-          <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
-        </button>
-
-        <div class="flex-1 min-w-0">
-          <div class="flex items-center gap-2 mb-0.5">
-            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded-md bg-[#F0EFF9] text-[0.6rem] font-bold tracking-wider uppercase text-[#443E8D]">
-              <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"></path></svg>
-              Feedback
-            </span>
+      <header class="sticky top-0 z-[100] flex w-full flex-col min-[901px]:flex-row min-[901px]:items-center min-[901px]:justify-between gap-3 min-[901px]:gap-4 px-4 py-3.5 sm:px-6 sm:py-4 lg:px-8 lg:py-5 bg-white/[0.92] backdrop-blur-[14px] [-webkit-backdrop-filter:blur(14px)] border-b border-[#EEEDF5]">
+        <div class="flex flex-col min-[901px]:flex-row min-[901px]:items-center min-[901px]:justify-between gap-3 min-[901px]:gap-4 w-full max-w-[1440px] mx-auto min-w-0">
+          <div class="flex flex-col gap-1 min-w-0 flex-1">
+            <div class="flex items-center gap-3 min-w-0">
+              <button
+                class="inline-flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-[#E8E7F2] text-[#443E8D] transition-transform duration-200 hover:-translate-y-0.5 hover:bg-[#F0EFF9] min-[901px]:hidden cursor-pointer"
+                @click="sidebarOpen = !sidebarOpen"
+                aria-label="Toggle sidebar"
+              >
+                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+              </button>
+              <h1 class="text-[1.05rem] sm:text-[1.15rem] font-semibold leading-snug tracking-[-0.02em] text-[#18181B] truncate">
+                Catatan Revisi &amp; Feedback
+              </h1>
+            </div>
+            <p class="text-[0.75rem] sm:text-[0.82rem] leading-relaxed text-[#71717A] w-full m-0">
+              Ulasan dan catatan perbaikan tugas dari mentor pembimbing.
+            </p>
           </div>
-          <h1 class="text-[1.1rem] font-bold text-[#1A1830] m-0 tracking-tight">
-            Catatan Revisi
-          </h1>
-        </div>
 
-        <div class="flex-shrink-0 flex items-center gap-2 bg-[#F0EFF9] px-3.5 py-2 rounded-xl">
-          <span class="text-[0.6rem] font-bold uppercase tracking-wider text-[#7B77B8]">Total</span>
-          <span class="text-[1.1rem] font-black leading-none text-[#443E8D]">{{ totalFeedback }}</span>
+          <div class="flex items-center justify-between min-[901px]:justify-end gap-2 bg-[#F0EFF9] px-3.5 py-1.5 rounded-xl shrink-0">
+            <span class="text-[0.65rem] font-bold uppercase tracking-wider text-[#7B77B8]">Total Feedback</span>
+            <span class="text-[1.15rem] font-black leading-none text-[#443E8D]">{{ totalFeedback }}</span>
+          </div>
         </div>
       </header>
 

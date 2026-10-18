@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex min-h-screen bg-[#F7F7F9] text-[#111827] antialiased overflow-x-hidden"
+    class="flex min-h-screen bg-[#F7F7F9] text-[#111827] antialiased overflow-x-clip"
     style="font-family: 'Instrument Sans', Raleway, sans-serif"
   >
     <Sidebar :open="sidebarOpen" @update:open="sidebarOpen = $event" />
@@ -9,28 +9,32 @@
     <div class="relative z-[1] flex-1 w-full min-w-0 lg:ml-[210px]">
       
       <!-- Header -->
-      <header class="sticky top-0 z-[100] flex w-full items-center justify-between border-b border-[#E4E4E7] bg-white/[0.92] px-5 py-4 backdrop-blur-md lg:px-8 lg:py-5">
-        <div class="mx-auto flex w-full max-w-7xl items-center gap-3 sm:gap-4">
-          <!-- Tombol Hamburger (Hanya tampil di bawah ukuran lg) -->
-          <button
-            class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#E4E4E7] text-[#52525B] transition-transform duration-200 hover:-translate-y-0.5 hover:border-[#CFCFE0] hover:text-[#443E8D] lg:hidden"
-            @click="sidebarOpen = !sidebarOpen"
-            aria-label="Toggle sidebar"
-          >
-            <Bars3Icon class="h-5 w-5" />
-          </button>
+      <!-- Header -->
+      <header class="sticky top-0 z-[100] flex w-full flex-col lg:flex-row lg:items-center lg:justify-between gap-3 lg:gap-4 px-4 py-3.5 sm:px-6 sm:py-4 lg:px-8 lg:py-5 bg-white/[0.92] backdrop-blur-[14px] [-webkit-backdrop-filter:blur(14px)] border-b border-[#E4E4E7]">
+        <div class="mx-auto flex w-full max-w-7xl flex-col gap-1 min-w-0">
+          <!-- Baris 1: Tombol menu di kiri, judul di sebelahnya -->
+          <div class="flex items-center gap-3 min-w-0">
+            <!-- Tombol Hamburger (Hanya tampil di bawah ukuran lg) -->
+            <button
+              class="inline-flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-[#E4E4E7] text-[#52525B] transition-transform duration-200 hover:-translate-y-0.5 hover:border-[#CFCFE0] hover:text-[#443E8D] lg:hidden cursor-pointer"
+              @click="sidebarOpen = !sidebarOpen"
+              aria-label="Toggle sidebar"
+            >
+              <Bars3Icon class="w-5 h-5" />
+            </button>
 
-          <!-- Judul Header -->
-          <div class="min-w-0 flex-1">
-            <h1 class="truncate text-base font-semibold leading-snug tracking-tight text-[#171717] sm:text-lg lg:text-xl">
+            <!-- Judul Header -->
+            <h1 class="truncate text-[1.05rem] sm:text-[1.15rem] font-semibold leading-snug tracking-tight text-[#171717] lg:text-xl">
               Halo, <span class="text-[#443E8D]">{{ studentName }}</span>
               <span class="hidden sm:inline">. Siap lanjut belajar hari ini?</span>
               <span class="sm:hidden">! 👋</span>
             </h1>
-            <p class="mt-1 text-xs leading-relaxed text-[#71717A] sm:text-sm">
-              {{ todayStr }}
-            </p>
           </div>
+
+          <!-- Baris 2: Subtitle / Tanggal selebar layar -->
+          <p class="text-[0.75rem] sm:text-[0.82rem] leading-relaxed text-[#71717A] w-full m-0">
+            {{ todayStr }}
+          </p>
         </div>
       </header>
 

@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex min-h-screen bg-[#F7F7F9] antialiased relative overflow-x-hidden"
+    class="flex min-h-screen bg-[#F7F7F9] antialiased relative overflow-x-clip"
     style="font-family: 'Instrument Sans', Raleway, sans-serif"
   >
     <!-- Sidebar -->
@@ -10,30 +10,30 @@
     <div class="flex-1 lg:ml-[260px] flex flex-col relative z-[1]">
 
       <!-- ── TOPBAR ── -->
-      <header class="sticky top-0 z-[100] flex items-center gap-4 px-10 py-5 max-[900px]:px-6 max-[900px]:py-4 bg-white/[0.92] backdrop-blur-[14px] [-webkit-backdrop-filter:blur(14px)] border-b border-[#EBEBEE]">
-        <button
-          class="hidden max-[900px]:flex w-9 h-9 border border-[#E4E4E7] bg-white cursor-pointer rounded-[10px] items-center justify-center text-[#71717A] hover:bg-[#F4F4F5] hover:text-[#18181B] transition-colors"
-          @click="sidebarOpen = !sidebarOpen"
-          aria-label="Toggle sidebar"
-        >
-          <Bars3Icon class="w-5 h-5" />
-        </button>
-
-        <div class="flex-1 min-w-0">
-          <div class="flex items-center gap-2 mb-[0.15rem]">
-            <span class="inline-flex items-center gap-[0.35rem] px-[0.45rem] py-[0.15rem] rounded-[5px] bg-[#F4F4F5] text-[0.6rem] font-bold tracking-[0.02em] uppercase text-[#52525B]">
-              <ChartBarIcon class="w-3 h-3" />
-              Skill Report
-            </span>
+      <header class="sticky top-0 z-[100] flex w-full flex-col min-[901px]:flex-row min-[901px]:items-center min-[901px]:justify-between gap-3 min-[901px]:gap-4 px-4 py-3.5 sm:px-6 sm:py-4 lg:px-8 lg:py-5 bg-white/[0.92] backdrop-blur-[14px] [-webkit-backdrop-filter:blur(14px)] border-b border-[#EBEBEE]">
+        <div class="flex flex-col min-[901px]:flex-row min-[901px]:items-center min-[901px]:justify-between gap-3 min-[901px]:gap-4 w-full max-w-[1440px] mx-auto min-w-0">
+          <div class="flex flex-col gap-1 min-w-0 flex-1">
+            <div class="flex items-center gap-3 min-w-0">
+              <button
+                class="inline-flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-[#E4E4E7] text-[#52525B] transition-transform duration-200 hover:-translate-y-0.5 hover:border-[#CFCFE0] hover:text-[#443E8D] min-[901px]:hidden cursor-pointer"
+                @click="sidebarOpen = !sidebarOpen"
+                aria-label="Toggle sidebar"
+              >
+                <Bars3Icon class="w-5 h-5" />
+              </button>
+              <h1 class="text-[1.05rem] sm:text-[1.15rem] font-semibold leading-snug tracking-[-0.02em] text-[#18181B] truncate">
+                Perkembangan & Pertumbuhan Skill
+              </h1>
+            </div>
+            <p class="text-[0.75rem] sm:text-[0.82rem] leading-relaxed text-[#71717A] w-full m-0">
+              Laporan evaluasi komprehensif kemampuan teknis dan soft skill.
+            </p>
           </div>
-          <h1 class="text-[1.15rem] font-bold text-[#18181B] m-0 tracking-[-0.02em]">
-            Perkembangan & Pertumbuhan Skill
-          </h1>
-        </div>
 
-        <div class="flex-shrink-0 flex flex-col items-end gap-[0.15rem]">
-          <span class="text-[0.65rem] font-bold uppercase tracking-[0.02em] text-[#A1A1AA]">Skor Kamu</span>
-          <span class="text-[1.25rem] font-black leading-none tracking-[-0.02em]" :class="overallScore < targetScore ? 'text-[#E11D48]' : 'text-[#18181B]'">{{ overallScore }}%</span>
+          <div class="flex items-center justify-between min-[901px]:justify-end gap-2 bg-[#FAFAFC] border border-[#E4E4E7] px-3.5 py-1.5 rounded-xl shrink-0">
+            <span class="text-[0.68rem] font-bold uppercase tracking-[0.02em] text-[#71717A]">Skor Kamu</span>
+            <span class="text-[1.15rem] font-black leading-none tracking-[-0.02em]" :class="overallScore < targetScore ? 'text-[#E11D48]' : 'text-[#18181B]'">{{ overallScore }}%</span>
+          </div>
         </div>
       </header>
 

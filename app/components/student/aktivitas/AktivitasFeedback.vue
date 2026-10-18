@@ -1,12 +1,12 @@
 <template>
-  <div class="flex flex-col gap-8">
+  <div class="flex flex-col gap-6 sm:gap-8 w-full min-w-0 max-w-full">
 
     <!-- ── 1. STATS ROW ── -->
-    <section class="grid grid-cols-2 lg:grid-cols-4 gap-4">
-      <div class="bg-white p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between">
-        <div class="flex items-center justify-between">
-          <span class="text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A]">Total Catatan</span>
-          <div class="w-8 h-8 rounded-xl bg-[#F0EFF9] border border-[#D8D6F0] flex items-center justify-center text-[#443E8D]">
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full min-w-0">
+      <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between min-w-0">
+        <div class="flex items-center justify-between gap-2 min-w-0">
+          <span class="text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A] truncate">Total Catatan</span>
+          <div class="w-8 h-8 rounded-xl bg-[#F0EFF9] border border-[#D8D6F0] flex items-center justify-center text-[#443E8D] shrink-0">
             <ChatBubbleBottomCenterTextIcon class="w-4 h-4" />
           </div>
         </div>
@@ -18,10 +18,10 @@
         </div>
       </div>
 
-      <div class="bg-white p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between">
-        <div class="flex items-center justify-between">
-          <span class="text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A]">Rata-rata Skor</span>
-          <div class="w-8 h-8 rounded-xl bg-[#ECFDF5] border border-[#A7F3D0] flex items-center justify-center text-[#059669]">
+      <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between min-w-0">
+        <div class="flex items-center justify-between gap-2 min-w-0">
+          <span class="text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A] truncate">Rata-rata Skor</span>
+          <div class="w-8 h-8 rounded-xl bg-[#ECFDF5] border border-[#A7F3D0] flex items-center justify-center text-[#059669] shrink-0">
             <TrophyIcon class="w-4 h-4" />
           </div>
         </div>
@@ -34,10 +34,10 @@
         </div>
       </div>
 
-      <div class="bg-white p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between">
-        <div class="flex items-center justify-between">
-          <span class="text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A]">Tugas Selesai</span>
-          <div class="w-8 h-8 rounded-xl bg-[#EFF6FF] border border-[#BFDBFE] flex items-center justify-center text-[#2563EB]">
+      <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between min-w-0">
+        <div class="flex items-center justify-between gap-2 min-w-0">
+          <span class="text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A] truncate">Tugas Selesai</span>
+          <div class="w-8 h-8 rounded-xl bg-[#EFF6FF] border border-[#BFDBFE] flex items-center justify-center text-[#2563EB] shrink-0">
             <CheckBadgeIcon class="w-4 h-4" />
           </div>
         </div>
@@ -49,10 +49,10 @@
         </div>
       </div>
 
-      <div class="bg-white p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between">
-        <div class="flex items-center justify-between">
-          <span class="text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A]">Mentor Pembimbing</span>
-          <div class="w-8 h-8 rounded-xl bg-[#FDF2F8] border border-[#FBCFE8] flex items-center justify-center text-[#DB2777]">
+      <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between min-w-0">
+        <div class="flex items-center justify-between gap-2 min-w-0">
+          <span class="text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A] truncate">Mentor Pembimbing</span>
+          <div class="w-8 h-8 rounded-xl bg-[#FDF2F8] border border-[#FBCFE8] flex items-center justify-center text-[#DB2777] shrink-0">
             <UserGroupIcon class="w-4 h-4" />
           </div>
         </div>
@@ -74,11 +74,11 @@
         </div>
       </div>
 
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full min-w-0">
         <div
           v-for="mentor in mentors"
           :key="mentor.id"
-          class="bg-white rounded-2xl border border-[#E4E4E7] p-5 shadow-sm flex flex-col justify-between gap-4 transition-all hover:border-[#D4D4D8] hover:shadow-md"
+          class="bg-white rounded-2xl border border-[#E4E4E7] p-4 sm:p-5 shadow-sm flex flex-col justify-between gap-4 transition-all hover:border-[#D4D4D8] hover:shadow-md min-w-0 w-full"
         >
           <div class="flex items-start gap-4">
             <!-- Mentor Avatar -->
@@ -131,7 +131,7 @@
     </section>
 
     <!-- ── 3. RIWAYAT PENILAIAN & EVALUASI TUGAS ── -->
-    <section class="space-y-4">
+    <section class="space-y-4 w-full min-w-0">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
         <div>
           <h2 class="text-[1.05rem] font-bold text-[#18181B] tracking-tight m-0">Riwayat Catatan &amp; Feedback</h2>
@@ -139,8 +139,8 @@
         </div>
 
         <!-- Filter / Search Controls -->
-        <div class="flex items-center gap-2.5 w-full sm:w-auto">
-          <div class="relative flex-1 sm:w-64">
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto min-w-0">
+          <div class="relative flex-1 sm:w-64 min-w-0">
             <MagnifyingGlassIcon class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A1A1AA]" />
             <input
               v-model="searchQuery"
@@ -179,11 +179,11 @@
       </div>
 
       <!-- Review Cards List -->
-      <div v-else class="space-y-4">
+      <div v-else class="space-y-4 w-full min-w-0">
         <div
           v-for="review in filteredReviews"
           :key="review.id"
-          class="bg-white rounded-2xl border p-6 shadow-sm transition-all duration-200 hover:shadow-md flex flex-col gap-4"
+          class="bg-white rounded-2xl border p-4 sm:p-6 shadow-sm transition-all duration-200 hover:shadow-md flex flex-col gap-4 w-full min-w-0"
           :class="isHighlighted(review) ? 'border-[#443E8D] ring-2 ring-[#443E8D]/15 bg-[#FCFBFF]' : 'border-[#E4E4E7] hover:border-[#D4D4D8]'"
         >
           <!-- Top Row: Assignment Title, Grade & Type -->

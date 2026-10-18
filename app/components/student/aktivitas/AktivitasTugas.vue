@@ -1,13 +1,13 @@
 <template>
-  <div class="flex flex-col gap-6">
+  <div class="flex flex-col gap-6 w-full min-w-0 max-w-full">
 
     <!-- ── 1. RINGKASAN METRIK (HEADER STAT CARDS) ── -->
-    <section class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full min-w-0">
       <!-- Card: Pending -->
-      <div class="bg-white p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between transition-all hover:border-[#D4D4D8]">
-        <div class="flex items-center justify-between">
-          <span class="text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A]">Perlu Dikerjakan</span>
-          <div class="w-8 h-8 rounded-xl bg-[#FFFBEB] border border-[#FDE68A] flex items-center justify-center text-[#D97706]">
+      <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between transition-all hover:border-[#D4D4D8] min-w-0">
+        <div class="flex items-center justify-between gap-2 min-w-0">
+          <span class="text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A] truncate">Perlu Dikerjakan</span>
+          <div class="w-8 h-8 rounded-xl bg-[#FFFBEB] border border-[#FDE68A] flex items-center justify-center text-[#D97706] shrink-0">
             <ClockIcon class="w-4 h-4" />
           </div>
         </div>
@@ -20,10 +20,10 @@
       </div>
 
       <!-- Card: Submitted -->
-      <div class="bg-white p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between transition-all hover:border-[#D4D4D8]">
-        <div class="flex items-center justify-between">
-          <span class="text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A]">Menunggu Review</span>
-          <div class="w-8 h-8 rounded-xl bg-[#EFF6FF] border border-[#BFDBFE] flex items-center justify-center text-[#2563EB]">
+      <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between transition-all hover:border-[#D4D4D8] min-w-0">
+        <div class="flex items-center justify-between gap-2 min-w-0">
+          <span class="text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A] truncate">Menunggu Review</span>
+          <div class="w-8 h-8 rounded-xl bg-[#EFF6FF] border border-[#BFDBFE] flex items-center justify-center text-[#2563EB] shrink-0">
             <ArrowUpTrayIcon class="w-4 h-4" />
           </div>
         </div>
@@ -36,10 +36,10 @@
       </div>
 
       <!-- Card: Reviewed -->
-      <div class="bg-white p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between transition-all hover:border-[#D4D4D8]">
-        <div class="flex items-center justify-between">
-          <span class="text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A]">Telah Dinilai</span>
-          <div class="w-8 h-8 rounded-xl bg-[#ECFDF5] border border-[#A7F3D0] flex items-center justify-center text-[#059669]">
+      <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between transition-all hover:border-[#D4D4D8] min-w-0">
+        <div class="flex items-center justify-between gap-2 min-w-0">
+          <span class="text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A] truncate">Telah Dinilai</span>
+          <div class="w-8 h-8 rounded-xl bg-[#ECFDF5] border border-[#A7F3D0] flex items-center justify-center text-[#059669] shrink-0">
             <CheckCircleIcon class="w-4 h-4" />
           </div>
         </div>
@@ -52,10 +52,10 @@
       </div>
 
       <!-- Card: Average Grade -->
-      <div class="bg-white p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between transition-all hover:border-[#D4D4D8]">
-        <div class="flex items-center justify-between">
-          <span class="text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A]">Rata-rata Nilai</span>
-          <div class="w-8 h-8 rounded-xl bg-[#F5F3FF] border border-[#DDD6FE] flex items-center justify-center text-[#7C3AED]">
+      <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between transition-all hover:border-[#D4D4D8] min-w-0">
+        <div class="flex items-center justify-between gap-2 min-w-0">
+          <span class="text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A] truncate">Rata-rata Nilai</span>
+          <div class="w-8 h-8 rounded-xl bg-[#F5F3FF] border border-[#DDD6FE] flex items-center justify-center text-[#7C3AED] shrink-0">
             <TrophyIcon class="w-4 h-4" />
           </div>
         </div>
@@ -70,61 +70,58 @@
     </section>
 
     <!-- ── 2. FILTER & SEARCH CONTROLS ── -->
-    <section class="bg-white rounded-2xl border border-[#E4E4E7] p-5 shadow-sm space-y-4">
+    <section class="bg-white rounded-2xl border border-[#E4E4E7] p-4 sm:p-5 shadow-sm space-y-4 w-full min-w-0 max-w-full overflow-hidden">
       <!-- Status Tabs -->
-      <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none">
+      <div class="flex items-center gap-2 overflow-x-auto pb-1 scrollbar-none w-full max-w-full">
         <button
           v-for="tab in statusFilterTabs"
           :key="tab.id"
-          class="whitespace-nowrap px-3.5 py-2 rounded-xl text-[0.75rem] font-semibold transition-all border flex items-center gap-1.5"
+          class="shrink-0 whitespace-nowrap px-3.5 py-2 rounded-xl text-[0.75rem] font-semibold transition-all border flex items-center gap-1.5"
           :class="activeStatusFilter === tab.id
             ? 'bg-[#18181B] border-[#18181B] text-white shadow-sm'
             : 'bg-white border-[#E4E4E7] text-[#71717A] hover:bg-[#FAFAFC] hover:text-[#18181B]'"
           @click="activeStatusFilter = tab.id"
         >
           <span>{{ tab.label }}</span>
-          <span
-            class="text-[0.62rem] px-1.5 py-0.5 rounded-full font-bold"
-            :class="activeStatusFilter === tab.id ? 'bg-[#3F3F46] text-white' : 'bg-[#F4F4F5] text-[#71717A]'"
-          >
-            {{ tab.count }}
-          </span>
         </button>
       </div>
 
       <!-- Search & Select Filters -->
-      <div class="flex flex-col sm:flex-row gap-3">
+      <div class="flex flex-col gap-2 w-full min-w-0">
         <!-- Search Input -->
-        <div class="relative flex-1">
+        <div class="relative w-full min-w-0">
           <MagnifyingGlassIcon class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A1A1AA]" />
           <input
             v-model="searchQuery"
             type="text"
-            placeholder="Cari judul tugas, materi, atau instruksi..."
+            placeholder="Cari judul tugas..."
             class="w-full pl-10 pr-4 py-2.5 bg-[#FAFAFC] border border-[#E4E4E7] rounded-xl text-[0.8rem] text-[#18181B] placeholder-[#A1A1AA] focus:bg-white focus:ring-2 focus:ring-[#18181B]/10 focus:border-[#18181B] outline-none transition-all"
           />
         </div>
 
-        <!-- Filter Tipe Tugas -->
-        <select
-          v-model="activeTypeFilter"
-          class="px-3.5 py-2.5 bg-[#FAFAFC] border border-[#E4E4E7] rounded-xl text-[0.8rem] font-medium text-[#18181B] focus:bg-white focus:ring-2 focus:ring-[#18181B]/10 focus:border-[#18181B] outline-none cursor-pointer transition-all"
-        >
-          <option value="all">Semua Tipe (Quizizz, Praktek, Studi Kasus)</option>
-          <option value="quizizz">🟣 Quizizz</option>
-          <option value="practice">🔵 Praktek</option>
-          <option value="case_study">🟠 Studi Kasus</option>
-        </select>
+        <!-- Filter Row: type + sort -->
+        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2 w-full min-w-0">
+          <!-- Filter Tipe Tugas -->
+          <select
+            v-model="activeTypeFilter"
+            class="w-full sm:flex-1 min-w-0 px-3 py-2.5 bg-[#FAFAFC] border border-[#E4E4E7] rounded-xl text-[0.8rem] font-medium text-[#18181B] focus:bg-white focus:ring-2 focus:ring-[#18181B]/10 focus:border-[#18181B] outline-none cursor-pointer transition-all"
+          >
+            <option value="all">Semua Tipe</option>
+            <option value="quizizz">🟣 Quizizz</option>
+            <option value="practice">🔵 Praktek</option>
+            <option value="case_study">🟠 Studi Kasus</option>
+          </select>
 
-        <!-- Sorting -->
-        <select
-          v-model="sortBy"
-          class="px-3.5 py-2.5 bg-[#FAFAFC] border border-[#E4E4E7] rounded-xl text-[0.8rem] font-medium text-[#18181B] focus:bg-white focus:ring-2 focus:ring-[#18181B]/10 focus:border-[#18181B] outline-none cursor-pointer transition-all"
-        >
-          <option value="deadline">Urutkan: Batas Waktu Terdekat</option>
-          <option value="newest">Urutkan: Tugas Terbaru</option>
-          <option value="status">Urutkan: Status Tugas</option>
-        </select>
+          <!-- Sorting -->
+          <select
+            v-model="sortBy"
+            class="w-full sm:flex-1 min-w-0 px-3 py-2.5 bg-[#FAFAFC] border border-[#E4E4E7] rounded-xl text-[0.8rem] font-medium text-[#18181B] focus:bg-white focus:ring-2 focus:ring-[#18181B]/10 focus:border-[#18181B] outline-none cursor-pointer transition-all"
+          >
+            <option value="deadline">Deadline Terdekat</option>
+            <option value="newest">Terbaru</option>
+            <option value="status">Status</option>
+          </select>
+        </div>
       </div>
     </section>
 
@@ -157,11 +154,11 @@
       </div>
 
       <!-- Assignment Items -->
-      <div v-else class="space-y-4">
+      <div v-else class="space-y-4 w-full min-w-0">
         <div
           v-for="item in filteredAssignments"
           :key="item.id"
-          class="bg-white rounded-2xl border border-[#E4E4E7] p-6 shadow-sm transition-all duration-200 hover:shadow-md hover:border-[#D4D4D8] flex flex-col gap-4 relative overflow-hidden"
+          class="bg-white rounded-2xl border border-[#E4E4E7] p-4 sm:p-6 shadow-sm transition-all duration-200 hover:shadow-md hover:border-[#D4D4D8] flex flex-col gap-4 relative overflow-hidden w-full min-w-0"
         >
           <!-- Top Row: Badges & Deadline -->
           <div class="flex flex-wrap items-center justify-between gap-3">

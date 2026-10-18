@@ -1,35 +1,42 @@
 <template>
-  <div class="min-h-screen bg-[#F7F7F9] font-['Instrument_Sans','Raleway',sans-serif] relative overflow-x-hidden">
+  <div class="min-h-screen bg-[#F7F7F9] font-['Instrument_Sans','Raleway',sans-serif] relative overflow-x-clip">
 
     <StudentSidebar :open="sidebarOpen" @update:open="sidebarOpen = $event" />
 
     <div class="min-[901px]:ml-[210px] flex-1 min-w-0 relative z-10 flex flex-col">
       <!-- Topbar -->
-      <header class="sticky top-0 z-[100] flex w-full items-center justify-between gap-4 px-8 py-5 max-[900px]:px-5 max-[900px]:py-4 bg-white/[0.92] backdrop-blur-[14px] [-webkit-backdrop-filter:blur(14px)] border-b border-[#E4E4E7]">
-        <div class="flex items-center gap-3 sm:gap-4 w-full max-w-[1440px] mx-auto">
-          <button
-            class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#E4E4E7] text-[#52525B] transition-transform duration-200 hover:-translate-y-0.5 hover:border-[#CFCFE0] hover:text-[#443E8D] min-[900px]:hidden"
-            @click="sidebarOpen = !sidebarOpen"
-            aria-label="Toggle sidebar"
-          >
-            <Bars3Icon class="h-5 w-5" />
-          </button>
-          
-          <div class="min-w-0 flex-1">
-            <h1 class="text-[0.95rem] sm:text-[1.1rem] font-semibold leading-snug tracking-[-0.02em] text-[#18181B] lg:text-[1.15rem]">
-              Portfolio Builder
-            </h1>
-            <p class="mt-0.5 sm:mt-1 text-[0.7rem] sm:text-[0.82rem] leading-relaxed text-[#71717A]">
+      <header class="sticky top-0 z-[100] flex w-full flex-col min-[901px]:flex-row min-[901px]:items-center min-[901px]:justify-between gap-3 min-[901px]:gap-4 px-4 py-3.5 sm:px-6 sm:py-4 lg:px-8 lg:py-5 bg-white/[0.92] backdrop-blur-[14px] [-webkit-backdrop-filter:blur(14px)] border-b border-[#E4E4E7]">
+        <div class="flex flex-col min-[901px]:flex-row min-[901px]:items-center min-[901px]:justify-between gap-3 min-[901px]:gap-4 w-full max-w-[1440px] mx-auto min-w-0">
+          <!-- Baris 1 & 2: Menu + Judul, lalu Deskripsi selebar layar -->
+          <div class="flex flex-col gap-1 min-w-0 flex-1">
+            <!-- Baris 1: Tombol menu di kiri, judul di sebelahnya -->
+            <div class="flex items-center gap-3 min-w-0">
+              <button
+                class="inline-flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-[#E4E4E7] text-[#52525B] transition-transform duration-200 hover:-translate-y-0.5 hover:border-[#CFCFE0] hover:text-[#443E8D] min-[901px]:hidden cursor-pointer"
+                @click="sidebarOpen = !sidebarOpen"
+                aria-label="Toggle sidebar"
+              >
+                <Bars3Icon class="w-5 h-5" />
+              </button>
+              <h1 class="text-[1.05rem] sm:text-[1.15rem] font-semibold leading-snug tracking-[-0.02em] text-[#18181B] truncate">
+                Portfolio Builder
+              </h1>
+            </div>
+
+            <!-- Baris 2: Deskripsi selebar layar -->
+            <p class="text-[0.75rem] sm:text-[0.82rem] leading-relaxed text-[#71717A] w-full m-0">
               Susun project terbaikmu, siap untuk direkrut.
             </p>
           </div>
 
-          <div class="hidden sm:flex items-center gap-3">
-            <button class="px-4 py-2 bg-white border border-[#E4E4E7] rounded-xl text-[0.85rem] font-bold text-[#18181B] hover:bg-[#F4F4F5] transition-colors shadow-sm">
+          <!-- Baris 3: Tombol aksi selebar layar di mobile -->
+          <div class="flex items-center gap-2.5 w-full min-[901px]:w-auto shrink-0">
+            <button class="flex-1 min-[901px]:flex-initial px-4 py-2.5 bg-white border border-[#E4E4E7] rounded-xl text-[0.82rem] font-bold text-[#18181B] hover:bg-[#F4F4F5] transition-colors shadow-sm cursor-pointer text-center">
               Preview
             </button>
-            <button class="px-4 py-2 bg-[#443E8D] text-white rounded-xl text-[0.85rem] font-bold hover:bg-[#3A3478] shadow-sm transition-colors flex items-center gap-2">
-              Publish <ArrowUpRightIcon class="w-4 h-4" />
+            <button class="flex-1 min-[901px]:flex-initial px-4 py-2.5 bg-[#443E8D] text-white rounded-xl text-[0.82rem] font-bold hover:bg-[#3A3478] shadow-sm transition-colors flex items-center justify-center gap-2 cursor-pointer">
+              <span>Publish</span>
+              <ArrowUpRightIcon class="w-4 h-4" />
             </button>
           </div>
         </div>

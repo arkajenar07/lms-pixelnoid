@@ -1,42 +1,44 @@
 <template>
-  <div class="flex min-h-screen bg-[#F7F7F9] text-[#18181B] antialiased overflow-x-hidden" style="font-family: 'Instrument Sans', Raleway, sans-serif">
+  <div class="flex min-h-screen bg-[#F7F7F9] text-[#18181B] antialiased overflow-x-clip" style="font-family: 'Instrument Sans', Raleway, sans-serif">
     <StudentSidebar :open="sidebarOpen" @update:open="sidebarOpen = $event" />
 
     <div class="flex-1 w-full min-w-0 min-[901px]:ml-[210px] relative z-[1]">
       <!-- Header -->
-      <header class="sticky top-0 z-[100] flex w-full items-center justify-between gap-4 px-8 py-5 max-[900px]:px-5 max-[900px]:py-4 bg-white/[0.92] backdrop-blur-[14px] [-webkit-backdrop-filter:blur(14px)] border-b border-[#E4E4E7]">
-        <div class="flex items-center justify-between gap-4 w-full max-w-[1440px] mx-auto">
-          <div class="flex items-center gap-3 sm:gap-4 min-w-0 flex-1">
-            <button
-              class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#E4E4E7] text-[#52525B] transition-transform duration-200 hover:-translate-y-0.5 hover:border-[#CFCFE0] hover:text-[#443E8D] min-[901px]:hidden cursor-pointer"
-              @click="sidebarOpen = !sidebarOpen"
-              aria-label="Toggle sidebar"
-            >
-              <Bars3Icon class="w-5 h-5" />
-            </button>
-            <div class="min-w-0 flex-1">
-              <h1 class="text-[0.95rem] sm:text-[1.1rem] font-semibold leading-snug tracking-[-0.02em] text-[#18181B] lg:text-[1.15rem]">
+      <header class="sticky top-0 z-[100] flex w-full flex-col min-[901px]:flex-row min-[901px]:items-center min-[901px]:justify-between gap-3 min-[901px]:gap-4 px-4 py-3.5 sm:px-6 sm:py-4 lg:px-8 lg:py-5 bg-white/[0.92] backdrop-blur-[14px] [-webkit-backdrop-filter:blur(14px)] border-b border-[#E4E4E7]">
+        <div class="flex flex-col min-[901px]:flex-row min-[901px]:items-center min-[901px]:justify-between gap-3 min-[901px]:gap-4 w-full max-w-[1440px] mx-auto min-w-0">
+          <!-- Baris 1 & 2: Menu + Judul, lalu Deskripsi selebar layar -->
+          <div class="flex flex-col gap-1 min-w-0 flex-1">
+            <!-- Baris 1: Tombol menu di kiri, judul di sebelahnya -->
+            <div class="flex items-center gap-3 min-w-0">
+              <button
+                class="inline-flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-[#E4E4E7] text-[#52525B] transition-transform duration-200 hover:-translate-y-0.5 hover:border-[#CFCFE0] hover:text-[#443E8D] min-[901px]:hidden cursor-pointer"
+                @click="sidebarOpen = !sidebarOpen"
+                aria-label="Toggle sidebar"
+              >
+                <Bars3Icon class="w-5 h-5" />
+              </button>
+              <h1 class="text-[1.05rem] sm:text-[1.15rem] font-semibold leading-snug tracking-[-0.02em] text-[#18181B] truncate">
                 Absensi & Presensi
               </h1>
-              <p class="mt-0.5 sm:mt-1 text-[0.7rem] sm:text-[0.82rem] leading-relaxed text-[#71717A]">
-                Kelola kehadiran siswa, bukti foto sesi bimbingan, dan persetujuan (approval)
-              </p>
             </div>
           </div>
 
-          <button
-            @click="openAddModal"
-            class="flex items-center gap-2 px-4 py-2.5 rounded-xl bg-[#443E8D] hover:bg-[#373273] text-white text-[0.82rem] font-semibold transition-all hover:-translate-y-0.5 shadow-sm shadow-[#443E8D]/25 shrink-0 cursor-pointer"
-          >
-            <PlusIcon class="w-4 h-4" />
-            <span>Tambah Absensi</span>
-          </button>
+          <!-- Baris 3: Tombol + Tambah Absensi selebar layar di mobile -->
+          <div class="w-full min-[901px]:w-auto shrink-0">
+            <button
+              @click="openAddModal"
+              class="w-full min-[901px]:w-auto flex items-center justify-center gap-2 px-4 py-2.5 rounded-xl bg-[#443E8D] hover:bg-[#373273] text-white text-[0.82rem] font-semibold transition-all hover:-translate-y-0.5 shadow-sm shadow-[#443E8D]/25 cursor-pointer"
+            >
+              <PlusIcon class="w-4 h-4" />
+              <span>Tambah Absensi</span>
+            </button>
+          </div>
         </div>
       </header>
 
-      <main class="p-8 max-[900px]:p-5 flex flex-col gap-6 max-w-[1440px] mx-auto w-full">
+      <main class="p-4 sm:p-6 lg:p-8 flex flex-col gap-6 max-w-[1440px] mx-auto w-full min-w-0 max-w-full">
         <!-- Stats Summary Cards -->
-        <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full min-w-0">
           <!-- Card: Total -->
           <div class="bg-white p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between transition-all hover:border-[#D4D4D8] hover:-translate-y-0.5">
             <div class="flex items-center justify-between">
@@ -47,9 +49,9 @@
             </div>
             <div class="mt-3">
               <div class="text-[1.75rem] font-black text-[#18181B] tracking-tight leading-none">
-                {{ absensiList.length }}
+                {{ myAbsensiList.length }}
               </div>
-              <p class="text-[0.7rem] text-[#A1A1AA] font-medium mt-1 mb-0">Semua sesi terdaftar</p>
+              <p class="text-[0.7rem] text-[#A1A1AA] font-medium mt-1 mb-0">Total sesi kamu</p>
             </div>
           </div>
 
@@ -63,7 +65,7 @@
             </div>
             <div class="mt-3">
               <div class="text-[1.75rem] font-black text-[#D97706] tracking-tight leading-none">
-                {{ absensiList.filter(a => a.status === 'pending').length }}
+                {{ myAbsensiList.filter(a => a.status === 'pending').length }}
               </div>
               <p class="text-[0.7rem] text-[#A1A1AA] font-medium mt-1 mb-0">Antre konfirmasi admin</p>
             </div>
@@ -79,7 +81,7 @@
             </div>
             <div class="mt-3">
               <div class="text-[1.75rem] font-black text-[#059669] tracking-tight leading-none">
-                {{ absensiList.filter(a => a.status === 'approved').length }}
+                {{ myAbsensiList.filter(a => a.status === 'approved').length }}
               </div>
               <p class="text-[0.7rem] text-[#A1A1AA] font-medium mt-1 mb-0">Kehadiran terverifikasi</p>
             </div>
@@ -95,7 +97,7 @@
             </div>
             <div class="mt-3">
               <div class="text-[1.75rem] font-black text-[#E11D48] tracking-tight leading-none">
-                {{ absensiList.filter(a => a.status === 'rejected').length }}
+                {{ myAbsensiList.filter(a => a.status === 'rejected').length }}
               </div>
               <p class="text-[0.7rem] text-[#A1A1AA] font-medium mt-1 mb-0">Perlu perbaikan atau ditolak</p>
             </div>
@@ -150,7 +152,11 @@
               <ClipboardDocumentCheckIcon class="w-7 h-7" />
             </div>
             <p class="text-[#18181B] font-semibold text-sm">Tidak ada data absensi</p>
-            <p class="text-[#71717A] text-xs mt-1 max-w-sm">Belum ada rekapan absensi yang dibuat atau tidak ada data yang cocok dengan filter.</p>
+            <p class="text-[#71717A] text-xs mt-1 max-w-sm">
+              {{ myAbsensiList.length === 0
+                ? 'Belum ada riwayat absensi untuk akun kamu. Klik tombol di bawah untuk mencatat kehadiran sesi bimbingan.'
+                : 'Tidak ada data presensi kamu yang sesuai dengan filter pencarian.' }}
+            </p>
             <button
               @click="openAddModal"
               class="mt-4 px-4 py-2.5 rounded-xl bg-[#443E8D] hover:bg-[#373273] text-white text-xs font-semibold transition-all shadow-sm shadow-[#443E8D]/20 cursor-pointer"
@@ -681,11 +687,20 @@ const currentStudentInitials = computed(() => {
   return (name[0] || 'A').toUpperCase()
 })
 
-// Fetch Data
+// Fetch Data (API-level filtering by student)
 const fetchData = async () => {
   isLoading.value = true
   try {
-    const res: any = await $fetch('/api/admin/absensi')
+    const currentId = loggedInStudentId.value || (await getLoggedInStudentId())
+    const { data: sessionData } = await supabase.auth.getSession()
+    const token = sessionData?.session?.access_token
+    const headers: Record<string, string> = {}
+    if (token) headers.Authorization = `Bearer ${token}`
+
+    const res: any = await $fetch('/api/student/absensi', {
+      headers,
+      query: currentId ? { student_id: currentId } : {}
+    })
     absensiList.value = res.absensi || []
     mentors.value = res.mentors || []
     students.value = res.students || []
@@ -696,12 +711,18 @@ const fetchData = async () => {
   }
 }
 
+const loggedInStudentId = ref<string>('')
+
 onMounted(async () => {
   await fetchProfile()
+  loggedInStudentId.value = await getLoggedInStudentId()
   await fetchData()
 })
 
-// Filtered List
+// Daftar absensi milik murid yang sedang login (sudah difilter langsung di API / Supabase)
+const myAbsensiList = computed(() => absensiList.value)
+
+// Filtered List: filter berdasarkan input pencarian dan status di tampilan UI
 const filteredAbsensi = computed(() => {
   return absensiList.value.filter(item => {
     // Status Filter
@@ -719,16 +740,12 @@ const filteredAbsensi = computed(() => {
       const topic = item.topic?.toLowerCase() || ''
       const notes = item.notes?.toLowerCase() || ''
       const date = item.session_date?.toLowerCase() || ''
-      const studentsMatch = (item.students || []).some((st: any) =>
-        st.fullname?.toLowerCase().includes(q) || st.username?.toLowerCase().includes(q)
-      )
 
       if (
         !mentorName.includes(q) &&
         !topic.includes(q) &&
         !notes.includes(q) &&
-        !date.includes(q) &&
-        !studentsMatch
+        !date.includes(q)
       ) {
         return false
       }
@@ -832,7 +849,7 @@ const handleFileUpload = async (event: Event) => {
     formData.append('file', compressed.file)
 
     // 2. Upload file WebP yang sudah dikompres
-    const res: any = await $fetch('/api/admin/absensi/upload', {
+    const res: any = await $fetch('/api/student/absensi/upload', {
       method: 'POST',
       body: formData
     })
@@ -878,12 +895,12 @@ const saveAbsensi = async () => {
     }
 
     if (editingId.value) {
-      await $fetch(`/api/admin/absensi/${editingId.value}`, {
+      await $fetch(`/api/student/absensi/${editingId.value}`, {
         method: 'PUT',
         body: payload
       })
     } else {
-      await $fetch('/api/admin/absensi', {
+      await $fetch('/api/student/absensi', {
         method: 'POST',
         body: payload
       })
@@ -904,7 +921,7 @@ const deleteAbsensi = async (item: any) => {
   if (!confirmed) return
 
   try {
-    await $fetch(`/api/admin/absensi/${item.id}`, {
+    await $fetch(`/api/student/absensi/${item.id}`, {
       method: 'DELETE'
     })
     await fetchData()

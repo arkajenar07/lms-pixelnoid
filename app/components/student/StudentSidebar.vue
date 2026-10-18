@@ -148,7 +148,7 @@ const currentPath = computed(() => route.path)
 const navItems = [
   { to: '/student/', label: 'Dashboard', icon: Squares2X2Icon, badge: null },
   { to: '/student/class', label: 'Kelas', icon: BookOpenIcon, badge: null },
-  { to: '/student/aktivitas', label: 'Aktivitas', icon: ClipboardDocumentCheckIcon, badge: '3' },
+  { to: '/student/aktivitas', label: 'Aktivitas', icon: ClipboardDocumentCheckIcon, badge: null },
   { to: '/student/absensi', label: 'Absensi', icon: CheckBadgeIcon, badge: null },
   { to: '/student/profil', label: 'Profil', icon: UserCircleIcon, badge: null },
 ]

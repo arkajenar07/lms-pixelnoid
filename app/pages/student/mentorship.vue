@@ -1,6 +1,6 @@
 <template>
   <div
-    class="flex min-h-screen bg-[#F5F5F8] antialiased relative overflow-x-hidden"
+    class="flex min-h-screen bg-[#F5F5F8] antialiased relative overflow-x-clip"
     style="font-family: 'Instrument Sans', Raleway, sans-serif"
   >
     <!-- Sidebar -->

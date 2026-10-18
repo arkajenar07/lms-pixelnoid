@@ -1,43 +1,42 @@
 <template>
   <div
-    class="flex min-h-screen bg-[#F7F7F9] antialiased relative overflow-x-hidden"
+    class="flex min-h-screen bg-[#F7F7F9] antialiased relative overflow-x-clip"
     style="font-family: 'Instrument Sans', Raleway, sans-serif"
   >
     <!-- Sidebar -->
     <StudentSidebar :open="sidebarOpen" @update:open="sidebarOpen = $event" />
 
     <!-- Main wrap -->
-    <div class="flex-1 min-[901px]:ml-[210px] flex flex-col relative z-[1]">
+    <div class="flex-1 w-full min-w-0 max-w-full min-[901px]:ml-[210px] flex flex-col relative z-[1]">
 
       <!-- ── TOPBAR ── -->
-      <header class="sticky top-0 z-[100] flex w-full items-center justify-between gap-4 px-8 py-5 max-[900px]:px-5 max-[900px]:py-4 bg-white/[0.92] backdrop-blur-[14px] [-webkit-backdrop-filter:blur(14px)] border-b border-[#E4E4E7]">
-        <div class="flex items-center gap-3 sm:gap-4 w-full max-w-[1440px] mx-auto">
-          <!-- Mobile hamburger -->
-          <button
-            class="inline-flex h-10 w-10 shrink-0 items-center justify-center rounded-xl border border-[#E4E4E7] text-[#52525B] transition-transform duration-200 hover:-translate-y-0.5 hover:border-[#CFCFE0] hover:text-[#443E8D] min-[900px]:hidden"
-            @click="sidebarOpen = !sidebarOpen"
-            aria-label="Toggle sidebar"
-          >
-            <Bars3Icon class="h-5 w-5" />
-          </button>
-
-          <!-- Title -->
-          <div class="min-w-0 flex-1">
-            <h1 class="text-[0.95rem] sm:text-[1.1rem] font-semibold leading-snug tracking-[-0.02em] text-[#18181B] lg:text-[1.15rem]">
-              Aktivitas
-            </h1>
-            <p class="mt-0.5 sm:mt-1 text-[0.7rem] sm:text-[0.82rem] leading-relaxed text-[#71717A]">
-              Kelola tugas dan lihat catatan mentor dalam satu tempat.
-            </p>
+      <header class="sticky top-0 z-[100] flex w-full flex-col min-[901px]:flex-row min-[901px]:items-center min-[901px]:justify-between gap-3 min-[901px]:gap-4 px-4 py-3.5 sm:px-6 sm:py-4 lg:px-8 lg:py-5 bg-white/[0.92] backdrop-blur-[14px] [-webkit-backdrop-filter:blur(14px)] border-b border-[#E4E4E7]">
+        <div class="flex flex-col min-[901px]:flex-row min-[901px]:items-center min-[901px]:justify-between gap-3 min-[901px]:gap-4 w-full max-w-[1440px] mx-auto min-w-0">
+          
+          <!-- Baris 1 & 2: Menu + Judul, lalu Deskripsi selebar layar -->
+          <div class="flex flex-col gap-1 min-w-0 flex-1">
+            <!-- Baris 1: Tombol menu di kiri, judul di sebelahnya -->
+            <div class="flex items-center gap-3 min-w-0">
+              <button
+                class="inline-flex h-9 w-9 sm:h-10 sm:w-10 shrink-0 items-center justify-center rounded-xl border border-[#E4E4E7] text-[#52525B] transition-transform duration-200 hover:-translate-y-0.5 hover:border-[#CFCFE0] hover:text-[#443E8D] min-[901px]:hidden cursor-pointer"
+                @click="sidebarOpen = !sidebarOpen"
+                aria-label="Toggle sidebar"
+              >
+                <Bars3Icon class="w-5 h-5" />
+              </button>
+              <h1 class="text-[1.05rem] sm:text-[1.15rem] font-semibold leading-snug tracking-[-0.02em] text-[#18181B] truncate">
+                Aktivitas
+              </h1>
+            </div>
           </div>
 
           <!-- Right actions: summary chips -->
-          <div class="flex items-center gap-3">
+          <div class="hidden sm:flex items-center gap-3 shrink-0">
             <Transition name="chip-fade" mode="out-in">
               <div
                 v-if="activeTab === 'tugas'"
                 key="chip-tugas"
-                class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-[10px] bg-[#FAFAFC] border border-[#E4E4E7] text-[#18181B]"
+                class="flex items-center gap-2 px-3 py-1.5 rounded-[10px] bg-[#FAFAFC] border border-[#E4E4E7] text-[#18181B]"
               >
                 <div class="w-2 h-2 rounded-full bg-[#18181B]"></div>
                 <span class="text-[0.72rem] font-bold">{{ taskSummaryText }}</span>
@@ -45,7 +44,7 @@
               <div
                 v-else
                 key="chip-feedback"
-                class="hidden sm:flex items-center gap-2 px-3 py-1.5 rounded-[10px] bg-[#F0EFF9] border border-[#D8D6F0] text-[#443E8D]"
+                class="flex items-center gap-2 px-3 py-1.5 rounded-[10px] bg-[#F0EFF9] border border-[#D8D6F0] text-[#443E8D]"
               >
                 <div class="w-2 h-2 rounded-full bg-[#443E8D]"></div>
                 <span class="text-[0.72rem] font-bold">{{ feedbackSummaryText }}</span>
@@ -56,14 +55,14 @@
       </header>
 
       <!-- ── MAIN CONTENT ── -->
-      <main class="p-8 max-[900px]:p-5 flex flex-col gap-0 max-w-[1280px] mx-auto w-full">
+      <main class="p-4 sm:p-8 flex flex-col gap-0 max-w-[1280px] mx-auto w-full min-w-0 max-w-full">
 
         <!-- ── TAB SWITCHER ── -->
-        <div class="flex items-center gap-1 mb-7 bg-white border border-[#E4E4E7] rounded-[12px] p-1 w-fit">
+        <div class="flex items-center gap-1 mb-6 bg-white border border-[#E4E4E7] rounded-[12px] p-1 w-full sm:w-fit overflow-x-auto max-w-full">
           <button
             v-for="tab in tabConfig"
             :key="tab.id"
-            class="relative flex items-center gap-2 px-5 py-2.5 rounded-[9px] text-[0.8rem] font-semibold transition-all duration-200"
+            class="flex-1 sm:flex-initial relative flex items-center justify-center gap-2 px-4 py-2.5 rounded-[9px] text-[0.8rem] font-semibold transition-all duration-200 whitespace-nowrap"
             :class="activeTab === tab.id
               ? tab.id === 'tugas'
                 ? 'bg-[#18181B] text-white shadow-[0_1px_4px_rgba(0,0,0,0.12)]'
@@ -73,16 +72,6 @@
           >
             <component :is="tab.icon" class="w-4 h-4 flex-shrink-0" />
             <span>{{ tab.label }}</span>
-            <!-- Badge -->
-            <span
-              v-if="tab.badge !== null && tab.badge > 0"
-              class="text-[0.6rem] font-bold px-1.5 py-0.5 rounded-[5px] leading-none"
-              :class="activeTab === tab.id
-                ? 'bg-white/20 text-white'
-                : tab.id === 'feedback' ? 'bg-[#F0EFF9] text-[#443E8D]' : 'bg-[#F4F4F5] text-[#52525B]'"
-            >
-              {{ tab.badge }}
-            </span>
           </button>
         </div>
 
