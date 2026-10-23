@@ -42,29 +42,29 @@
       <main class="mx-auto flex w-full max-w-7xl flex-col gap-6 p-5 lg:p-8">
 
         <!-- Progress Cards (Responsive Grid) -->
-        <section class="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-4">
+        <section class="grid grid-cols-2 gap-3 lg:grid-cols-4">
           <article
             v-for="stat in summaryStats"
             :key="stat.label"
-            class="rounded-2xl border border-[#E4E4E7] bg-white p-4 shadow-sm transition-transform duration-200 hover:-translate-y-0.5"
+            class="rounded-2xl border border-[#E4E4E7] bg-white p-3.5 shadow-sm transition-transform duration-200 hover:-translate-y-0.5"
           >
-            <div class="flex items-start justify-between gap-3">
-              <div class="min-w-0">
-                <p class="truncate text-xs font-semibold uppercase tracking-wider text-[#71717A]">
+            <div class="flex items-start justify-between gap-2">
+              <div class="min-w-0 flex-1">
+                <p class="truncate text-[0.6rem] font-bold uppercase tracking-wider text-[#71717A]">
                   {{ stat.label }}
                 </p>
-                <p class="mt-2 text-2xl font-semibold tracking-tight text-[#18181B]">
+                <p class="mt-1.5 text-[1.5rem] font-bold tracking-tight text-[#18181B] leading-none">
                   <span v-if="loading" class="animate-pulse text-[#E4E4E7]">—</span>
                   <span v-else>{{ stat.value }}</span>
                 </p>
-                <p class="mt-1 truncate text-xs text-[#71717A]">{{ stat.hint }}</p>
+                <p class="mt-1 truncate text-[0.65rem] text-[#71717A]">{{ stat.hint }}</p>
               </div>
-              <div class="flex h-10 w-10 shrink-0 items-center justify-center rounded-2xl border border-[#ECECF1] bg-[#FAFAFB] text-[#443E8D]">
-                <component :is="stat.icon" class="h-5 w-5" />
+              <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-[#ECECF1] bg-[#FAFAFB] text-[#443E8D]">
+                <component :is="stat.icon" class="h-4 w-4" />
               </div>
             </div>
             <div v-if="stat.progress !== undefined" class="mt-3">
-              <div class="h-1.5 w-full overflow-hidden rounded-full bg-[#F1F1F4]">
+              <div class="h-1 w-full overflow-hidden rounded-full bg-[#F1F1F4]">
                 <div
                   class="h-full rounded-full bg-[#443E8D] transition-all duration-700 ease-out"
                   :style="{ width: `${stat.progress}%` }"

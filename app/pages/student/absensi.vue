@@ -414,7 +414,10 @@
             <!-- Image Upload Zone -->
             <div class="space-y-3">
               <div
-                class="border-2 border-dashed border-[#D4D4D8] hover:border-[#443E8D] rounded-2xl p-5 flex flex-col items-center justify-center text-center cursor-pointer transition-colors bg-[#FAFAFC] hover:bg-[#F0EFF9]/30"
+                class="border-2 border-dashed rounded-2xl p-5 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 bg-[#FAFAFC]"
+                :class="isPasteHighlight
+                  ? 'border-[#443E8D] bg-[#F0EFF9]/40 scale-[1.01] shadow-md shadow-[#443E8D]/10'
+                  : 'border-[#D4D4D8] hover:border-[#443E8D] hover:bg-[#F0EFF9]/30'"
                 @click="triggerFileInput"
               >
                 <input
@@ -435,7 +438,7 @@
                   <div v-if="compressionInfo" class="mt-2.5 text-[11px] text-[#443E8D] font-semibold bg-[#F0EFF9] px-2.5 py-1 rounded-full border border-[#D8D6F0]">
                     Format: WebP · Ukuran: {{ compressionInfo }} (Terkonversi)
                   </div>
-                  <p class="text-xs text-[#443E8D] font-semibold mt-2">Klik untuk mengganti foto</p>
+                  <p class="text-xs text-[#443E8D] font-semibold mt-2">Klik untuk mengganti · atau tekan <kbd class="px-1.5 py-0.5 rounded bg-[#443E8D]/10 font-mono text-[10px]">Ctrl+V</kbd> untuk paste baru</p>
                 </div>
 
                 <div v-else class="flex flex-col items-center py-3">
@@ -444,6 +447,11 @@
                   </div>
                   <p class="text-xs font-semibold text-[#18181B]">Klik untuk unggah Bukti Foto</p>
                   <p class="text-[0.6875rem] text-[#71717A] mt-0.5">Otomatis dikonversi ke WebP &amp; dikompres maks. 150 KB</p>
+                  <!-- Paste hint -->
+                  <div class="mt-3 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#443E8D]/8 border border-[#443E8D]/20">
+                    <svg class="w-3.5 h-3.5 text-[#443E8D] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
+                    <span class="text-[0.65rem] font-semibold text-[#443E8D]">Atau tekan <kbd class="px-1 py-0.5 rounded bg-[#443E8D]/15 font-mono">Ctrl+V</kbd> untuk paste screenshot langsung</span>
+                  </div>
                 </div>
               </div>
 
@@ -576,7 +584,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import {
   Bars3Icon,
   PlusIcon,
@@ -616,6 +624,7 @@ const studentSearchQuery = ref('')
 const isModalOpen = ref(false)
 const editingId = ref<number | null>(null)
 const fileInputRef = ref<HTMLInputElement | null>(null)
+const isPasteHighlight = ref(false)
 
 // Photo preview modal
 const previewPhotoUrl = ref('')
@@ -830,11 +839,13 @@ const triggerFileInput = () => {
   fileInputRef.value?.click()
 }
 
-const handleFileUpload = async (event: Event) => {
-  const target = event.target as HTMLInputElement
-  if (!target.files || target.files.length === 0) return
+/** Proses file gambar: kompresi ke WebP lalu upload ke server */
+const processAndUploadImage = async (file: File) => {
+  if (!file.type.startsWith('image/')) {
+    alert('File yang dipaste bukan gambar yang valid.')
+    return
+  }
 
-  const file = target.files[0]
   isUploadingPhoto.value = true
   uploadStatusText.value = 'Mengompresi gambar ke WebP (maks. 150 KB)...'
 
@@ -861,9 +872,57 @@ const handleFileUpload = async (event: Event) => {
   } finally {
     isUploadingPhoto.value = false
     uploadStatusText.value = ''
-    if (fileInputRef.value) fileInputRef.value.value = ''
   }
 }
+
+const handleFileUpload = async (event: Event) => {
+  const target = event.target as HTMLInputElement
+  if (!target.files || target.files.length === 0) return
+  const file = target.files[0]
+  await processAndUploadImage(file)
+  if (fileInputRef.value) fileInputRef.value.value = ''
+}
+
+/** Handler paste event dari clipboard (Ctrl+V / screenshot) */
+const handlePaste = async (event: ClipboardEvent) => {
+  if (!isModalOpen.value) return
+
+  const items = event.clipboardData?.items
+  if (!items) return
+
+  // Cari item gambar di clipboard
+  let imageFile: File | null = null
+  for (const item of Array.from(items)) {
+    if (item.type.startsWith('image/')) {
+      imageFile = item.getAsFile()
+      break
+    }
+  }
+
+  if (!imageFile) return
+
+  // Highlight animasi paste
+  isPasteHighlight.value = true
+  setTimeout(() => { isPasteHighlight.value = false }, 800)
+
+  // Beri nama file screenshot dengan timestamp
+  const namedFile = new File(
+    [imageFile],
+    `screenshot-${Date.now()}.png`,
+    { type: imageFile.type }
+  )
+
+  await processAndUploadImage(namedFile)
+}
+
+// Daftarkan/unregister paste listener sesuai state modal
+watch(isModalOpen, (open) => {
+  if (open) {
+    document.addEventListener('paste', handlePaste)
+  } else {
+    document.removeEventListener('paste', handlePaste)
+  }
+})
 
 // Save Absensi
 const saveAbsensi = async () => {

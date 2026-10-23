@@ -121,27 +121,48 @@
 
       <!-- ── TAB SWITCHER ── -->
       <template v-if="activeClass">
-        <div class="pt-6 pb-5 px-5 lg:px-8 lg:pt-7">
-          <!-- Overflow scrollbar disembunyikan agar rapi -->
-          <div class="flex items-center gap-1 bg-white border border-[#E4E4E7] rounded-[12px] p-1 w-full overflow-x-auto scrollbar-none sm:w-fit">
+        <div class="pt-5 pb-0 px-5 lg:px-8 lg:pt-6">
+          <!-- 3 tab button kompak: icon + label, full width, border bawah sebagai active indicator -->
+          <div class="flex items-stretch bg-white border border-[#E4E4E7] rounded-2xl overflow-hidden shadow-xs w-full">
             <button
-              v-for="tab in tabs"
+              v-for="(tab, index) in tabs"
               :key="tab.id"
               @click="activeTab = tab.id"
-              class="relative flex items-center gap-2 px-5 py-2.5 rounded-[9px] text-[0.8rem] font-semibold transition-all duration-200 whitespace-nowrap cursor-pointer shrink-0"
-              :class="activeTab === tab.id
-                ? 'bg-[#443E8D] text-white shadow-[0_1px_4px_rgba(68,62,141,0.2)]'
-                : 'text-[#71717A] hover:text-[#18181B] hover:bg-[#FAFAFC]'"
+              :title="tab.label"
+              class="group relative flex-1 flex flex-col items-center justify-center gap-1.5 py-3 px-2 text-center transition-all duration-200 cursor-pointer focus:outline-none"
+              :class="[
+                activeTab === tab.id
+                  ? 'bg-[#F0EFF9] text-[#443E8D]'
+                  : 'text-[#71717A] hover:bg-[#FAFAFC] hover:text-[#443E8D]',
+                index < tabs.length - 1 ? 'border-r border-[#E4E4E7]' : ''
+              ]"
             >
-              <component :is="tab.icon" class="w-4 h-4 flex-shrink-0" />
-              {{ tab.label }}
+              <!-- Active bar di atas -->
+              <div
+                class="absolute top-0 left-0 right-0 h-[2.5px] rounded-b-full transition-all duration-300"
+                :class="activeTab === tab.id ? 'bg-[#443E8D]' : 'bg-transparent'"
+              ></div>
+
+              <!-- Icon -->
+              <div
+                class="w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-200"
+                :class="activeTab === tab.id ? 'bg-[#443E8D] text-white shadow-sm shadow-[#443E8D]/30' : 'bg-[#F4F4F5] text-[#71717A] group-hover:bg-[#E8E7F5] group-hover:text-[#443E8D]'"
+              >
+                <component :is="tab.icon" class="w-4 h-4 flex-shrink-0" />
+              </div>
+
+              <!-- Label -->
               <span
+                class="text-[0.68rem] font-bold leading-none transition-colors duration-200 whitespace-nowrap"
+                :class="activeTab === tab.id ? 'text-[#443E8D]' : 'text-[#A1A1AA] group-hover:text-[#443E8D]'"
+              >{{ tab.label }}</span>
+
+              <!-- Badge (Live Meeting) -->
+              <div
                 v-if="tab.badge"
-                class="text-[0.58rem] font-bold px-1.5 py-0.5 rounded-[5px] leading-none shrink-0"
-                :class="activeTab === tab.id
-                  ? 'bg-white/20 text-white'
-                  : 'bg-[#F4F4F5] text-[#52525B]'"
-              >{{ tab.badge }}</span>
+                class="absolute top-2 right-2 min-w-[16px] h-4 px-1 rounded-full text-[0.55rem] font-black flex items-center justify-center leading-none"
+                :class="activeTab === tab.id ? 'bg-[#443E8D] text-white ring-2 ring-[#F0EFF9]' : 'bg-[#EF4444] text-white'"
+              >{{ tab.badge }}</div>
             </button>
           </div>
         </div>
@@ -249,9 +270,9 @@ const supabase = useSupabaseClient()
 
 // ── Tabs ────────────────────────────────────────────────────────
 const tabs = [
-  { id: 'modules',   label: 'Modul Belajar', icon: BookOpenIcon,      badge: null },
-  { id: 'meeting',   label: 'Live Meeting',  icon: CalendarDaysIcon,  badge: 2    },
-  { id: 'resources', label: 'Sumber Daya',   icon: FolderOpenIcon,    badge: null },
+  { id: 'modules',   label: 'Modul',    icon: BookOpenIcon,      badge: null },
+  { id: 'meeting',   label: 'Meeting',  icon: CalendarDaysIcon,  badge: null },
+  { id: 'resources', label: 'Sumber',   icon: FolderOpenIcon,    badge: null },
 ] as const
 
 // ── Resilient Auth Token ─────────────────────────────────────────
