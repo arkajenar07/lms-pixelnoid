@@ -2,65 +2,65 @@
   <div class="flex flex-col gap-6 sm:gap-8 w-full min-w-0 max-w-full">
 
     <!-- ── 1. STATS ROW ── -->
-    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full min-w-0">
-      <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between min-w-0">
-        <div class="flex items-center justify-between gap-2 min-w-0">
-          <span class="text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A] truncate">Total Catatan</span>
-          <div class="w-8 h-8 rounded-xl bg-[#F0EFF9] border border-[#D8D6F0] flex items-center justify-center text-[#443E8D] shrink-0">
-            <ChatBubbleBottomCenterTextIcon class="w-4 h-4" />
+    <section class="grid grid-cols-2 gap-3 lg:grid-cols-4 w-full min-w-0">
+      <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between min-w-0">
+        <div class="flex items-center justify-between gap-1.5 sm:gap-2 min-w-0">
+          <span class="text-[0.6rem] sm:text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A] truncate">Total Catatan</span>
+          <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-[#F0EFF9] border border-[#D8D6F0] flex items-center justify-center text-[#443E8D] shrink-0">
+            <ChatBubbleBottomCenterTextIcon class="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </div>
         </div>
-        <div class="mt-3">
-          <div class="text-[1.75rem] font-black text-[#18181B] tracking-tight leading-none">
+        <div class="mt-2.5 sm:mt-3">
+          <div class="text-[1.5rem] sm:text-[1.75rem] font-black text-[#18181B] tracking-tight leading-none">
             {{ totalReviews }}
           </div>
-          <p class="text-[0.7rem] text-[#A1A1AA] font-medium mt-1 mb-0">Evaluasi mentor masuk</p>
+          <p class="text-[0.62rem] sm:text-[0.7rem] text-[#A1A1AA] font-medium mt-1 mb-0 truncate">Evaluasi mentor masuk</p>
         </div>
       </div>
 
-      <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between min-w-0">
-        <div class="flex items-center justify-between gap-2 min-w-0">
-          <span class="text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A] truncate">Rata-rata Skor</span>
-          <div class="w-8 h-8 rounded-xl bg-[#ECFDF5] border border-[#A7F3D0] flex items-center justify-center text-[#059669] shrink-0">
-            <TrophyIcon class="w-4 h-4" />
+      <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between min-w-0">
+        <div class="flex items-center justify-between gap-1.5 sm:gap-2 min-w-0">
+          <span class="text-[0.6rem] sm:text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A] truncate">Rata-rata Skor</span>
+          <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-[#ECFDF5] border border-[#A7F3D0] flex items-center justify-center text-[#059669] shrink-0">
+            <TrophyIcon class="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </div>
         </div>
-        <div class="mt-3">
-          <div class="text-[1.75rem] font-black text-[#059669] tracking-tight leading-none">
+        <div class="mt-2.5 sm:mt-3">
+          <div class="text-[1.5rem] sm:text-[1.75rem] font-black text-[#059669] tracking-tight leading-none">
             {{ averageScore !== null ? averageScore : '-' }}
-            <span v-if="averageScore !== null" class="text-[0.9rem] font-semibold text-[#A1A1AA]">/100</span>
+            <span v-if="averageScore !== null" class="text-[0.8rem] sm:text-[0.9rem] font-semibold text-[#A1A1AA]">/100</span>
           </div>
-          <p class="text-[0.7rem] text-[#A1A1AA] font-medium mt-1 mb-0">Performa pengerjaan tugas</p>
+          <p class="text-[0.62rem] sm:text-[0.7rem] text-[#A1A1AA] font-medium mt-1 mb-0 truncate">Performa tugas</p>
         </div>
       </div>
 
-      <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between min-w-0">
-        <div class="flex items-center justify-between gap-2 min-w-0">
-          <span class="text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A] truncate">Tugas Selesai</span>
-          <div class="w-8 h-8 rounded-xl bg-[#EFF6FF] border border-[#BFDBFE] flex items-center justify-center text-[#2563EB] shrink-0">
-            <CheckBadgeIcon class="w-4 h-4" />
+      <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between min-w-0">
+        <div class="flex items-center justify-between gap-1.5 sm:gap-2 min-w-0">
+          <span class="text-[0.6rem] sm:text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A] truncate">Tugas Selesai</span>
+          <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-[#EFF6FF] border border-[#BFDBFE] flex items-center justify-center text-[#2563EB] shrink-0">
+            <CheckBadgeIcon class="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </div>
         </div>
-        <div class="mt-3">
-          <div class="text-[1.75rem] font-black text-[#18181B] tracking-tight leading-none">
+        <div class="mt-2.5 sm:mt-3">
+          <div class="text-[1.5rem] sm:text-[1.75rem] font-black text-[#18181B] tracking-tight leading-none">
             {{ totalReviews }}
           </div>
-          <p class="text-[0.7rem] text-[#A1A1AA] font-medium mt-1 mb-0">Telah diperiksa mentor</p>
+          <p class="text-[0.62rem] sm:text-[0.7rem] text-[#A1A1AA] font-medium mt-1 mb-0 truncate">Telah diperiksa mentor</p>
         </div>
       </div>
 
-      <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between min-w-0">
-        <div class="flex items-center justify-between gap-2 min-w-0">
-          <span class="text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A] truncate">Mentor Pembimbing</span>
-          <div class="w-8 h-8 rounded-xl bg-[#FDF2F8] border border-[#FBCFE8] flex items-center justify-center text-[#DB2777] shrink-0">
-            <UserGroupIcon class="w-4 h-4" />
+      <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between min-w-0">
+        <div class="flex items-center justify-between gap-1.5 sm:gap-2 min-w-0">
+          <span class="text-[0.6rem] sm:text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A] truncate">Mentor</span>
+          <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-[#FDF2F8] border border-[#FBCFE8] flex items-center justify-center text-[#DB2777] shrink-0">
+            <UserGroupIcon class="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </div>
         </div>
-        <div class="mt-3">
-          <div class="text-[1.75rem] font-black text-[#18181B] tracking-tight leading-none">
+        <div class="mt-2.5 sm:mt-3">
+          <div class="text-[1.5rem] sm:text-[1.75rem] font-black text-[#18181B] tracking-tight leading-none">
             {{ mentors.length }}
           </div>
-          <p class="text-[0.7rem] text-[#A1A1AA] font-medium mt-1 mb-0">Aktif membimbing kelas</p>
+          <p class="text-[0.62rem] sm:text-[0.7rem] text-[#A1A1AA] font-medium mt-1 mb-0 truncate">Aktif membimbing</p>
         </div>
       </div>
     </section>

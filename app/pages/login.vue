@@ -27,11 +27,7 @@
           </div>
 
           <!-- Headline -->
-          <div class="flex-1">
-            <div class="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full border border-indigo-500/15 bg-indigo-500/5 text-[0.7rem] font-bold tracking-widest uppercase text-indigo-300 mb-5">
-              <span class="w-1.5 h-1.5 rounded-full bg-indigo-400 animate-pulse"></span>
-              Platform Belajar Masa Depan
-            </div>
+          <div class="flex-1"> 
             <h2 class="text-4xl xl:text-5xl font-light leading-[1.2] tracking-tight text-gray-50 mb-4">
               Selamat Datang<br />
               Kembali di <em class="not-italic font-medium text-indigo-300">Pixelnoid Digital Academy.</em>

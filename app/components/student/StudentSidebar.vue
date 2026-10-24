@@ -26,10 +26,6 @@
 
     <!-- Nav Section -->
     <nav class="flex-1 overflow-y-auto px-4 py-8 flex flex-col gap-1 custom-scrollbar">
-      <div class="px-3 mb-4 flex items-center justify-between">
-        <span class="text-[0.625rem] font-black text-gray-600 uppercase tracking-[0.2em]">Main Menu</span>
-      </div>
-
       <NuxtLink
         v-for="item in navItems"
         :key="item.to"

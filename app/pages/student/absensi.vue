@@ -38,68 +38,68 @@
 
       <main class="p-4 sm:p-6 lg:p-8 flex flex-col gap-6 max-w-[1440px] mx-auto w-full min-w-0 max-w-full">
         <!-- Stats Summary Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full min-w-0">
+        <div class="grid grid-cols-2 gap-3 lg:grid-cols-4 w-full min-w-0">
           <!-- Card: Total -->
-          <div class="bg-white p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between transition-all hover:border-[#D4D4D8] hover:-translate-y-0.5">
-            <div class="flex items-center justify-between">
-              <span class="text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A]">Total Presensi</span>
-              <div class="w-8 h-8 rounded-xl bg-[#F0EFF9] border border-[#D8D6F0] flex items-center justify-center text-[#443E8D]">
-                <ClipboardDocumentCheckIcon class="w-4 h-4" />
+          <div class="bg-white p-3.5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between transition-all hover:border-[#D4D4D8] hover:-translate-y-0.5">
+            <div class="flex items-start justify-between gap-2">
+              <span class="text-[0.6rem] font-bold uppercase tracking-wider text-[#71717A] leading-snug">Total Presensi</span>
+              <div class="w-7 h-7 rounded-xl bg-[#F0EFF9] border border-[#D8D6F0] flex items-center justify-center text-[#443E8D] shrink-0">
+                <ClipboardDocumentCheckIcon class="w-3.5 h-3.5" />
               </div>
             </div>
-            <div class="mt-3">
-              <div class="text-[1.75rem] font-black text-[#18181B] tracking-tight leading-none">
+            <div class="mt-2">
+              <div class="text-[1.5rem] font-black text-[#18181B] tracking-tight leading-none">
                 {{ myAbsensiList.length }}
               </div>
-              <p class="text-[0.7rem] text-[#A1A1AA] font-medium mt-1 mb-0">Total sesi kamu</p>
+              <p class="text-[0.65rem] text-[#A1A1AA] font-medium mt-1 mb-0">Total sesi kamu</p>
             </div>
           </div>
 
           <!-- Card: Pending -->
-          <div class="bg-white p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between transition-all hover:border-[#D4D4D8] hover:-translate-y-0.5">
-            <div class="flex items-center justify-between">
-              <span class="text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A]">Menunggu Approval</span>
-              <div class="w-8 h-8 rounded-xl bg-[#FFFBEB] border border-[#FDE68A] flex items-center justify-center text-[#D97706]">
-                <ClockIcon class="w-4 h-4" />
+          <div class="bg-white p-3.5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between transition-all hover:border-[#D4D4D8] hover:-translate-y-0.5">
+            <div class="flex items-start justify-between gap-2">
+              <span class="text-[0.6rem] font-bold uppercase tracking-wider text-[#71717A] leading-snug">Menunggu</span>
+              <div class="w-7 h-7 rounded-xl bg-[#FFFBEB] border border-[#FDE68A] flex items-center justify-center text-[#D97706] shrink-0">
+                <ClockIcon class="w-3.5 h-3.5" />
               </div>
             </div>
-            <div class="mt-3">
-              <div class="text-[1.75rem] font-black text-[#D97706] tracking-tight leading-none">
+            <div class="mt-2">
+              <div class="text-[1.5rem] font-black text-[#D97706] tracking-tight leading-none">
                 {{ myAbsensiList.filter(a => a.status === 'pending').length }}
               </div>
-              <p class="text-[0.7rem] text-[#A1A1AA] font-medium mt-1 mb-0">Antre konfirmasi admin</p>
+              <p class="text-[0.65rem] text-[#A1A1AA] font-medium mt-1 mb-0">Antre konfirmasi</p>
             </div>
           </div>
 
           <!-- Card: Approved -->
-          <div class="bg-white p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between transition-all hover:border-[#D4D4D8] hover:-translate-y-0.5">
-            <div class="flex items-center justify-between">
-              <span class="text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A]">Disetujui</span>
-              <div class="w-8 h-8 rounded-xl bg-[#ECFDF5] border border-[#A7F3D0] flex items-center justify-center text-[#059669]">
-                <CheckCircleIcon class="w-4 h-4" />
+          <div class="bg-white p-3.5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between transition-all hover:border-[#D4D4D8] hover:-translate-y-0.5">
+            <div class="flex items-start justify-between gap-2">
+              <span class="text-[0.6rem] font-bold uppercase tracking-wider text-[#71717A] leading-snug">Disetujui</span>
+              <div class="w-7 h-7 rounded-xl bg-[#ECFDF5] border border-[#A7F3D0] flex items-center justify-center text-[#059669] shrink-0">
+                <CheckCircleIcon class="w-3.5 h-3.5" />
               </div>
             </div>
-            <div class="mt-3">
-              <div class="text-[1.75rem] font-black text-[#059669] tracking-tight leading-none">
+            <div class="mt-2">
+              <div class="text-[1.5rem] font-black text-[#059669] tracking-tight leading-none">
                 {{ myAbsensiList.filter(a => a.status === 'approved').length }}
               </div>
-              <p class="text-[0.7rem] text-[#A1A1AA] font-medium mt-1 mb-0">Kehadiran terverifikasi</p>
+              <p class="text-[0.65rem] text-[#A1A1AA] font-medium mt-1 mb-0">Terverifikasi</p>
             </div>
           </div>
 
           <!-- Card: Rejected -->
-          <div class="bg-white p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between transition-all hover:border-[#D4D4D8] hover:-translate-y-0.5">
-            <div class="flex items-center justify-between">
-              <span class="text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A]">Ditolak</span>
-              <div class="w-8 h-8 rounded-xl bg-[#FEF2F2] border border-[#FECACA] flex items-center justify-center text-[#E11D48]">
-                <XCircleIcon class="w-4 h-4" />
+          <div class="bg-white p-3.5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between transition-all hover:border-[#D4D4D8] hover:-translate-y-0.5">
+            <div class="flex items-start justify-between gap-2">
+              <span class="text-[0.6rem] font-bold uppercase tracking-wider text-[#71717A] leading-snug">Ditolak</span>
+              <div class="w-7 h-7 rounded-xl bg-[#FEF2F2] border border-[#FECACA] flex items-center justify-center text-[#E11D48] shrink-0">
+                <XCircleIcon class="w-3.5 h-3.5" />
               </div>
             </div>
-            <div class="mt-3">
-              <div class="text-[1.75rem] font-black text-[#E11D48] tracking-tight leading-none">
+            <div class="mt-2">
+              <div class="text-[1.5rem] font-black text-[#E11D48] tracking-tight leading-none">
                 {{ myAbsensiList.filter(a => a.status === 'rejected').length }}
               </div>
-              <p class="text-[0.7rem] text-[#A1A1AA] font-medium mt-1 mb-0">Perlu perbaikan atau ditolak</p>
+              <p class="text-[0.65rem] text-[#A1A1AA] font-medium mt-1 mb-0">Perlu perbaikan</p>
             </div>
           </div>
         </div>
@@ -165,142 +165,219 @@
             </button>
           </div>
 
-          <!-- Data Table -->
-          <div v-else class="overflow-x-auto">
-            <table class="w-full text-left border-collapse">
-              <thead>
-                <tr class="border-b border-[#E4E4E7] bg-[#FAFAFC]">
-                  <th class="px-5 py-3.5 text-[0.6875rem] font-bold text-[#71717A] uppercase tracking-wider">Tanggal & Sesi</th>
-                  <th class="px-5 py-3.5 text-[0.6875rem] font-bold text-[#71717A] uppercase tracking-wider">Mentor</th>
-                  <th class="px-5 py-3.5 text-[0.6875rem] font-bold text-[#71717A] uppercase tracking-wider">Murid yang Hadir</th>
-                  <th class="px-5 py-3.5 text-[0.6875rem] font-bold text-[#71717A] uppercase tracking-wider">Bukti Foto</th>
-                  <th class="px-5 py-3.5 text-[0.6875rem] font-bold text-[#71717A] uppercase tracking-wider">Approval</th>
-                  <th class="px-5 py-3.5 text-[0.6875rem] font-bold text-[#71717A] uppercase tracking-wider text-right">Aksi</th>
-                </tr>
-              </thead>
-              <tbody class="divide-y divide-[#F4F4F5] text-sm">
-                <tr v-for="item in filteredAbsensi" :key="item.id" class="hover:bg-[#FAFAFD] transition-colors">
-                  <!-- Tanggal & Jam -->
-                  <td class="px-5 py-4">
-                    <div class="font-semibold text-[#18181B]">
-                      {{ formatDate(item.session_date) }}
-                    </div>
-                    <div class="flex items-center gap-1.5 text-xs text-[#71717A] mt-1">
-                      <ClockIcon class="w-3.5 h-3.5 text-[#A1A1AA] shrink-0" />
-                      <span>{{ item.session_time }}</span>
-                    </div>
-                    <div v-if="item.topic" class="text-[0.72rem] text-[#443E8D] bg-[#F0EFF9] border border-[#D8D6F0]/70 px-2 py-0.5 rounded-md inline-flex items-center gap-1 mt-1.5 font-medium">
-                      {{ item.topic }}
-                    </div>
-                  </td>
+          <!-- Data Table & Mobile Cards -->
+          <div v-else>
+            <!-- Mobile Card List (tampil di hp, ringkas, bersih & nyaman dibaca) -->
+            <div class="block md:hidden divide-y divide-[#F4F4F5]">
+              <div
+                v-for="item in filteredAbsensi"
+                :key="item.id"
+                class="p-4 flex flex-col gap-3 hover:bg-[#FAFAFD] transition-colors"
+              >
+                <!-- Row 1: Status Badge & Aksi -->
+                <div class="flex items-center justify-between gap-2">
+                  <span
+                    class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold"
+                    :class="[
+                      item.status === 'approved' ? 'bg-[#ECFDF5] text-[#059669] border border-[#A7F3D0]' :
+                      item.status === 'rejected' ? 'bg-[#FEF2F2] text-[#E11D48] border border-[#FECACA]' :
+                      'bg-[#FFFBEB] text-[#D97706] border border-[#FDE68A]'
+                    ]"
+                  >
+                    <CheckCircleIcon v-if="item.status === 'approved'" class="w-3.5 h-3.5 text-[#059669]" />
+                    <XCircleIcon v-else-if="item.status === 'rejected'" class="w-3.5 h-3.5 text-[#E11D48]" />
+                    <ClockIcon v-else class="w-3.5 h-3.5 text-[#D97706]" />
+                    {{ item.status === 'approved' ? 'Disetujui' : item.status === 'rejected' ? 'Ditolak' : 'Menunggu Approval' }}
+                  </span>
 
-                  <!-- Mentor -->
-                  <td class="px-5 py-4">
-                    <div class="flex items-center gap-2.5">
-                      <div class="w-8 h-8 rounded-full bg-[#F0EFF9] text-[#443E8D] border border-[#D8D6F0]/60 font-bold text-xs flex items-center justify-center shrink-0 overflow-hidden">
-                        <img v-if="item.mentor?.avatar_url" :src="item.mentor.avatar_url" class="w-full h-full object-cover" />
-                        <span v-else>{{ (item.mentor?.fullname || 'M').charAt(0).toUpperCase() }}</span>
+                  <button
+                    @click="openEditModal(item)"
+                    title="Edit Absensi"
+                    class="p-1.5 text-[#71717A] hover:text-[#443E8D] hover:bg-[#F0EFF9] rounded-xl transition-colors cursor-pointer"
+                  >
+                    <PencilSquareIcon class="w-4 h-4" />
+                  </button>
+                </div>
+
+                <!-- Row 2: Mentor & Jadwal Sesi -->
+                <div class="flex items-start justify-between gap-3">
+                  <div class="flex items-center gap-2.5 min-w-0">
+                    <div class="w-9 h-9 rounded-full bg-[#F0EFF9] text-[#443E8D] border border-[#D8D6F0]/60 font-bold text-xs flex items-center justify-center shrink-0 overflow-hidden">
+                      <img v-if="item.mentor?.avatar_url" :src="item.mentor.avatar_url" class="w-full h-full object-cover" />
+                      <span v-else>{{ (item.mentor?.fullname || 'M').charAt(0).toUpperCase() }}</span>
+                    </div>
+                    <div class="min-w-0">
+                      <div class="font-semibold text-xs text-[#18181B] truncate">{{ item.mentor?.fullname || 'Mentor' }}</div>
+                      <div class="flex items-center gap-1.5 text-[0.7rem] text-[#71717A] mt-0.5">
+                        <ClockIcon class="w-3 h-3 text-[#A1A1AA] shrink-0" />
+                        <span>{{ formatDate(item.session_date) }} · {{ item.session_time }}</span>
                       </div>
-                      <div>
-                        <div class="font-semibold text-[#18181B] leading-tight">{{ item.mentor?.fullname || 'Mentor tidak ditemukan' }}</div>
-                        <div class="text-[0.6875rem] text-[#A1A1AA]">@{{ item.mentor?.username || '-' }}</div>
-                      </div>
                     </div>
-                  </td>
+                  </div>
 
-                  <!-- Murid (Bisa Banyak) -->
-                  <td class="px-5 py-4 max-w-[320px]">
-                    <div class="flex flex-wrap gap-1.5 items-center">
-                      <div
-                        v-for="st in (item.students || []).slice(0, 3)"
-                        :key="st.id"
-                        class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#FAFAFC] text-[#27272A] text-xs font-medium border border-[#E4E4E7]"
-                      >
-                        <span class="w-4 h-4 rounded-full bg-[#F0EFF9] text-[#443E8D] text-[9px] font-bold flex items-center justify-center shrink-0">
-                          {{ (st.fullname || 'S').charAt(0).toUpperCase() }}
-                        </span>
-                        <span class="truncate max-w-[110px]">{{ st.fullname }}</span>
+                  <!-- Bukti Foto Thumbnail -->
+                  <div v-if="item.bukti_foto" class="shrink-0">
+                    <button
+                      @click="previewImage(item.bukti_foto, item)"
+                      class="relative w-11 h-11 rounded-xl overflow-hidden border border-[#E4E4E7] block bg-[#FAFAFC] cursor-pointer"
+                    >
+                      <img :src="item.bukti_foto" class="w-full h-full object-cover" alt="Bukti Foto" />
+                      <div class="absolute inset-0 bg-black/20 flex items-center justify-center">
+                        <EyeIcon class="w-3.5 h-3.5 text-white" />
                       </div>
+                    </button>
+                  </div>
+                </div>
 
-                      <button
-                        v-if="(item.students || []).length > 3"
-                        @click="showAllStudents(item)"
-                        class="text-xs font-semibold text-[#443E8D] hover:text-[#373273] bg-[#F0EFF9] hover:bg-[#E5E3F7] px-2.5 py-1 rounded-lg transition-colors cursor-pointer"
-                      >
-                        +{{ (item.students || []).length - 3 }} lainnya
-                      </button>
+                <!-- Row 3: Topik (jika ada) -->
+                <div v-if="item.topic" class="text-[0.72rem] text-[#443E8D] bg-[#F0EFF9] border border-[#D8D6F0]/70 px-2.5 py-1 rounded-lg font-medium inline-block w-fit">
+                  {{ item.topic }}
+                </div>
 
-                      <span v-if="(!item.students || item.students.length === 0)" class="text-xs text-[#A1A1AA] italic">
-                        Belum ada murid dipilih
-                      </span>
-                    </div>
-                  </td>
+                <!-- Row 4: Alasan Penolakan (jika ditolak) -->
+                <div v-if="item.status === 'rejected' && item.rejection_reason" class="text-[0.72rem] text-[#E11D48] bg-[#FEF2F2] border border-[#FECACA] px-2.5 py-1.5 rounded-lg">
+                  <span class="font-bold">Alasan ditolak:</span> {{ item.rejection_reason }}
+                </div>
+              </div>
+            </div>
 
-                  <!-- Bukti Foto Absen -->
-                  <td class="px-5 py-4">
-                    <div v-if="item.bukti_foto" class="flex items-center gap-2">
-                      <button
-                        @click="previewImage(item.bukti_foto, item)"
-                        class="group relative w-12 h-12 rounded-xl overflow-hidden border border-[#E4E4E7] hover:border-[#443E8D] hover:ring-2 hover:ring-[#443E8D]/20 transition-all shrink-0 bg-[#FAFAFC] shadow-xs cursor-pointer"
-                      >
-                        <img :src="item.bukti_foto" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-200" alt="Bukti Foto" />
-                        <div class="absolute inset-0 bg-black/20 group-hover:bg-black/40 flex items-center justify-center transition-colors">
-                          <EyeIcon class="w-4 h-4 text-white drop-shadow" />
+            <!-- Desktop Table (tampil di laptop/komputer) -->
+            <div class="hidden md:block overflow-x-auto">
+              <table class="w-full text-left border-collapse">
+                <thead>
+                  <tr class="border-b border-[#E4E4E7] bg-[#FAFAFC]">
+                    <th class="px-5 py-3.5 text-[0.6875rem] font-bold text-[#71717A] uppercase tracking-wider">Tanggal & Sesi</th>
+                    <th class="px-5 py-3.5 text-[0.6875rem] font-bold text-[#71717A] uppercase tracking-wider">Mentor</th>
+                    <th class="hidden lg:table-cell px-5 py-3.5 text-[0.6875rem] font-bold text-[#71717A] uppercase tracking-wider">Murid yang Hadir</th>
+                    <th class="px-5 py-3.5 text-[0.6875rem] font-bold text-[#71717A] uppercase tracking-wider">Bukti Foto</th>
+                    <th class="px-5 py-3.5 text-[0.6875rem] font-bold text-[#71717A] uppercase tracking-wider">Approval</th>
+                    <th class="px-5 py-3.5 text-[0.6875rem] font-bold text-[#71717A] uppercase tracking-wider text-right">Aksi</th>
+                  </tr>
+                </thead>
+                <tbody class="divide-y divide-[#F4F4F5] text-sm">
+                  <tr v-for="item in filteredAbsensi" :key="item.id" class="hover:bg-[#FAFAFD] transition-colors">
+                    <!-- Tanggal & Jam -->
+                    <td class="px-5 py-4">
+                      <div class="font-semibold text-[#18181B]">
+                        {{ formatDate(item.session_date) }}
+                      </div>
+                      <div class="flex items-center gap-1.5 text-xs text-[#71717A] mt-1">
+                        <ClockIcon class="w-3.5 h-3.5 text-[#A1A1AA] shrink-0" />
+                        <span>{{ item.session_time }}</span>
+                      </div>
+                      <div v-if="item.topic" class="text-[0.72rem] text-[#443E8D] bg-[#F0EFF9] border border-[#D8D6F0]/70 px-2 py-0.5 rounded-md inline-flex items-center gap-1 mt-1.5 font-medium">
+                        {{ item.topic }}
+                      </div>
+                    </td>
+
+                    <!-- Mentor -->
+                    <td class="px-5 py-4">
+                      <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-full bg-[#F0EFF9] text-[#443E8D] border border-[#D8D6F0]/60 font-bold text-xs flex items-center justify-center shrink-0 overflow-hidden">
+                          <img v-if="item.mentor?.avatar_url" :src="item.mentor.avatar_url" class="w-full h-full object-cover" />
+                          <span v-else>{{ (item.mentor?.fullname || 'M').charAt(0).toUpperCase() }}</span>
                         </div>
-                      </button>
-                      <button
-                        @click="previewImage(item.bukti_foto, item)"
-                        class="text-xs text-[#443E8D] hover:text-[#373273] font-semibold hover:underline cursor-pointer"
-                      >
-                        Lihat Foto
-                      </button>
-                    </div>
-                    <div v-else class="text-xs text-[#A1A1AA] flex items-center gap-1 italic">
-                      <PhotoIcon class="w-4 h-4 text-[#D4D4D8]" />
-                      Tidak ada foto
-                    </div>
-                  </td>
+                        <div>
+                          <div class="font-semibold text-[#18181B] leading-tight">{{ item.mentor?.fullname || 'Mentor tidak ditemukan' }}</div>
+                          <div class="text-[0.6875rem] text-[#A1A1AA]">@{{ item.mentor?.username || '-' }}</div>
+                        </div>
+                      </div>
+                    </td>
 
-                  <!-- Status Approval -->
-                  <td class="px-5 py-4">
-                    <div class="flex flex-col items-start gap-1">
-                      <span
-                        class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold"
-                        :class="[
-                          item.status === 'approved' ? 'bg-[#ECFDF5] text-[#059669] border border-[#A7F3D0]' :
-                          item.status === 'rejected' ? 'bg-[#FEF2F2] text-[#E11D48] border border-[#FECACA]' :
-                          'bg-[#FFFBEB] text-[#D97706] border border-[#FDE68A]'
-                        ]"
-                      >
-                        <CheckCircleIcon v-if="item.status === 'approved'" class="w-3.5 h-3.5 text-[#059669]" />
-                        <XCircleIcon v-else-if="item.status === 'rejected'" class="w-3.5 h-3.5 text-[#E11D48]" />
-                        <ClockIcon v-else class="w-3.5 h-3.5 text-[#D97706]" />
-                        {{ item.status === 'approved' ? 'Disetujui' : item.status === 'rejected' ? 'Ditolak' : 'Menunggu Approval' }}
-                      </span>
+                    <!-- Murid (Bisa Banyak) -->
+                    <td class="hidden lg:table-cell px-5 py-4 max-w-[320px]">
+                      <div class="flex flex-wrap gap-1.5 items-center">
+                        <div
+                          v-for="st in (item.students || []).slice(0, 3)"
+                          :key="st.id"
+                          class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-lg bg-[#FAFAFC] text-[#27272A] text-xs font-medium border border-[#E4E4E7]"
+                        >
+                          <span class="w-4 h-4 rounded-full bg-[#F0EFF9] text-[#443E8D] text-[9px] font-bold flex items-center justify-center shrink-0">
+                            {{ (st.fullname || 'S').charAt(0).toUpperCase() }}
+                          </span>
+                          <span class="truncate max-w-[110px]">{{ st.fullname }}</span>
+                        </div>
 
-                      <!-- Rejection reason preview -->
-                      <p v-if="item.status === 'rejected' && item.rejection_reason" class="text-[0.6875rem] text-[#E11D48] max-w-[180px] truncate" :title="item.rejection_reason">
-                        Alasan: {{ item.rejection_reason }}
-                      </p>
-                    </div>
-                  </td>
+                        <button
+                          v-if="(item.students || []).length > 3"
+                          @click="showAllStudents(item)"
+                          class="text-xs font-semibold text-[#443E8D] hover:text-[#373273] bg-[#F0EFF9] hover:bg-[#E5E3F7] px-2.5 py-1 rounded-lg transition-colors cursor-pointer"
+                        >
+                          +{{ (item.students || []).length - 3 }} lainnya
+                        </button>
 
-                  <!-- Aksi -->
-                  <td class="px-5 py-4 text-right">
-                    <div class="flex items-center justify-end gap-1.5">
-                      <!-- Edit Button -->
-                      <button
-                        @click="openEditModal(item)"
-                        title="Edit Absensi"
-                        class="p-2 text-[#71717A] hover:text-[#443E8D] hover:bg-[#F0EFF9] rounded-xl transition-colors cursor-pointer"
-                      >
-                        <PencilSquareIcon class="w-4 h-4" />
-                      </button>
-                    </div>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                        <span v-if="(!item.students || item.students.length === 0)" class="text-xs text-[#A1A1AA] italic">
+                          Belum ada murid dipilih
+                        </span>
+                      </div>
+                    </td>
+
+                    <!-- Bukti Foto Absen -->
+                    <td class="px-5 py-4">
+                      <div v-if="item.bukti_foto" class="flex items-center gap-2">
+                        <button
+                          @click="previewImage(item.bukti_foto, item)"
+                          class="group relative w-12 h-12 rounded-xl overflow-hidden border border-[#E4E4E7] hover:border-[#443E8D] hover:ring-2 hover:ring-[#443E8D]/20 transition-all shrink-0 bg-[#FAFAFC] shadow-xs cursor-pointer"
+                        >
+                          <img :src="item.bukti_foto" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-200" alt="Bukti Foto" />
+                          <div class="absolute inset-0 bg-black/20 group-hover:bg-black/40 flex items-center justify-center transition-colors">
+                            <EyeIcon class="w-4 h-4 text-white drop-shadow" />
+                          </div>
+                        </button>
+                        <button
+                          @click="previewImage(item.bukti_foto, item)"
+                          class="text-xs text-[#443E8D] hover:text-[#373273] font-semibold hover:underline cursor-pointer"
+                        >
+                          Lihat Foto
+                        </button>
+                      </div>
+                      <div v-else class="text-xs text-[#A1A1AA] flex items-center gap-1 italic">
+                        <PhotoIcon class="w-4 h-4 text-[#D4D4D8]" />
+                        Tidak ada foto
+                      </div>
+                    </td>
+
+                    <!-- Status Approval -->
+                    <td class="px-5 py-4">
+                      <div class="flex flex-col items-start gap-1">
+                        <span
+                          class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold"
+                          :class="[
+                            item.status === 'approved' ? 'bg-[#ECFDF5] text-[#059669] border border-[#A7F3D0]' :
+                            item.status === 'rejected' ? 'bg-[#FEF2F2] text-[#E11D48] border border-[#FECACA]' :
+                            'bg-[#FFFBEB] text-[#D97706] border border-[#FDE68A]'
+                          ]"
+                        >
+                          <CheckCircleIcon v-if="item.status === 'approved'" class="w-3.5 h-3.5 text-[#059669]" />
+                          <XCircleIcon v-else-if="item.status === 'rejected'" class="w-3.5 h-3.5 text-[#E11D48]" />
+                          <ClockIcon v-else class="w-3.5 h-3.5 text-[#D97706]" />
+                          {{ item.status === 'approved' ? 'Disetujui' : item.status === 'rejected' ? 'Ditolak' : 'Menunggu Approval' }}
+                        </span>
+
+                        <!-- Rejection reason preview -->
+                        <p v-if="item.status === 'rejected' && item.rejection_reason" class="text-[0.6875rem] text-[#E11D48] max-w-[180px] truncate" :title="item.rejection_reason">
+                          Alasan: {{ item.rejection_reason }}
+                        </p>
+                      </div>
+                    </td>
+
+                    <!-- Aksi -->
+                    <td class="px-5 py-4 text-right">
+                      <div class="flex items-center justify-end gap-1.5">
+                        <!-- Edit Button -->
+                        <button
+                          @click="openEditModal(item)"
+                          title="Edit Absensi"
+                          class="p-2 text-[#71717A] hover:text-[#443E8D] hover:bg-[#F0EFF9] rounded-xl transition-colors cursor-pointer"
+                        >
+                          <PencilSquareIcon class="w-4 h-4" />
+                        </button>
+                      </div>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
           </div>
         </div>
       </main>
@@ -315,12 +392,12 @@
     >
       <div class="relative w-full max-w-2xl bg-white rounded-2xl shadow-xl overflow-hidden my-8 border border-[#E4E4E7]">
         <!-- Modal Header -->
-        <div class="flex items-center justify-between px-6 py-4 border-b border-[#F4F4F5]">
+        <div class="flex items-center justify-between px-5 sm:px-6 py-3.5 sm:py-4 border-b border-[#F4F4F5]">
           <div>
-            <h2 class="text-base font-bold text-[#18181B]">
+            <h2 class="text-sm sm:text-base font-bold text-[#18181B]">
               {{ editingId ? 'Edit Data Absensi' : 'Tambah Absensi & Presensi' }}
             </h2>
-            <p class="text-xs text-[#71717A]">Pilih mentor, jadwal sesi, dan unggah bukti foto kehadiran sesi belajar.</p>
+            <p class="hidden sm:block text-xs text-[#71717A] mt-0.5">Pilih mentor, jadwal sesi, dan unggah bukti foto kehadiran sesi belajar.</p>
           </div>
           <button @click="closeModal" class="text-[#71717A] hover:text-[#18181B] hover:bg-[#F4F4F5] p-1.5 rounded-xl transition-colors cursor-pointer">
             <XMarkIcon class="w-5 h-5" />
@@ -328,16 +405,16 @@
         </div>
 
         <!-- Modal Body Form -->
-        <form @submit.prevent="saveAbsensi" class="p-6 space-y-4 max-h-[75vh] overflow-y-auto">
+        <form @submit.prevent="saveAbsensi" class="p-4 sm:p-6 space-y-3 sm:space-y-4 max-h-[75vh] overflow-y-auto">
           <!-- 1. Pilih Mentor -->
           <div>
-            <label class="block text-[0.7rem] font-bold text-[#52525B] uppercase tracking-wider mb-1.5">
+            <label class="block text-[0.68rem] sm:text-[0.7rem] font-bold text-[#52525B] uppercase tracking-wider mb-1 sm:mb-1.5">
               Pilih Mentor <span class="text-rose-500">*</span>
             </label>
             <select
               v-model="form.mentor_id"
               required
-              class="w-full h-11 px-3.5 rounded-xl border border-[#E4E4E7] bg-white text-sm text-[#18181B] focus:border-[#443E8D] focus:ring-2 focus:ring-[#443E8D]/15 outline-none transition-all cursor-pointer"
+              class="w-full h-10 sm:h-11 px-3 sm:px-3.5 rounded-xl border border-[#E4E4E7] bg-white text-xs sm:text-sm text-[#18181B] focus:border-[#443E8D] focus:ring-2 focus:ring-[#443E8D]/15 outline-none transition-all cursor-pointer"
             >
               <option value="" disabled>-- Pilih Mentor --</option>
               <option v-for="m in mentors" :key="m.id" :value="m.id">
@@ -346,8 +423,8 @@
             </select>
           </div>
 
-          <!-- 2. Murid (Otomatis akun siswa yang login) -->
-          <div>
+          <!-- 2. Murid (Disembunyikan di HP karena sudah otomatis akun sendiri, tampil di laptop) -->
+          <div class="hidden sm:block">
             <label class="block text-[0.7rem] font-bold text-[#52525B] uppercase tracking-wider mb-1.5">
               Murid
             </label>
@@ -365,56 +442,56 @@
             </div>
           </div>
 
-          <!-- 3. Tanggal Sesi & Jam Sesi -->
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <!-- 3. Tanggal Sesi & Jam Sesi (2 kolom di mobile & desktop) -->
+          <div class="grid grid-cols-2 gap-2.5 sm:gap-4">
             <div>
-              <label class="block text-[0.7rem] font-bold text-[#52525B] uppercase tracking-wider mb-1.5">
+              <label class="block text-[0.68rem] sm:text-[0.7rem] font-bold text-[#52525B] uppercase tracking-wider mb-1 sm:mb-1.5">
                 Tanggal Sesi <span class="text-rose-500">*</span>
               </label>
               <input
                 v-model="form.session_date"
                 type="date"
                 required
-                class="w-full h-11 px-3.5 rounded-xl border border-[#E4E4E7] bg-white text-sm text-[#18181B] focus:border-[#443E8D] focus:ring-2 focus:ring-[#443E8D]/15 outline-none transition-all"
+                class="w-full h-10 sm:h-11 px-2.5 sm:px-3.5 rounded-xl border border-[#E4E4E7] bg-white text-xs sm:text-sm text-[#18181B] focus:border-[#443E8D] focus:ring-2 focus:ring-[#443E8D]/15 outline-none transition-all"
               />
             </div>
             <div>
-              <label class="block text-[0.7rem] font-bold text-[#52525B] uppercase tracking-wider mb-1.5">
+              <label class="block text-[0.68rem] sm:text-[0.7rem] font-bold text-[#52525B] uppercase tracking-wider mb-1 sm:mb-1.5">
                 Jam Sesi <span class="text-rose-500">*</span>
               </label>
               <input
                 v-model="form.session_time"
                 type="text"
-                placeholder="Contoh: 14:00 - 15:30 WIB"
+                placeholder="14:00 - 15:30 WIB"
                 required
-                class="w-full h-11 px-3.5 rounded-xl border border-[#E4E4E7] bg-white text-sm text-[#18181B] placeholder:text-[#A1A1AA] focus:border-[#443E8D] focus:ring-2 focus:ring-[#443E8D]/15 outline-none transition-all"
+                class="w-full h-10 sm:h-11 px-2.5 sm:px-3.5 rounded-xl border border-[#E4E4E7] bg-white text-xs sm:text-sm text-[#18181B] placeholder:text-[#A1A1AA] focus:border-[#443E8D] focus:ring-2 focus:ring-[#443E8D]/15 outline-none transition-all"
               />
             </div>
           </div>
 
           <!-- Topik / Materi Pembahasan (Opsional) -->
           <div>
-            <label class="block text-[0.7rem] font-bold text-[#52525B] uppercase tracking-wider mb-1.5">
+            <label class="block text-[0.68rem] sm:text-[0.7rem] font-bold text-[#52525B] uppercase tracking-wider mb-1 sm:mb-1.5">
               Topik / Materi (Opsional)
             </label>
             <input
               v-model="form.topic"
               type="text"
               placeholder="Contoh: Mentoring Project Nuxt 3 & Integrasi Supabase"
-              class="w-full h-11 px-3.5 rounded-xl border border-[#E4E4E7] bg-white text-sm text-[#18181B] placeholder:text-[#A1A1AA] focus:border-[#443E8D] focus:ring-2 focus:ring-[#443E8D]/15 outline-none transition-all"
+              class="w-full h-10 sm:h-11 px-3 sm:px-3.5 rounded-xl border border-[#E4E4E7] bg-white text-xs sm:text-sm text-[#18181B] placeholder:text-[#A1A1AA] focus:border-[#443E8D] focus:ring-2 focus:ring-[#443E8D]/15 outline-none transition-all"
             />
           </div>
 
           <!-- 4. Bukti Foto Absen -->
           <div>
-            <label class="block text-[0.7rem] font-bold text-[#52525B] uppercase tracking-wider mb-1.5">
+            <label class="block text-[0.68rem] sm:text-[0.7rem] font-bold text-[#52525B] uppercase tracking-wider mb-1 sm:mb-1.5">
               Bukti Foto Absen
             </label>
 
             <!-- Image Upload Zone -->
-            <div class="space-y-3">
+            <div class="space-y-2.5 sm:space-y-3">
               <div
-                class="border-2 border-dashed rounded-2xl p-5 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 bg-[#FAFAFC]"
+                class="border-2 border-dashed rounded-2xl p-4 sm:p-5 flex flex-col items-center justify-center text-center cursor-pointer transition-all duration-200 bg-[#FAFAFC]"
                 :class="isPasteHighlight
                   ? 'border-[#443E8D] bg-[#F0EFF9]/40 scale-[1.01] shadow-md shadow-[#443E8D]/10'
                   : 'border-[#D4D4D8] hover:border-[#443E8D] hover:bg-[#F0EFF9]/30'"
@@ -434,29 +511,29 @@
                 </div>
 
                 <div v-else-if="form.bukti_foto" class="flex flex-col items-center">
-                  <img :src="form.bukti_foto" class="h-32 object-contain rounded-xl border border-[#E4E4E7] shadow-xs" alt="Preview Foto" />
-                  <div v-if="compressionInfo" class="mt-2.5 text-[11px] text-[#443E8D] font-semibold bg-[#F0EFF9] px-2.5 py-1 rounded-full border border-[#D8D6F0]">
-                    Format: WebP · Ukuran: {{ compressionInfo }} (Terkonversi)
+                  <img :src="form.bukti_foto" class="h-28 sm:h-32 object-contain rounded-xl border border-[#E4E4E7] shadow-xs" alt="Preview Foto" />
+                  <div v-if="compressionInfo" class="mt-2 text-[10px] sm:text-[11px] text-[#443E8D] font-semibold bg-[#F0EFF9] px-2.5 py-0.5 rounded-full border border-[#D8D6F0]">
+                    Format: WebP · {{ compressionInfo }}
                   </div>
-                  <p class="text-xs text-[#443E8D] font-semibold mt-2">Klik untuk mengganti · atau tekan <kbd class="px-1.5 py-0.5 rounded bg-[#443E8D]/10 font-mono text-[10px]">Ctrl+V</kbd> untuk paste baru</p>
+                  <p class="text-[0.72rem] sm:text-xs text-[#443E8D] font-semibold mt-1.5">Klik untuk mengganti foto</p>
                 </div>
 
-                <div v-else class="flex flex-col items-center py-3">
-                  <div class="w-10 h-10 rounded-xl bg-[#F0EFF9] flex items-center justify-center mb-2.5 text-[#443E8D]">
-                    <ArrowUpTrayIcon class="w-5 h-5" />
+                <div v-else class="flex flex-col items-center py-2 sm:py-3">
+                  <div class="w-8 h-8 sm:w-10 sm:h-10 rounded-xl bg-[#F0EFF9] flex items-center justify-center mb-1.5 sm:mb-2 text-[#443E8D]">
+                    <ArrowUpTrayIcon class="w-4 h-4 sm:w-5 sm:h-5" />
                   </div>
                   <p class="text-xs font-semibold text-[#18181B]">Klik untuk unggah Bukti Foto</p>
-                  <p class="text-[0.6875rem] text-[#71717A] mt-0.5">Otomatis dikonversi ke WebP &amp; dikompres maks. 150 KB</p>
-                  <!-- Paste hint -->
-                  <div class="mt-3 flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#443E8D]/8 border border-[#443E8D]/20">
+                  <p class="hidden sm:block text-[0.6875rem] text-[#71717A] mt-0.5">Otomatis dikonversi ke WebP &amp; dikompres maks. 150 KB</p>
+                  <!-- Paste hint (hanya di laptop) -->
+                  <div class="hidden sm:flex mt-3 items-center gap-1.5 px-3 py-1.5 rounded-xl bg-[#443E8D]/8 border border-[#443E8D]/20">
                     <svg class="w-3.5 h-3.5 text-[#443E8D] shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/></svg>
                     <span class="text-[0.65rem] font-semibold text-[#443E8D]">Atau tekan <kbd class="px-1 py-0.5 rounded bg-[#443E8D]/15 font-mono">Ctrl+V</kbd> untuk paste screenshot langsung</span>
                   </div>
                 </div>
               </div>
 
-              <!-- Manual URL Fallback Input -->
-              <div class="flex items-center gap-2">
+              <!-- Manual URL Fallback Input (hanya di laptop) -->
+              <div class="hidden sm:flex items-center gap-2">
                 <input
                   v-model="form.bukti_foto"
                   type="url"

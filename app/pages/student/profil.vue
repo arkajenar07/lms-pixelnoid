@@ -36,22 +36,152 @@
         <!-- Profile Overview Card -->
         <section class="rounded-2xl border border-[#E4E4E7] bg-white p-6 shadow-sm">
           <div class="flex items-center gap-5">
-            <!-- Avatar -->
-            <div
-              class="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-gradient-to-br from-[#443E8D] to-indigo-500 text-white text-2xl font-black shadow-lg shadow-indigo-900/10 select-none"
-            >
-              {{ userInitials }}
+            <!-- Avatar dengan tombol upload -->
+            <div class="relative shrink-0 group">
+              <!-- Avatar container -->
+              <div
+                class="flex h-16 w-16 items-center justify-center rounded-2xl overflow-hidden bg-gradient-to-br from-[#443E8D] to-indigo-500 text-white text-2xl font-black shadow-lg shadow-indigo-900/10 select-none"
+              >
+                <img
+                  v-if="avatarPreview || profile?.avatar_url"
+                  :src="avatarPreview || profile?.avatar_url"
+                  class="w-full h-full object-cover"
+                  alt="Foto Profil"
+                />
+                <span v-else>{{ userInitials }}</span>
+              </div>
+
+              <!-- Loading spinner overlay -->
+              <div v-if="avatarUploading" class="absolute inset-0 rounded-2xl bg-black/50 flex items-center justify-center">
+                <div class="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+              </div>
+
+              <!-- Camera button -->
+              <button
+                v-else
+                type="button"
+                @click="triggerAvatarInput"
+                title="Ganti foto profil"
+                class="absolute -bottom-1.5 -right-1.5 w-6 h-6 rounded-full bg-[#443E8D] text-white flex items-center justify-center shadow-md border-2 border-white hover:bg-[#312C6A] transition-colors cursor-pointer"
+              >
+                <CameraIcon class="w-3 h-3" />
+              </button>
+
+              <!-- Hidden file input -->
+              <input
+                ref="avatarInputRef"
+                type="file"
+                accept="image/*"
+                class="hidden"
+                @change="handleAvatarFileSelected"
+              />
             </div>
-            <div class="min-w-0">
+
+            <div class="min-w-0 flex-1">
               <p class="text-lg font-bold text-[#18181B] truncate">{{ userName }}</p>
               <p class="text-sm text-[#71717A] truncate mt-0.5">@{{ userUsername }}</p>
-              <span class="mt-1.5 inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-semibold text-[#443E8D]">
-                <CheckBadgeIcon class="h-3.5 w-3.5" />
-                {{ userRole }}
-              </span>
+              <div class="flex items-center gap-2 flex-wrap mt-1.5">
+                <span class="inline-flex items-center gap-1 rounded-full bg-indigo-50 px-2.5 py-0.5 text-xs font-semibold text-[#443E8D]">
+                  <CheckBadgeIcon class="h-3.5 w-3.5" />
+                  {{ userRole }}
+                </span>
+                <button
+                  type="button"
+                  @click="triggerAvatarInput"
+                  class="text-[0.65rem] font-semibold text-[#71717A] hover:text-[#443E8D] transition-colors cursor-pointer underline underline-offset-2"
+                >
+                  Ganti Foto
+                </button>
+              </div>
+              <!-- Upload error -->
+              <p v-if="avatarError" class="mt-1 text-[0.65rem] text-rose-600 font-medium">{{ avatarError }}</p>
             </div>
           </div>
         </section>
+
+        <!-- ============================================================ -->
+        <!-- MODAL CROP FOTO PROFIL -->
+        <!-- ============================================================ -->
+        <Teleport to="body">
+          <div
+            v-if="cropModalOpen"
+            class="fixed inset-0 z-[300] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm"
+          >
+            <div class="relative w-full max-w-sm bg-white rounded-2xl shadow-2xl overflow-hidden border border-[#E4E4E7]">
+              <!-- Header -->
+              <div class="flex items-center justify-between px-5 py-4 border-b border-[#F4F4F5]">
+                <div>
+                  <h3 class="text-sm font-bold text-[#18181B]">Sesuaikan Foto Profil</h3>
+                  <p class="text-[0.65rem] text-[#71717A] mt-0.5">Drag untuk geser · Scroll untuk zoom</p>
+                </div>
+                <button @click="closeCropModal" class="p-1.5 rounded-xl text-[#71717A] hover:bg-[#F4F4F5] transition-colors cursor-pointer">
+                  <XMarkIcon class="w-4 h-4" />
+                </button>
+              </div>
+
+              <!-- Canvas crop area -->
+              <div class="relative bg-[#111] flex items-center justify-center" style="height: 280px">
+                <canvas
+                  ref="cropCanvasRef"
+                  class="cursor-move select-none"
+                  :width="cropSize"
+                  :height="cropSize"
+                  @mousedown="onCropMouseDown"
+                  @mousemove="onCropMouseMove"
+                  @mouseup="onCropMouseUp"
+                  @mouseleave="onCropMouseUp"
+                  @wheel.prevent="onCropWheel"
+                  @touchstart.prevent="onCropTouchStart"
+                  @touchmove.prevent="onCropTouchMove"
+                  @touchend="onCropTouchEnd"
+                ></canvas>
+                <!-- Circle overlay guide -->
+                <div class="absolute inset-0 pointer-events-none flex items-center justify-center">
+                  <div
+                    class="rounded-full border-2 border-white/60 shadow-[0_0_0_9999px_rgba(0,0,0,0.45)]"
+                    :style="{ width: cropSize + 'px', height: cropSize + 'px' }"
+                  ></div>
+                </div>
+              </div>
+
+              <!-- Zoom slider -->
+              <div class="px-5 py-3 flex items-center gap-3 border-b border-[#F4F4F5]">
+                <MagnifyingGlassMinusIcon class="w-4 h-4 text-[#A1A1AA] shrink-0" />
+                <input
+                  type="range"
+                  min="0.5"
+                  max="3"
+                  step="0.01"
+                  v-model.number="cropZoom"
+                  @input="drawCrop"
+                  class="flex-1 h-1 accent-[#443E8D] cursor-pointer"
+                />
+                <MagnifyingGlassPlusIcon class="w-4 h-4 text-[#A1A1AA] shrink-0" />
+              </div>
+
+              <!-- Actions -->
+              <div class="flex items-center justify-end gap-2.5 px-5 py-4">
+                <button
+                  type="button"
+                  @click="closeCropModal"
+                  class="px-4 py-2 rounded-xl border border-[#E4E4E7] text-[#52525B] text-xs font-semibold hover:bg-[#F4F4F5] transition-colors cursor-pointer"
+                >
+                  Batal
+                </button>
+                <button
+                  type="button"
+                  @click="confirmCropAndUpload"
+                  :disabled="avatarUploading"
+                  class="flex items-center gap-2 px-5 py-2 rounded-xl bg-[#443E8D] hover:bg-[#312C6A] text-white text-xs font-bold transition-all disabled:opacity-50 cursor-pointer shadow-sm shadow-[#443E8D]/25"
+                >
+                  <div v-if="avatarUploading" class="w-3 h-3 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
+                  <CheckIcon v-else class="w-3.5 h-3.5" />
+                  {{ avatarUploading ? 'Menyimpan...' : 'Simpan Foto' }}
+                </button>
+              </div>
+            </div>
+          </div>
+        </Teleport>
 
         <!-- Edit Username Card -->
         <section class="rounded-2xl border border-[#E4E4E7] bg-white p-6 shadow-sm">
@@ -268,7 +398,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, reactive, computed, onMounted } from 'vue'
+import { ref, reactive, computed, onMounted, nextTick } from 'vue'
 import Sidebar from '~/components/student/StudentSidebar.vue'
 import {
   Bars3Icon,
@@ -283,6 +413,10 @@ import {
   ExclamationTriangleIcon,
   ShieldCheckIcon,
   ArrowRightOnRectangleIcon,
+  CameraIcon,
+  XMarkIcon,
+  MagnifyingGlassPlusIcon,
+  MagnifyingGlassMinusIcon,
 } from '@heroicons/vue/24/outline'
 
 useSeoMeta({
@@ -296,6 +430,196 @@ const supabase = useSupabaseClient()
 const user = useSupabaseUser()
 const { profile, fetchProfile } = useUserProfile()
 const sidebarOpen = ref(false)
+
+// ── Avatar Upload + Crop ────────────────────────────────────────
+const avatarInputRef = ref<HTMLInputElement | null>(null)
+const cropCanvasRef = ref<HTMLCanvasElement | null>(null)
+const avatarPreview = ref('')
+const avatarUploading = ref(false)
+const avatarError = ref('')
+const cropModalOpen = ref(false)
+const cropSize = 280 // px - ukuran canvas & preview lingkaran
+
+// State gambar crop
+let cropImg: HTMLImageElement | null = null
+const cropZoom = ref(1)
+let cropOffsetX = 0
+let cropOffsetY = 0
+let isDragging = false
+let dragStartX = 0
+let dragStartY = 0
+let lastTouchDist = 0
+
+const triggerAvatarInput = () => avatarInputRef.value?.click()
+
+/** Dipanggil saat user pilih file — buka modal crop */
+const handleAvatarFileSelected = (event: Event) => {
+  const target = event.target as HTMLInputElement
+  if (!target.files || target.files.length === 0) return
+  const file = target.files[0]
+
+  if (!file.type.startsWith('image/')) {
+    avatarError.value = 'File harus berupa gambar.'
+    return
+  }
+  if (file.size > 10 * 1024 * 1024) {
+    avatarError.value = 'Ukuran foto maksimal 10 MB.'
+    return
+  }
+
+  avatarError.value = ''
+  const reader = new FileReader()
+  reader.onload = async (e) => {
+    const img = new Image()
+    img.onload = async () => {
+      cropImg = img
+      // Reset posisi: tengahkan gambar
+      const scale = Math.max(cropSize / img.width, cropSize / img.height)
+      cropZoom.value = scale
+      cropOffsetX = (cropSize - img.width * scale) / 2
+      cropOffsetY = (cropSize - img.height * scale) / 2
+      cropModalOpen.value = true
+      await nextTick()
+      drawCrop()
+    }
+    img.src = e.target?.result as string
+  }
+  reader.readAsDataURL(file)
+  if (avatarInputRef.value) avatarInputRef.value.value = ''
+}
+
+/** Render frame crop ke canvas */
+const drawCrop = () => {
+  const canvas = cropCanvasRef.value
+  if (!canvas || !cropImg) return
+  const ctx = canvas.getContext('2d')!
+  ctx.clearRect(0, 0, cropSize, cropSize)
+  ctx.drawImage(
+    cropImg,
+    cropOffsetX, cropOffsetY,
+    cropImg.width * cropZoom.value,
+    cropImg.height * cropZoom.value
+  )
+}
+
+// Mouse drag handlers
+const onCropMouseDown = (e: MouseEvent) => {
+  isDragging = true
+  dragStartX = e.clientX - cropOffsetX
+  dragStartY = e.clientY - cropOffsetY
+}
+const onCropMouseMove = (e: MouseEvent) => {
+  if (!isDragging) return
+  cropOffsetX = e.clientX - dragStartX
+  cropOffsetY = e.clientY - dragStartY
+  drawCrop()
+}
+const onCropMouseUp = () => { isDragging = false }
+
+// Scroll zoom
+const onCropWheel = (e: WheelEvent) => {
+  const delta = e.deltaY > 0 ? -0.08 : 0.08
+  cropZoom.value = Math.min(3, Math.max(0.5, cropZoom.value + delta))
+  drawCrop()
+}
+
+// Touch handlers
+const onCropTouchStart = (e: TouchEvent) => {
+  if (e.touches.length === 1) {
+    isDragging = true
+    dragStartX = e.touches[0].clientX - cropOffsetX
+    dragStartY = e.touches[0].clientY - cropOffsetY
+  } else if (e.touches.length === 2) {
+    lastTouchDist = Math.hypot(
+      e.touches[0].clientX - e.touches[1].clientX,
+      e.touches[0].clientY - e.touches[1].clientY
+    )
+  }
+}
+const onCropTouchMove = (e: TouchEvent) => {
+  if (e.touches.length === 1 && isDragging) {
+    cropOffsetX = e.touches[0].clientX - dragStartX
+    cropOffsetY = e.touches[0].clientY - dragStartY
+    drawCrop()
+  } else if (e.touches.length === 2) {
+    const dist = Math.hypot(
+      e.touches[0].clientX - e.touches[1].clientX,
+      e.touches[0].clientY - e.touches[1].clientY
+    )
+    const delta = (dist - lastTouchDist) * 0.005
+    cropZoom.value = Math.min(3, Math.max(0.5, cropZoom.value + delta))
+    lastTouchDist = dist
+    drawCrop()
+  }
+}
+const onCropTouchEnd = () => { isDragging = false }
+
+const closeCropModal = () => {
+  cropModalOpen.value = false
+  cropImg = null
+}
+
+/** Export canvas sebagai WebP blob, lalu upload */
+const confirmCropAndUpload = async () => {
+  const canvas = cropCanvasRef.value
+  if (!canvas) return
+
+  avatarUploading.value = true
+  avatarError.value = ''
+
+  try {
+    // Render hasil crop ke canvas output 400x400
+    const outputSize = 400
+    const outCanvas = document.createElement('canvas')
+    outCanvas.width = outputSize
+    outCanvas.height = outputSize
+    const ctx = outCanvas.getContext('2d')!
+    // Scale down dari cropSize ke outputSize
+    const ratio = outputSize / cropSize
+    if (cropImg) {
+      ctx.drawImage(
+        cropImg,
+        cropOffsetX * ratio, cropOffsetY * ratio,
+        cropImg.width * cropZoom.value * ratio,
+        cropImg.height * cropZoom.value * ratio
+      )
+    }
+
+    const blob = await new Promise<Blob | null>(res => outCanvas.toBlob(res, 'image/webp', 0.9))
+    if (!blob) throw new Error('Gagal memproses gambar.')
+
+    const file = new File([blob], 'avatar.webp', { type: 'image/webp' })
+
+    // Preview instan
+    avatarPreview.value = URL.createObjectURL(blob)
+    cropModalOpen.value = false
+
+    // Upload ke server
+    const { data: { session } } = await supabase.auth.getSession()
+    const token = session?.access_token
+    if (!token) throw new Error('Tidak terautentikasi.')
+
+    const formData = new FormData()
+    formData.append('file', file)
+
+    const res: any = await $fetch('/api/student/profile/upload-avatar', {
+      method: 'POST',
+      headers: { Authorization: `Bearer ${token}` },
+      body: formData,
+    })
+
+    if (res.avatar_url) {
+      avatarPreview.value = res.avatar_url
+      profile.value = null
+      await fetchProfile()
+    }
+  } catch (err: any) {
+    avatarError.value = err?.data?.statusMessage || err?.message || 'Gagal mengunggah foto.'
+    avatarPreview.value = ''
+  } finally {
+    avatarUploading.value = false
+  }
+}
 
 // ── Computed profile fields ──────────────────────────────────────
 const userName = computed(() =>

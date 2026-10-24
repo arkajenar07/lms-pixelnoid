@@ -57,21 +57,47 @@
       <!-- ── MAIN CONTENT ── -->
       <main class="p-4 sm:p-8 flex flex-col gap-0 max-w-[1280px] mx-auto w-full min-w-0 max-w-full">
 
-        <!-- ── TAB SWITCHER ── -->
-        <div class="flex items-center gap-1 mb-6 bg-white border border-[#E4E4E7] rounded-[12px] p-1 w-full sm:w-fit overflow-x-auto max-w-full">
+        <!-- ── TAB SWITCHER (style sama dengan tab kelas) ── -->
+        <div class="flex items-stretch bg-white border border-[#E4E4E7] rounded-2xl overflow-hidden shadow-xs w-full mb-6">
           <button
-            v-for="tab in tabConfig"
+            v-for="(tab, index) in tabConfig"
             :key="tab.id"
-            class="flex-1 sm:flex-initial relative flex items-center justify-center gap-2 px-4 py-2.5 rounded-[9px] text-[0.8rem] font-semibold transition-all duration-200 whitespace-nowrap"
-            :class="activeTab === tab.id
-              ? tab.id === 'tugas'
-                ? 'bg-[#18181B] text-white shadow-[0_1px_4px_rgba(0,0,0,0.12)]'
-                : 'bg-[#443E8D] text-white shadow-[0_1px_4px_rgba(68,62,141,0.2)]'
-              : 'text-[#71717A] hover:text-[#18181B] hover:bg-[#FAFAFC]'"
             @click="switchTab(tab.id)"
+            :title="tab.label"
+            class="group relative flex-1 flex flex-col items-center justify-center gap-1.5 py-3 px-2 text-center transition-all duration-200 cursor-pointer focus:outline-none"
+            :class="[
+              activeTab === tab.id
+                ? 'bg-[#F0EFF9] text-[#443E8D]'
+                : 'text-[#71717A] hover:bg-[#FAFAFC] hover:text-[#443E8D]',
+              index < tabConfig.length - 1 ? 'border-r border-[#E4E4E7]' : ''
+            ]"
           >
-            <component :is="tab.icon" class="w-4 h-4 flex-shrink-0" />
-            <span>{{ tab.label }}</span>
+            <!-- Active bar di atas -->
+            <div
+              class="absolute top-0 left-0 right-0 h-[2.5px] rounded-b-full transition-all duration-300"
+              :class="activeTab === tab.id ? 'bg-[#443E8D]' : 'bg-transparent'"
+            ></div>
+
+            <!-- Icon box -->
+            <div
+              class="w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-200 relative"
+              :class="activeTab === tab.id
+                ? 'bg-[#443E8D] text-white shadow-sm shadow-[#443E8D]/30'
+                : 'bg-[#F4F4F5] text-[#71717A] group-hover:bg-[#E8E7F5] group-hover:text-[#443E8D]'"
+            >
+              <component :is="tab.icon" class="w-4 h-4 flex-shrink-0" />
+              <!-- Badge -->
+              <div
+                v-if="tab.badge > 0"
+                class="absolute -top-1 -right-1 min-w-[14px] h-[14px] px-0.5 rounded-full text-[0.5rem] font-black flex items-center justify-center leading-none bg-[#EF4444] text-white"
+              >{{ tab.badge }}</div>
+            </div>
+
+            <!-- Label -->
+            <span
+              class="text-[0.68rem] font-bold leading-none transition-colors duration-200 whitespace-nowrap"
+              :class="activeTab === tab.id ? 'text-[#443E8D]' : 'text-[#A1A1AA] group-hover:text-[#443E8D]'"
+            >{{ tab.label }}</span>
           </button>
         </div>
 

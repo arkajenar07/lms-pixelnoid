@@ -2,69 +2,70 @@
   <div class="flex flex-col gap-6 w-full min-w-0 max-w-full">
 
     <!-- ── 1. RINGKASAN METRIK (HEADER STAT CARDS) ── -->
-    <section class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 w-full min-w-0">
+    <!-- ── 1. RINGKASAN METRIK (HEADER STAT CARDS) ── -->
+    <section class="grid grid-cols-2 gap-3 lg:grid-cols-4 w-full min-w-0">
       <!-- Card: Pending -->
-      <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between transition-all hover:border-[#D4D4D8] min-w-0">
-        <div class="flex items-center justify-between gap-2 min-w-0">
-          <span class="text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A] truncate">Perlu Dikerjakan</span>
-          <div class="w-8 h-8 rounded-xl bg-[#FFFBEB] border border-[#FDE68A] flex items-center justify-center text-[#D97706] shrink-0">
-            <ClockIcon class="w-4 h-4" />
+      <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between transition-all hover:border-[#D4D4D8] min-w-0">
+        <div class="flex items-center justify-between gap-1.5 sm:gap-2 min-w-0">
+          <span class="text-[0.6rem] sm:text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A] truncate">Perlu Dikerjakan</span>
+          <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-[#FFFBEB] border border-[#FDE68A] flex items-center justify-center text-[#D97706] shrink-0">
+            <ClockIcon class="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </div>
         </div>
-        <div class="mt-3">
-          <div class="text-[1.75rem] font-black text-[#18181B] tracking-tight leading-none">
+        <div class="mt-2.5 sm:mt-3">
+          <div class="text-[1.5rem] sm:text-[1.75rem] font-black text-[#18181B] tracking-tight leading-none">
             {{ metrics.pending }}
           </div>
-          <p class="text-[0.7rem] text-[#A1A1AA] font-medium mt-1 mb-0">Tugas belum dikumpulkan</p>
+          <p class="text-[0.62rem] sm:text-[0.7rem] text-[#A1A1AA] font-medium mt-1 mb-0 truncate">Tugas belum dikumpulkan</p>
         </div>
       </div>
 
       <!-- Card: Submitted -->
-      <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between transition-all hover:border-[#D4D4D8] min-w-0">
-        <div class="flex items-center justify-between gap-2 min-w-0">
-          <span class="text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A] truncate">Menunggu Review</span>
-          <div class="w-8 h-8 rounded-xl bg-[#EFF6FF] border border-[#BFDBFE] flex items-center justify-center text-[#2563EB] shrink-0">
-            <ArrowUpTrayIcon class="w-4 h-4" />
+      <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between transition-all hover:border-[#D4D4D8] min-w-0">
+        <div class="flex items-center justify-between gap-1.5 sm:gap-2 min-w-0">
+          <span class="text-[0.6rem] sm:text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A] truncate">Menunggu Review</span>
+          <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-[#EFF6FF] border border-[#BFDBFE] flex items-center justify-center text-[#2563EB] shrink-0">
+            <ArrowUpTrayIcon class="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </div>
         </div>
-        <div class="mt-3">
-          <div class="text-[1.75rem] font-black text-[#2563EB] tracking-tight leading-none">
+        <div class="mt-2.5 sm:mt-3">
+          <div class="text-[1.5rem] sm:text-[1.75rem] font-black text-[#2563EB] tracking-tight leading-none">
             {{ metrics.submitted }}
           </div>
-          <p class="text-[0.7rem] text-[#A1A1AA] font-medium mt-1 mb-0">Antre diperiksa mentor</p>
+          <p class="text-[0.62rem] sm:text-[0.7rem] text-[#A1A1AA] font-medium mt-1 mb-0 truncate">Antre diperiksa mentor</p>
         </div>
       </div>
 
       <!-- Card: Reviewed -->
-      <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between transition-all hover:border-[#D4D4D8] min-w-0">
-        <div class="flex items-center justify-between gap-2 min-w-0">
-          <span class="text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A] truncate">Telah Dinilai</span>
-          <div class="w-8 h-8 rounded-xl bg-[#ECFDF5] border border-[#A7F3D0] flex items-center justify-center text-[#059669] shrink-0">
-            <CheckCircleIcon class="w-4 h-4" />
+      <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between transition-all hover:border-[#D4D4D8] min-w-0">
+        <div class="flex items-center justify-between gap-1.5 sm:gap-2 min-w-0">
+          <span class="text-[0.6rem] sm:text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A] truncate">Telah Dinilai</span>
+          <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-[#ECFDF5] border border-[#A7F3D0] flex items-center justify-center text-[#059669] shrink-0">
+            <CheckCircleIcon class="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </div>
         </div>
-        <div class="mt-3">
-          <div class="text-[1.75rem] font-black text-[#059669] tracking-tight leading-none">
+        <div class="mt-2.5 sm:mt-3">
+          <div class="text-[1.5rem] sm:text-[1.75rem] font-black text-[#059669] tracking-tight leading-none">
             {{ metrics.reviewed }}
           </div>
-          <p class="text-[0.7rem] text-[#A1A1AA] font-medium mt-1 mb-0">Memiliki skor &amp; feedback</p>
+          <p class="text-[0.62rem] sm:text-[0.7rem] text-[#A1A1AA] font-medium mt-1 mb-0 truncate">Skor &amp; feedback masuk</p>
         </div>
       </div>
 
       <!-- Card: Average Grade -->
-      <div class="bg-white p-4 sm:p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between transition-all hover:border-[#D4D4D8] min-w-0">
-        <div class="flex items-center justify-between gap-2 min-w-0">
-          <span class="text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A] truncate">Rata-rata Nilai</span>
-          <div class="w-8 h-8 rounded-xl bg-[#F5F3FF] border border-[#DDD6FE] flex items-center justify-center text-[#7C3AED] shrink-0">
-            <TrophyIcon class="w-4 h-4" />
+      <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between transition-all hover:border-[#D4D4D8] min-w-0">
+        <div class="flex items-center justify-between gap-1.5 sm:gap-2 min-w-0">
+          <span class="text-[0.6rem] sm:text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A] truncate">Rata-rata Nilai</span>
+          <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-[#F5F3FF] border border-[#DDD6FE] flex items-center justify-center text-[#7C3AED] shrink-0">
+            <TrophyIcon class="w-3.5 h-3.5 sm:w-4 sm:h-4" />
           </div>
         </div>
-        <div class="mt-3">
-          <div class="text-[1.75rem] font-black text-[#18181B] tracking-tight leading-none">
+        <div class="mt-2.5 sm:mt-3">
+          <div class="text-[1.5rem] sm:text-[1.75rem] font-black text-[#18181B] tracking-tight leading-none">
             {{ metrics.averageGrade !== null ? metrics.averageGrade : '-' }}
-            <span v-if="metrics.averageGrade !== null" class="text-[0.9rem] font-semibold text-[#A1A1AA]">/100</span>
+            <span v-if="metrics.averageGrade !== null" class="text-[0.8rem] sm:text-[0.9rem] font-semibold text-[#A1A1AA]">/100</span>
           </div>
-          <p class="text-[0.7rem] text-[#A1A1AA] font-medium mt-1 mb-0">Rata-rata seluruh evaluasi</p>
+          <p class="text-[0.62rem] sm:text-[0.7rem] text-[#A1A1AA] font-medium mt-1 mb-0 truncate">Rata-rata evaluasi</p>
         </div>
       </div>
     </section>
