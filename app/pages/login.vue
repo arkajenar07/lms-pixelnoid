@@ -27,14 +27,14 @@
           </div>
 
           <!-- Headline -->
-          <div class="flex-1"> 
+          <div class="flex-1">
             <h2 class="text-4xl xl:text-5xl font-light leading-[1.2] tracking-tight text-gray-50 mb-4">
-              Selamat Datang<br />
-              Kembali di <em class="not-italic font-medium text-indigo-300">Pixelnoid Digital Academy.</em>
+              Bangun Skill.<br />
+              Wujudkan Potensimu di
+              <em class="not-italic font-medium text-indigo-300">Pixelnoid Digital Academy.</em>
             </h2>
             <p class="text-[0.9375rem] font-light leading-relaxed text-gray-400 max-w-[380px]">
-              Lanjutkan perjalanan belajarmu. Setiap sprint membawamu selangkah lebih dekat ke portofolio
-              yang berbicara lebih keras dari ijazah.
+              Kembangkan kemampuan, kerjakan proyek nyata, dan bangun portofolio yang membuktikan skill-mu. Setiap langkah adalah progres menuju masa depan di dunia teknologi.
             </p>
           </div>
 
@@ -46,9 +46,9 @@
               <span class="w-2.5 h-2.5 rounded-full bg-emerald-500"></span>
             </div>
             <div class="px-5 pb-5 font-mono text-[0.8125rem] leading-loose">
-              <div class="text-gray-400"><span class="text-purple-400">const</span> <span class="text-blue-400">user</span> = <span class="text-amber-400">'you'</span></div>
-              <div class="text-gray-400"><span class="text-purple-400">await</span> <span class="text-emerald-400">login</span>(user)</div>
-              <div class="text-gray-400"><span class="text-purple-400">return</span> <span class="text-amber-400">'welcome back 🚀'</span></div>
+              <div class="text-gray-400"><span class="text-purple-400">const</span> <span class="text-blue-400">skills</span> = <span class="text-amber-400">'your potential'</span></div>
+              <div class="text-gray-400"><span class="text-purple-400">await</span> <span class="text-emerald-400">buildPortfolio</span>(skills)</div>
+              <div class="text-gray-400"><span class="text-purple-400">return</span> <span class="text-amber-400">'ready to build'</span></div>
             </div>
           </div>
         </div>
