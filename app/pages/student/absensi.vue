@@ -38,71 +38,37 @@
 
       <main class="p-4 sm:p-6 lg:p-8 flex flex-col gap-6 max-w-[1440px] mx-auto w-full min-w-0 max-w-full">
         <!-- Stats Summary Cards -->
-        <div class="grid grid-cols-2 gap-3 lg:grid-cols-4 w-full min-w-0">
-          <!-- Card: Total -->
-          <div class="bg-white p-3.5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between transition-all hover:border-[#D4D4D8] hover:-translate-y-0.5">
+        <section class="grid grid-cols-2 gap-3 lg:grid-cols-4 w-full min-w-0">
+          <article
+            v-for="stat in absensiSummaryStats"
+            :key="stat.label"
+            class="rounded-2xl border border-[#E4E4E7] bg-white p-3.5 shadow-sm transition-transform duration-200 hover:-translate-y-0.5"
+          >
             <div class="flex items-start justify-between gap-2">
-              <span class="text-[0.6rem] font-bold uppercase tracking-wider text-[#71717A] leading-snug">Total Presensi</span>
-              <div class="w-7 h-7 rounded-xl bg-[#F0EFF9] border border-[#D8D6F0] flex items-center justify-center text-[#443E8D] shrink-0">
-                <ClipboardDocumentCheckIcon class="w-3.5 h-3.5" />
+              <div class="min-w-0 flex-1">
+                <p class="truncate text-[0.6rem] font-bold uppercase tracking-wider text-[#71717A]">
+                  {{ stat.label }}
+                </p>
+                <p class="mt-1.5 text-[1.5rem] font-bold tracking-tight text-[#18181B] leading-none">
+                  <span v-if="isLoading" class="animate-pulse text-[#E4E4E7]">—</span>
+                  <span v-else>{{ stat.value }}</span>
+                </p>
+                <p class="mt-1 truncate text-[0.65rem] text-[#71717A]">{{ stat.hint }}</p>
+              </div>
+              <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-[#ECECF1] bg-[#FAFAFB] text-[#443E8D]">
+                <component :is="stat.icon" class="h-4 w-4" />
               </div>
             </div>
-            <div class="mt-2">
-              <div class="text-[1.5rem] font-black text-[#18181B] tracking-tight leading-none">
-                {{ myAbsensiList.length }}
-              </div>
-              <p class="text-[0.65rem] text-[#A1A1AA] font-medium mt-1 mb-0">Total sesi kamu</p>
-            </div>
-          </div>
-
-          <!-- Card: Pending -->
-          <div class="bg-white p-3.5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between transition-all hover:border-[#D4D4D8] hover:-translate-y-0.5">
-            <div class="flex items-start justify-between gap-2">
-              <span class="text-[0.6rem] font-bold uppercase tracking-wider text-[#71717A] leading-snug">Menunggu</span>
-              <div class="w-7 h-7 rounded-xl bg-[#FFFBEB] border border-[#FDE68A] flex items-center justify-center text-[#D97706] shrink-0">
-                <ClockIcon class="w-3.5 h-3.5" />
+            <div v-if="stat.progress !== undefined" class="mt-3">
+              <div class="h-1 w-full overflow-hidden rounded-full bg-[#F1F1F4]">
+                <div
+                  class="h-full rounded-full bg-[#443E8D] transition-all duration-700 ease-out"
+                  :style="{ width: `${stat.progress}%` }"
+                />
               </div>
             </div>
-            <div class="mt-2">
-              <div class="text-[1.5rem] font-black text-[#D97706] tracking-tight leading-none">
-                {{ myAbsensiList.filter(a => a.status === 'pending').length }}
-              </div>
-              <p class="text-[0.65rem] text-[#A1A1AA] font-medium mt-1 mb-0">Antre konfirmasi</p>
-            </div>
-          </div>
-
-          <!-- Card: Approved -->
-          <div class="bg-white p-3.5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between transition-all hover:border-[#D4D4D8] hover:-translate-y-0.5">
-            <div class="flex items-start justify-between gap-2">
-              <span class="text-[0.6rem] font-bold uppercase tracking-wider text-[#71717A] leading-snug">Disetujui</span>
-              <div class="w-7 h-7 rounded-xl bg-[#ECFDF5] border border-[#A7F3D0] flex items-center justify-center text-[#059669] shrink-0">
-                <CheckCircleIcon class="w-3.5 h-3.5" />
-              </div>
-            </div>
-            <div class="mt-2">
-              <div class="text-[1.5rem] font-black text-[#059669] tracking-tight leading-none">
-                {{ myAbsensiList.filter(a => a.status === 'approved').length }}
-              </div>
-              <p class="text-[0.65rem] text-[#A1A1AA] font-medium mt-1 mb-0">Terverifikasi</p>
-            </div>
-          </div>
-
-          <!-- Card: Rejected -->
-          <div class="bg-white p-3.5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between transition-all hover:border-[#D4D4D8] hover:-translate-y-0.5">
-            <div class="flex items-start justify-between gap-2">
-              <span class="text-[0.6rem] font-bold uppercase tracking-wider text-[#71717A] leading-snug">Ditolak</span>
-              <div class="w-7 h-7 rounded-xl bg-[#FEF2F2] border border-[#FECACA] flex items-center justify-center text-[#E11D48] shrink-0">
-                <XCircleIcon class="w-3.5 h-3.5" />
-              </div>
-            </div>
-            <div class="mt-2">
-              <div class="text-[1.5rem] font-black text-[#E11D48] tracking-tight leading-none">
-                {{ myAbsensiList.filter(a => a.status === 'rejected').length }}
-              </div>
-              <p class="text-[0.65rem] text-[#A1A1AA] font-medium mt-1 mb-0">Perlu perbaikan</p>
-            </div>
-          </div>
-        </div>
+          </article>
+        </section>
 
         <!-- Filter & Search Controls -->
         <div class="flex flex-col sm:flex-row gap-3">
@@ -423,26 +389,7 @@
             </select>
           </div>
 
-          <!-- 2. Murid (Disembunyikan di HP karena sudah otomatis akun sendiri, tampil di laptop) -->
-          <div class="hidden sm:block">
-            <label class="block text-[0.7rem] font-bold text-[#52525B] uppercase tracking-wider mb-1.5">
-              Murid
-            </label>
-            <div class="flex items-center gap-3 p-3.5 rounded-xl bg-[#FAFAFC] border border-[#E4E4E7]">
-              <div class="w-8 h-8 rounded-full bg-[#F0EFF9] text-[#443E8D] border border-[#D8D6F0]/60 text-xs font-bold flex items-center justify-center shrink-0">
-                {{ currentStudentInitials }}
-              </div>
-              <div class="flex-1 min-w-0">
-                <p class="text-xs font-semibold text-[#18181B] truncate">{{ currentStudentName }}</p>
-                <p class="text-[11px] text-[#71717A]">@{{ currentStudentUsername }} · Otomatis akun Anda</p>
-              </div>
-              <span class="text-[10px] font-bold text-[#443E8D] bg-[#F0EFF9] px-2.5 py-1 rounded-full border border-[#D8D6F0] shrink-0">
-                Otomatis Terpilih
-              </span>
-            </div>
-          </div>
-
-          <!-- 3. Tanggal Sesi & Jam Sesi (2 kolom di mobile & desktop) -->
+          <!-- 2. Tanggal Sesi & Jam Sesi (2 kolom di mobile & desktop) -->
           <div class="grid grid-cols-2 gap-2.5 sm:gap-4">
             <div>
               <label class="block text-[0.68rem] sm:text-[0.7rem] font-bold text-[#52525B] uppercase tracking-wider mb-1 sm:mb-1.5">
@@ -807,6 +754,42 @@ onMounted(async () => {
 
 // Daftar absensi milik murid yang sedang login (sudah difilter langsung di API / Supabase)
 const myAbsensiList = computed(() => absensiList.value)
+
+const absensiSummaryStats = computed(() => {
+  const total = myAbsensiList.value.length
+  const pending = myAbsensiList.value.filter(a => a.status === 'pending').length
+  const approved = myAbsensiList.value.filter(a => a.status === 'approved').length
+  const rejected = myAbsensiList.value.filter(a => a.status === 'rejected').length
+  const approvalRate = total > 0 ? Math.round((approved / total) * 100) : 0
+
+  return [
+    {
+      label: 'Total Presensi',
+      value: isLoading.value ? '—' : String(total),
+      hint: 'Total sesi kamu',
+      icon: ClipboardDocumentCheckIcon,
+      progress: approvalRate,
+    },
+    {
+      label: 'Menunggu',
+      value: isLoading.value ? '—' : String(pending),
+      hint: 'Antre konfirmasi',
+      icon: ClockIcon,
+    },
+    {
+      label: 'Disetujui',
+      value: isLoading.value ? '—' : String(approved),
+      hint: 'Terverifikasi',
+      icon: CheckCircleIcon,
+    },
+    {
+      label: 'Ditolak',
+      value: isLoading.value ? '—' : String(rejected),
+      hint: 'Perlu perbaikan',
+      icon: XCircleIcon,
+    },
+  ]
+})
 
 // Filtered List: filter berdasarkan input pencarian dan status di tampilan UI
 const filteredAbsensi = computed(() => {

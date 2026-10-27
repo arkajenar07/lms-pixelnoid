@@ -392,6 +392,7 @@ const handleRegister = async () => {
   if (data.user) {
     const { error: dbError } = await supabase.from('users').insert({
       id: data.user.id,
+      email: form.email.toLowerCase().trim(),
       fullname: fullName,
       username: form.username,
       roles: ['student']

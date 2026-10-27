@@ -30,14 +30,19 @@
 
     <!-- Content -->
     <template v-else>
-      <!-- Progress + Stats + CTA -->
+      <!-- Progress + CTA -->
       <section class="flex flex-col gap-5 py-6 px-6 rounded-2xl bg-[#FAFAFF] border border-[#443E8D]/10">
 
-        <!-- ① Progress Bar -->
+        <!-- Progress Bar with XP inline -->
         <div class="flex flex-col gap-2">
           <div class="flex items-center justify-between">
             <span class="text-[0.72rem] font-semibold text-[#443E8D] uppercase tracking-wider">Progress Belajar</span>
-            <span class="text-[0.72rem] font-bold text-[#443E8D]">{{ overallProgress }}%</span>
+            <div class="flex items-center gap-3">
+              <span v-if="totalXp" class="text-[0.72rem] text-[#A1A1AA]">
+                <span class="font-bold text-[#443E8D]">{{ xpEarned }}</span> / {{ totalXp }} XP
+              </span>
+              <span class="text-[0.72rem] font-bold text-[#443E8D]">{{ overallProgress }}%</span>
+            </div>
           </div>
           <div class="w-full h-2.5 rounded-full bg-[#E8E6F5] overflow-hidden">
             <div
@@ -45,29 +50,10 @@
               :style="{ width: overallProgress + '%' }"
             />
           </div>
-          <p class="text-[0.7rem] text-[#AAA]">{{ completedLessons }} dari {{ totalLessons }} pelajaran selesai</p>
+          <p class="text-[0.7rem] text-[#AAA]">{{ completedLessons }} dari {{ totalLessons }} pelajaran selesai · {{ modules.length }} modul</p>
         </div>
 
-        <!-- ② Stats Row -->
-        <div class="flex gap-3 flex-wrap">
-          <div class="rounded-lg bg-white border border-[#443E8D]/10 px-4 py-3 min-w-[130px] flex-1">
-            <p class="text-[0.62rem] text-[#999] uppercase tracking-wider font-semibold mb-1">Modul Tersedia</p>
-            <p class="text-[1.4rem] font-bold text-[#443E8D] leading-tight">{{ modules.length }}<span class="text-[0.85rem] text-[#CCC] font-normal ml-1">modul</span></p>
-            <p class="text-[0.68rem] text-[#BBB] mt-1">Dalam kelas ini</p>
-          </div>
-          <div class="rounded-lg bg-white border border-[#443E8D]/10 px-4 py-3 min-w-[130px] flex-1">
-            <p class="text-[0.62rem] text-[#999] uppercase tracking-wider font-semibold mb-1">Total Pelajaran</p>
-            <p class="text-[1.4rem] font-bold text-[#443E8D] leading-tight">{{ totalLessons }}</p>
-            <p class="text-[0.68rem] text-[#BBB] mt-1">Di semua modul</p>
-          </div>
-          <div class="rounded-lg bg-white border border-[#443E8D]/10 px-4 py-3 min-w-[130px] flex-1">
-            <p class="text-[0.62rem] text-[#999] uppercase tracking-wider font-semibold mb-1">XP Didapat</p>
-            <p class="text-[1.4rem] font-bold text-[#443E8D] leading-tight">{{ xpEarned }} <span class="text-[0.85rem] text-[#CCC] font-normal">/ {{ totalXp }}</span></p>
-            <p class="text-[0.68rem] text-[#BBB] mt-1">Dari progres kelas</p>
-          </div>
-        </div>
-
-        <!-- ③ Lanjut Belajar CTA -->
+        <!-- Lanjut Belajar CTA -->
         <NuxtLink
           v-if="activeModuleToStudy"
           :to="`/student/class/${activeModuleToStudy.slug}`"
@@ -79,95 +65,182 @@
       </section>
 
       <!-- Two-column layout -->
-      <div class="grid grid-cols-1 lg:grid-cols-[1fr_260px] gap-10 items-start">
+      <div class="grid grid-cols-1 lg:grid-cols-[1fr_260px] gap-8 items-start">
 
-        <!-- Module list -->
+        <!-- Module Cards Grid -->
         <div class="flex flex-col">
-          <h2 class="text-[0.75rem] font-semibold text-[#999] uppercase tracking-wider mb-5">Materi ({{ modules.length }} Modul)</h2>
+          <div class="flex items-center justify-between gap-3 mb-5">
+            <div>
+              <h2 class="text-[0.88rem] sm:text-[0.98rem] font-bold text-[#18181B] tracking-tight">Pilih Materi Belajar</h2>
+              <p class="text-[0.72rem] sm:text-[0.78rem] text-[#71717A] mt-0.5">Bebas pilih materi apa saja yang ingin kamu pelajari</p>
+            </div>
+            <span class="text-[0.7rem] sm:text-[0.75rem] font-bold text-[#443E8D] bg-[#F0EFF9] border border-[#443E8D]/15 px-3 py-1 rounded-full whitespace-nowrap">
+              {{ modules.length }} Modul
+            </span>
+          </div>
 
-          <div class="flex flex-col">
-            <div v-for="(mod, idx) in modules" :key="mod.slug" class="relative flex gap-4 pb-6 last:pb-0">
-
-              <!-- Timeline line -->
-              <div class="flex flex-col items-center gap-0 flex-shrink-0">
-                <div
-                  class="w-7 h-7 rounded-full flex items-center justify-center border-2 text-[0.6rem] flex-shrink-0 z-10 transition-colors"
-                  :class="{
-                    'bg-emerald-500 border-emerald-500 text-white shadow-sm': mod.is_completed,
-                    'bg-white border-[#DDD] text-[#BBB]': !mod.is_completed && !mod.is_locked_default,
-                    'bg-[#F7F7F7] border-[#EEE] text-[#CCC]': !mod.is_completed && mod.is_locked_default,
-                  }"
-                >
-                  <CheckIcon v-if="mod.is_completed" class="w-3.5 h-3.5 stroke-[3]" />
-                  <LockClosedIcon v-else-if="mod.is_locked_default" class="w-3 h-3" />
-                  <span v-else class="text-[0.6rem] font-semibold">{{ idx + 1 }}</span>
-                </div>
-                <div v-if="idx < modules.length - 1" class="w-px flex-1 min-h-[24px] mt-1" :class="mod.is_completed ? 'bg-emerald-200' : 'bg-[#EEE]'"></div>
-              </div>
-
-              <!-- Card -->
-              <div
-                class="flex-1 rounded-xl border p-4 mb-1 transition-all"
-                :class="{
-                  'border-emerald-200 bg-emerald-50/20 hover:border-emerald-300': mod.is_completed,
-                  'border-[#F0F0F0] bg-white hover:border-[#443E8D]/20': !mod.is_completed && !mod.is_locked_default,
-                  'opacity-50 pointer-events-none border-[#F0F0F0] bg-white': mod.is_locked_default,
-                }"
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 lg:gap-5">
+            <template v-for="(mod, idx) in modules" :key="mod.slug">
+              <!-- Unlocked Card (Clickable NuxtLink) -->
+              <NuxtLink
+                v-if="!mod.is_locked_default"
+                :to="`/student/class/${mod.slug}`"
+                class="group relative flex flex-col bg-white rounded-2xl border border-slate-200 overflow-hidden no-underline transition-all duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-[#443E8D]/12 hover:border-[#443E8D]/30"
               >
-                <div class="flex items-start justify-between gap-3 mb-2">
-                  <div class="flex items-center gap-2 flex-wrap">
-                    <h3
-                      class="text-[0.875rem] font-medium m-0"
-                      :class="mod.is_completed ? 'text-emerald-950 font-semibold' : 'text-[#111]'"
+                <!-- Thumbnail -->
+                <div
+                  v-if="mod.thumbnail_url"
+                  class="relative h-40 overflow-hidden bg-slate-900"
+                >
+                  <img
+                    :src="mod.thumbnail_url"
+                    :alt="mod.title"
+                    class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                  <div class="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                  <!-- Badges overlay -->
+                  <div class="absolute top-3 left-3 right-3 flex items-start justify-between">
+                    <span class="text-[0.65rem] font-bold px-2.5 py-1 rounded-full bg-white/20 backdrop-blur-sm text-white border border-white/30">
+                      Modul {{ idx + 1 }}
+                    </span>
+                    <span v-if="mod.xp_reward" class="text-[0.65rem] font-black px-2.5 py-1 rounded-full bg-amber-500 text-white flex items-center gap-1">
+                      <StarIcon class="w-3 h-3 fill-white" />+{{ mod.xp_reward }} XP
+                    </span>
+                  </div>
+                </div>
+
+                <!-- No Thumbnail — colored accent header -->
+                <div
+                  v-else
+                  class="relative px-5 pt-5 pb-4"
+                >
+                  <!-- Top badge row -->
+                  <div class="flex items-center justify-between mb-3">
+                    <span
+                      class="text-[0.63rem] font-bold px-2.5 py-1 rounded-full border"
+                      :class="mod.is_completed
+                        ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                        : (mod.completed_lessons || 0) > 0
+                          ? 'bg-indigo-50 text-indigo-700 border-indigo-200'
+                          : 'bg-[#F0EFF9] text-[#443E8D] border-[#443E8D]/20'"
                     >
+                      {{ mod.is_completed ? '✓ Selesai' : (mod.completed_lessons || 0) > 0 ? '● Sedang Belajar' : `Modul ${idx + 1}` }}
+                    </span>
+                    <span v-if="mod.xp_reward" class="text-[0.63rem] font-black px-2.5 py-1 rounded-full bg-amber-500 text-white flex items-center gap-1">
+                      <StarIcon class="w-3 h-3 fill-white" />+{{ mod.xp_reward }} XP
+                    </span>
+                  </div>
+                </div>
+
+                <!-- Card Body -->
+                <div class="flex flex-col flex-1 px-5 pb-5" :class="mod.thumbnail_url ? 'pt-4' : 'pt-0'">
+                  <!-- Title with left accent bar -->
+                  <div class="flex gap-3 mb-2">
+                    <div
+                      class="w-1 rounded-full flex-shrink-0 mt-0.5"
+                      :class="mod.is_completed ? 'bg-emerald-500' : (mod.completed_lessons || 0) > 0 ? 'bg-indigo-500' : 'bg-[#443E8D]'"
+                      style="min-height: 1.4rem"
+                    />
+                    <h3 class="text-[1rem] font-bold leading-snug line-clamp-2 text-slate-900 group-hover:text-[#443E8D] transition-colors m-0">
                       {{ mod.title }}
                     </h3>
+                  </div>
 
-                    <!-- Completed Badge -->
-                    <span v-if="mod.is_completed" class="text-[0.65rem] font-bold px-2 py-0.5 rounded-full bg-emerald-100 text-emerald-700 flex items-center gap-1 border border-emerald-200">
-                      <CheckIcon class="w-3 h-3 stroke-[3]" /> Selesai
+                  <!-- Description -->
+                  <p v-if="mod.description" class="text-[0.78rem] text-slate-500 line-clamp-2 leading-relaxed m-0 mb-4">
+                    {{ mod.description }}
+                  </p>
+                  <div v-else class="mb-4" />
+
+                  <!-- Spacer to push footer down -->
+                  <div class="flex-1" />
+
+                  <!-- Meta row: star rating style + lessons count -->
+                  <div class="flex items-center gap-3 mb-3 text-[0.75rem] text-slate-500">
+                    <span class="flex items-center gap-1">
+                      <StarIcon class="w-3.5 h-3.5 fill-amber-400 text-amber-400" />
+                      <span class="font-bold text-slate-700">
+                        {{ mod.is_completed ? '100%' : Math.round(((mod.completed_lessons || 0) / (mod.total_lessons || mod.module_lessons?.length || 1)) * 100) + '%' }}
+                      </span>
                     </span>
-                    <span v-else-if="mod.is_locked_default" class="text-[0.6rem] font-medium px-1.5 py-0.5 rounded-md bg-[#F7F7F7] text-[#999] flex items-center gap-1">
-                      <LockClosedIcon class="w-2.5 h-2.5" />Terkunci
+                    <span class="text-slate-300">|</span>
+                    <span v-if="mod.estimated_minutes" class="flex items-center gap-1">
+                      <ClockIcon class="w-3.5 h-3.5 text-slate-400" />
+                      {{ formatDuration(mod.estimated_minutes) }}
+                    </span>
+                    <span v-else>{{ mod.module_lessons?.length || 0 }} Pelajaran</span>
+                    <span class="text-slate-300">|</span>
+                    <span class="font-semibold" :class="mod.completed_lessons ? 'text-[#443E8D]' : 'text-slate-400'">
+                      {{ mod.completed_lessons || 0 }}/{{ mod.total_lessons || mod.module_lessons?.length || 0 }} selesai
                     </span>
                   </div>
 
-                  <span v-if="mod.xp_reward" class="text-[0.7rem] font-medium flex-shrink-0" :class="mod.is_completed ? 'text-emerald-600 font-bold' : 'text-[#999]'">
-                    +{{ mod.xp_reward }} XP
+                  <!-- Progress bar -->
+                  <div v-if="(mod.total_lessons || mod.module_lessons?.length)" class="w-full h-1.5 rounded-full bg-slate-100 overflow-hidden mb-4">
+                    <div
+                      class="h-full rounded-full transition-all duration-500"
+                      :class="mod.is_completed ? 'bg-emerald-500' : 'bg-[#443E8D]'"
+                      :style="{ width: Math.min(100, Math.round(((mod.completed_lessons || 0) / (mod.total_lessons || mod.module_lessons?.length || 1)) * 100)) + '%' }"
+                    />
+                  </div>
+
+                  <!-- CTA Button — primary brand color -->
+                  <div
+                    class="w-full py-2.5 px-5 rounded-xl text-[0.82rem] font-bold flex items-center justify-between transition-all duration-200 group-hover:scale-[1.02]"
+                    :class="mod.is_completed
+                      ? 'bg-slate-100 text-slate-600 group-hover:bg-[#443E8D] group-hover:text-white'
+                      : (mod.completed_lessons || 0) > 0
+                        ? 'bg-[#312C6A] text-white'
+                        : 'bg-[#443E8D] text-white'"
+                  >
+                    <span>{{ mod.is_completed ? 'Buka Kembali' : ((mod.completed_lessons || 0) > 0 ? 'Lanjut Belajar' : 'Mulai Belajar') }}</span>
+                    <ArrowRightIcon class="w-4 h-4 transition-transform duration-200 group-hover:translate-x-1" />
+                  </div>
+                </div>
+              </NuxtLink>
+
+              <!-- Locked Card (Non-clickable) -->
+              <div
+                v-else
+                class="relative flex flex-col bg-[#FAFAFA] rounded-2xl border border-slate-200 overflow-hidden opacity-55 cursor-not-allowed select-none"
+              >
+                <!-- Locked header pill -->
+                <div class="px-5 pt-5 pb-3">
+                  <span class="text-[0.63rem] font-bold px-2.5 py-1 rounded-full bg-slate-100 text-slate-500 border border-slate-200 flex items-center gap-1 w-fit">
+                    <LockClosedIcon class="w-3 h-3" /> Terkunci
                   </span>
                 </div>
 
-                <p v-if="mod.description" class="text-[0.78rem] text-[#888] leading-relaxed m-0 mb-3">{{ mod.description }}</p>
-
-                <div class="flex items-center justify-between">
-                  <div class="flex items-center gap-3 text-[0.7rem]" :class="mod.is_completed ? 'text-emerald-600 font-medium' : 'text-[#BBB]'">
-                    <span v-if="mod.estimated_minutes">{{ formatDuration(mod.estimated_minutes) }}</span>
-                    <span v-if="mod.estimated_minutes && mod.module_lessons?.length">·</span>
-                    <span v-if="mod.module_lessons?.length">
-                      {{ mod.completed_lessons !== undefined ? `${mod.completed_lessons} / ${mod.total_lessons || mod.module_lessons.length} pelajaran` : `${mod.module_lessons.length} pelajaran` }}
-                    </span>
+                <div class="flex flex-col flex-1 px-5 pb-5">
+                  <div class="flex gap-3 mb-2">
+                    <div class="w-1 rounded-full bg-slate-300 flex-shrink-0 mt-0.5" style="min-height: 1.4rem" />
+                    <h3 class="text-[1rem] font-semibold text-slate-500 line-clamp-2 leading-snug m-0">
+                      {{ mod.title }}
+                    </h3>
                   </div>
-
-                  <NuxtLink
-                    v-if="!mod.is_locked_default"
-                    :to="`/student/class/${mod.slug}`"
-                    class="text-[0.75rem] font-semibold transition-colors no-underline flex items-center gap-1"
-                    :class="mod.is_completed ? 'text-emerald-700 hover:text-emerald-900' : 'text-[#999] hover:text-[#443E8D]'"
-                  >
-                    {{ mod.is_completed ? 'Buka Kembali →' : 'Mulai →' }}
-                  </NuxtLink>
+                  <p v-if="mod.description" class="text-[0.78rem] text-slate-400 line-clamp-2 leading-relaxed m-0 mb-4">
+                    {{ mod.description }}
+                  </p>
+                  <div class="flex-1" />
+                  <div class="flex items-center justify-between text-[0.72rem] text-slate-400 mb-3">
+                    <span>{{ mod.module_lessons?.length || 0 }} Pelajaran</span>
+                    <span class="italic">Belum Tersedia</span>
+                  </div>
+                  <div class="w-full py-2.5 px-5 rounded-xl text-[0.82rem] font-bold bg-slate-100 text-slate-400 flex items-center justify-between">
+                    <span>Terkunci</span>
+                    <LockClosedIcon class="w-4 h-4" />
+                  </div>
                 </div>
               </div>
-
-            </div>
+            </template>
           </div>
         </div>
 
-        <!-- Bonus sidebar -->
+        <!-- Sidebar -->
         <div class="lg:sticky lg:top-[120px] flex flex-col gap-6">
           <div>
             <h2 class="text-[0.75rem] font-semibold text-[#999] uppercase tracking-wider mb-4">Info Kelas</h2>
-            <div class="rounded-xl border border-[#F0F0F0] bg-white p-4 space-y-3">
+            <div class="rounded-xl border border-[#F0F0F0] bg-white p-4 space-y-3 shadow-xs">
               <div class="flex items-center gap-2 text-[0.8rem] text-[#555]">
                 <Square3Stack3DIcon class="w-4 h-4 text-[#443E8D]" />
                 <span>{{ modules.length }} Modul</span>
@@ -193,7 +266,7 @@
 import { ref, computed, watch } from 'vue'
 import {
   ArrowRightIcon, CheckIcon, BookOpenIcon, LockClosedIcon,
-  Square3Stack3DIcon, ExclamationCircleIcon, StarIcon
+  Square3Stack3DIcon, ExclamationCircleIcon, StarIcon, ClockIcon
 } from '@heroicons/vue/24/outline'
 
 const props = defineProps<{

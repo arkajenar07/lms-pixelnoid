@@ -25,24 +25,38 @@
     </div>
 
     <!-- Nav Section -->
-    <nav class="flex-1 overflow-y-auto px-4 py-8 flex flex-col gap-1 custom-scrollbar">
-      <NuxtLink
-        v-for="item in navItems"
-        :key="item.to"
-        :to="item.to"
-        class="group flex items-center gap-3.5 px-4 py-3 rounded-xl transition-all duration-200 relative overflow-hidden"
-        :class="currentPath === item.to || currentPath.startsWith(item.to + '/') 
-          ? 'bg-gradient-to-r from-indigo-500/10 to-transparent text-white' 
-          : 'text-gray-400 hover:text-white hover:bg-white/5'"
-        @click="emit('update:open', false)"
+    <nav class="flex-1 overflow-y-auto px-4 py-8 flex flex-col gap-1 custom-scrollbar relative">
+      <!-- Sliding Active Indicator (Geser Antar Menu - Pixel Perfect) -->
+      <div
+        v-show="pillVisible"
+        class="absolute top-0 left-4 right-4 rounded-xl bg-gradient-to-r from-indigo-500/20 via-indigo-500/10 to-transparent border border-indigo-500/30 shadow-[0_0_15px_rgba(99,102,241,0.15)] pointer-events-none"
+        :class="enableTransition ? 'transition-transform duration-300 ease-[cubic-bezier(0.2,0.8,0.2,1)]' : ''"
+        :style="{
+          transform: `translateY(${pillTop}px)`,
+          height: `${pillHeight}px`,
+        }"
       >
-        <!-- Active Indicator -->
-        <div 
-          v-if="currentPath === item.to || currentPath.startsWith(item.to + '/')"
-          class="absolute left-0 top-1/2 -translate-y-1/2 w-1 h-6 bg-indigo-500 rounded-r-full shadow-[0_0_8px_rgba(99,102,241,0.5)]"
-        ></div>
+        <!-- Neon glowing bar di sisi kiri indikator geser -->
+        <div class="absolute left-0 top-1/2 -translate-y-1/2 w-1.5 h-6 bg-gradient-to-b from-indigo-400 to-indigo-600 rounded-r-full shadow-[0_0_10px_rgba(99,102,241,0.9)]"></div>
+      </div>
 
-        <div class="flex-shrink-0 transition-transform group-hover:scale-110" :class="currentPath === item.to || currentPath.startsWith(item.to + '/') ? 'text-indigo-400' : 'text-gray-500 group-hover:text-gray-300'">
+      <NuxtLink
+        v-for="(item, index) in navItems"
+        :key="item.to"
+        :ref="(el: any) => setItemRef(el, index)"
+        :to="item.to"
+        prefetch
+        @mouseenter="preloadRouteComponents(item.to)"
+        @click="handleNavClick(index)"
+        class="group flex items-center gap-3.5 px-4 py-3 rounded-xl transition-colors duration-200 relative overflow-hidden z-[1]"
+        :class="isActive(item.to) 
+          ? 'text-white font-semibold' 
+          : 'text-gray-400 hover:text-white hover:bg-white/5'"
+      >
+        <div
+          class="flex-shrink-0 transition-transform duration-200 group-hover:scale-110"
+          :class="isActive(item.to) ? 'text-indigo-400' : 'text-gray-500 group-hover:text-gray-300'"
+        >
           <component :is="item.icon" class="w-5 h-5 stroke-[1.5]" />
         </div>
         
@@ -55,17 +69,37 @@
     </nav>
 
     <!-- User Profile Section -->
-    <div class="p-4 border-t border-white/5 bg-black/20">
-      <div class="flex items-center gap-3 p-3 rounded-2xl bg-white/5 border border-white/5 transition-all hover:bg-white/[0.08]">
-        <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-[#443E8D] to-indigo-600 flex items-center justify-center text-white text-sm font-black shadow-lg shadow-indigo-900/20">
-          {{ userInitials }}
-        </div>
-        <div class="flex-1 min-w-0">
-          <p class="text-[0.8125rem] font-bold text-white truncate leading-tight">{{ userName }}</p>
-          <p class="text-[0.625rem] font-medium text-gray-500 truncate mt-0.5">@{{ userUsername }} · {{ userRole }}</p>
-        </div>
+    <div class="p-3 border-t border-white/5 bg-black/20 shrink-0 w-full">
+      <div class="flex items-center gap-2.5 p-2 rounded-xl bg-white/5 border border-white/5 transition-all hover:bg-white/[0.08]">
+        <NuxtLink 
+          to="/student/profil"
+          prefetch
+          @click="emit('update:open', false)"
+          @mouseenter="preloadRouteComponents('/student/profil')"
+          class="w-9 h-9 rounded-xl bg-gradient-to-br from-[#443E8D] to-indigo-600 flex items-center justify-center text-white text-xs font-black shadow-lg shadow-indigo-900/20 overflow-hidden shrink-0 select-none no-underline"
+          title="Lihat Profil"
+        >
+          <img
+            v-if="userAvatar"
+            :src="userAvatar"
+            alt="Foto Profil"
+            class="w-full h-full object-cover"
+            @error="avatarLoadError = true"
+          />
+          <span v-else>{{ userInitials }}</span>
+        </NuxtLink>
+        <NuxtLink
+          to="/student/profil"
+          prefetch
+          @click="emit('update:open', false)"
+          @mouseenter="preloadRouteComponents('/student/profil')"
+          class="flex-1 min-w-0 no-underline group/prof block"
+        >
+          <p class="text-[0.8125rem] font-bold text-white truncate leading-tight group-hover/prof:text-indigo-300 transition-colors" :title="userName">{{ userName }}</p>
+          <p class="text-[0.625rem] font-medium text-gray-400 truncate mt-0.5">@{{ userUsername }} · {{ userRole }}</p>
+        </NuxtLink>
         <button 
-          class="p-2 rounded-lg text-gray-500 hover:text-rose-400 hover:bg-rose-400/10 transition-all group"
+          class="p-1.5 rounded-lg text-gray-500 hover:text-rose-400 hover:bg-rose-400/10 transition-all group shrink-0 cursor-pointer"
           title="Logout"
           @click="handleLogout"
         >
@@ -77,7 +111,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRoute } from 'vue-router'
 import {
   Squares2X2Icon,
@@ -105,29 +139,58 @@ const emit = defineEmits<{
 
 const supabase = useSupabaseClient()
 const user = useSupabaseUser()
+const sessionUser = ref<any>(null)
 const { profile, fetchProfile } = useUserProfile()
 
-onMounted(() => {
-  fetchProfile()
+const avatarLoadError = ref(false)
+
+const userAvatar = computed(() => {
+  if (avatarLoadError.value) return null
+  return (
+    profile.value?.avatar_url ||
+    user.value?.user_metadata?.avatar_url ||
+    user.value?.user_metadata?.picture ||
+    sessionUser.value?.user_metadata?.avatar_url ||
+    sessionUser.value?.user_metadata?.picture ||
+    null
+  )
 })
 
-const handleLogout = async () => {
-  await supabase.auth.signOut()
-  emit('logout')
-  navigateTo('/login')
-}
+watch(() => [profile.value?.avatar_url, user.value?.user_metadata?.avatar_url], () => {
+  avatarLoadError.value = false
+})
 
 const userName = computed(() => {
-  return profile.value?.fullname || user.value?.user_metadata?.full_name || user.value?.user_metadata?.name || user.value?.email?.split('@')[0] || 'Guest'
+  return (
+    profile.value?.fullname ||
+    user.value?.user_metadata?.fullname ||
+    user.value?.user_metadata?.full_name ||
+    user.value?.user_metadata?.name ||
+    user.value?.user_metadata?.display_name ||
+    sessionUser.value?.user_metadata?.fullname ||
+    sessionUser.value?.user_metadata?.full_name ||
+    sessionUser.value?.user_metadata?.name ||
+    user.value?.email?.split('@')[0] ||
+    sessionUser.value?.email?.split('@')[0] ||
+    'Siswa'
+  )
 })
 
 const userUsername = computed(() => {
-  return profile.value?.username || user.value?.user_metadata?.username || user.value?.email?.split('@')[0] || 'guest'
+  return (
+    profile.value?.username ||
+    user.value?.user_metadata?.username ||
+    sessionUser.value?.user_metadata?.username ||
+    user.value?.email?.split('@')[0] ||
+    sessionUser.value?.email?.split('@')[0] ||
+    'siswa'
+  )
 })
 
 const userRole = computed(() => {
-  const roles = profile.value?.roles || user.value?.user_metadata?.role
+  const roles = profile.value?.roles || user.value?.user_metadata?.role || sessionUser.value?.user_metadata?.role
   if (Array.isArray(roles) && roles.length > 0) return roles[0].charAt(0).toUpperCase() + roles[0].slice(1)
+  if (typeof roles === 'string' && roles) return roles.charAt(0).toUpperCase() + roles.slice(1)
   return 'Student'
 })
 
@@ -135,19 +198,147 @@ const userInitials = computed(() => {
   const name = userName.value
   const names = name.split(/[\s@_.-]+/)
   if (names.length >= 2) return (names[0][0] + names[1][0]).toUpperCase()
-  return (name[0] || 'U').toUpperCase()
+  return (name[0] || 'S').toUpperCase()
 })
 
 const route = useRoute()
 const currentPath = computed(() => route.path)
 
 const navItems = [
-  { to: '/student/', label: 'Dashboard', icon: Squares2X2Icon, badge: null },
+  { to: '/student', label: 'Dashboard', icon: Squares2X2Icon, badge: null },
   { to: '/student/class', label: 'Kelas', icon: BookOpenIcon, badge: null },
   { to: '/student/aktivitas', label: 'Aktivitas', icon: ClipboardDocumentCheckIcon, badge: null },
   { to: '/student/absensi', label: 'Absensi', icon: CheckBadgeIcon, badge: null },
   { to: '/student/profil', label: 'Profil', icon: UserCircleIcon, badge: null },
 ]
+
+// ── Animasi Geser Antar Menu (Sliding Indicator) ────────────────
+const itemRefs = ref<(HTMLElement | null)[]>([])
+const setItemRef = (el: any, index: number) => {
+  if (el) {
+    itemRefs.value[index] = el.$el || el
+  }
+}
+
+// Simpan posisi pill antar perpindahan halaman di useState agar tidak lompat dari 0
+const sharedPillTop = useState<number>('sidebar_pill_top', () => -1)
+const sharedPillHeight = useState<number>('sidebar_pill_height', () => 48)
+
+const pillTop = ref(sharedPillTop.value !== -1 ? sharedPillTop.value : 32)
+const pillHeight = ref(sharedPillHeight.value)
+const pillVisible = ref(sharedPillTop.value !== -1)
+const enableTransition = ref(false)
+
+const isActive = (targetTo: string) => {
+  const normCurrent = currentPath.value.replace(/\/+$/, '') || '/'
+  const normTarget = targetTo.replace(/\/+$/, '') || '/'
+  if (normTarget === '/student') {
+    return normCurrent === '/student'
+  }
+  return normCurrent === normTarget || normCurrent.startsWith(normTarget + '/')
+}
+
+const updatePill = (withAnimation = true) => {
+  nextTick(() => {
+    const activeIndex = navItems.findIndex(item => isActive(item.to))
+    if (activeIndex !== -1 && itemRefs.value[activeIndex]) {
+      const el = itemRefs.value[activeIndex] as HTMLElement
+      pillTop.value = el.offsetTop
+      pillHeight.value = el.offsetHeight || 48
+      pillVisible.value = true
+      sharedPillTop.value = el.offsetTop
+      sharedPillHeight.value = el.offsetHeight || 48
+    } else {
+      pillVisible.value = false
+    }
+
+    if (withAnimation) {
+      setTimeout(() => {
+        enableTransition.value = true
+      }, 50)
+    }
+  })
+}
+
+const handleNavClick = (index: number) => {
+  emit('update:open', false)
+  enableTransition.value = true
+  if (itemRefs.value[index]) {
+    const el = itemRefs.value[index] as HTMLElement
+    pillTop.value = el.offsetTop
+    pillHeight.value = el.offsetHeight || 48
+    pillVisible.value = true
+    sharedPillTop.value = el.offsetTop
+    sharedPillHeight.value = el.offsetHeight || 48
+  }
+}
+
+watch(() => route.path, () => {
+  updatePill(true)
+})
+
+let authListener: any = null
+
+onMounted(async () => {
+  try {
+    const { data: sessionData } = await supabase.auth.getSession()
+    if (sessionData?.session?.user) {
+      sessionUser.value = sessionData.session.user
+    }
+  } catch {}
+
+  void fetchProfile()
+
+  // Listener perubahan status auth (login, logout, refresh session)
+  const { data } = supabase.auth.onAuthStateChange(async (_event, session) => {
+    if (session?.user) {
+      sessionUser.value = session.user
+      avatarLoadError.value = false
+      void fetchProfile(true)
+    }
+  })
+  authListener = data
+
+  // Mount awal: posisikan langsung tanpa animasi agar tidak terbang dari atas
+  updatePill(false)
+  setTimeout(() => {
+    enableTransition.value = true
+  }, 100)
+
+  if (typeof window !== 'undefined') {
+    window.addEventListener('resize', () => updatePill(false))
+    if ('requestIdleCallback' in window) {
+      (window as any).requestIdleCallback(() => {
+        preloadRouteComponents('/student/profil')
+      })
+    } else {
+      setTimeout(() => {
+        preloadRouteComponents('/student/profil')
+      }, 500)
+    }
+  }
+})
+
+onUnmounted(() => {
+  if (typeof window !== 'undefined') {
+    window.removeEventListener('resize', () => updatePill(false))
+  }
+  if (authListener?.subscription) {
+    authListener.subscription.unsubscribe()
+  }
+})
+
+watch(() => user.value?.id, (newId) => {
+  if (newId) {
+    void fetchProfile()
+  }
+}, { immediate: true })
+
+const handleLogout = async () => {
+  await supabase.auth.signOut()
+  emit('logout')
+  navigateTo('/login')
+}
 </script>
 
 <style scoped>

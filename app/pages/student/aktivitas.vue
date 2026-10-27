@@ -58,46 +58,24 @@
       <main class="p-4 sm:p-8 flex flex-col gap-0 max-w-[1280px] mx-auto w-full min-w-0 max-w-full">
 
         <!-- ── TAB SWITCHER (style sama dengan tab kelas) ── -->
-        <div class="flex items-stretch bg-white border border-[#E4E4E7] rounded-2xl overflow-hidden shadow-xs w-full mb-6">
+        <div class="flex items-stretch bg-[#F4F4F6] border border-[#E4E4E7] rounded-2xl overflow-hidden p-1 gap-1 w-full mb-6">
           <button
             v-for="(tab, index) in tabConfig"
             :key="tab.id"
             @click="switchTab(tab.id)"
             :title="tab.label"
-            class="group relative flex-1 flex flex-col items-center justify-center gap-1.5 py-3 px-2 text-center transition-all duration-200 cursor-pointer focus:outline-none"
-            :class="[
+            class="group relative flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-center transition-all duration-200 cursor-pointer focus:outline-none"
+            :class="
               activeTab === tab.id
-                ? 'bg-[#F0EFF9] text-[#443E8D]'
-                : 'text-[#71717A] hover:bg-[#FAFAFC] hover:text-[#443E8D]',
-              index < tabConfig.length - 1 ? 'border-r border-[#E4E4E7]' : ''
-            ]"
+                ? 'bg-white shadow-sm text-[#443E8D]'
+                : 'text-[#A1A1AA] hover:text-[#443E8D]'
+            "
           >
-            <!-- Active bar di atas -->
-            <div
-              class="absolute top-0 left-0 right-0 h-[2.5px] rounded-b-full transition-all duration-300"
-              :class="activeTab === tab.id ? 'bg-[#443E8D]' : 'bg-transparent'"
-            ></div>
-
-            <!-- Icon box -->
-            <div
-              class="w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-200 relative"
-              :class="activeTab === tab.id
-                ? 'bg-[#443E8D] text-white shadow-sm shadow-[#443E8D]/30'
-                : 'bg-[#F4F4F5] text-[#71717A] group-hover:bg-[#E8E7F5] group-hover:text-[#443E8D]'"
-            >
-              <component :is="tab.icon" class="w-4 h-4 flex-shrink-0" />
-              <!-- Badge -->
-              <div
-                v-if="tab.badge > 0"
-                class="absolute -top-1 -right-1 min-w-[14px] h-[14px] px-0.5 rounded-full text-[0.5rem] font-black flex items-center justify-center leading-none bg-[#EF4444] text-white"
-              >{{ tab.badge }}</div>
-            </div>
+            <!-- Icon — inline, same color as label -->
+            <component :is="tab.icon" class="w-4 h-4 flex-shrink-0" />
 
             <!-- Label -->
-            <span
-              class="text-[0.68rem] font-bold leading-none transition-colors duration-200 whitespace-nowrap"
-              :class="activeTab === tab.id ? 'text-[#443E8D]' : 'text-[#A1A1AA] group-hover:text-[#443E8D]'"
-            >{{ tab.label }}</span>
+            <span class="text-[0.78rem] font-bold leading-none whitespace-nowrap">{{ tab.label }}</span>
           </button>
         </div>
 
@@ -110,14 +88,14 @@
             <div class="flex items-center gap-2">
               <ChatBubbleBottomCenterTextIcon class="w-4 h-4 text-[#443E8D] flex-shrink-0" />
               <span class="text-[0.78rem] font-semibold text-[#443E8D]">
-                Menampilkan catatan evaluasi mentor untuk tugas: <strong>{{ feedbackFromTask.assignments?.title || 'Tugas' }}</strong>
+                Ingin berkonsultasi seputar tugas <strong>{{ feedbackFromTask.assignments?.title || 'Tugas' }}</strong>? Hubungi mentor di bawah untuk chat langsung.
               </span>
             </div>
             <button
-              class="text-[0.7rem] font-bold text-[#6B68A8] hover:text-[#443E8D] transition-colors whitespace-nowrap"
+              class="text-[0.7rem] font-bold text-[#6B68A8] hover:text-[#443E8D] transition-colors whitespace-nowrap cursor-pointer"
               @click="feedbackFromTask = null"
             >
-              Hapus filter ✕
+              Tutup ✕
             </button>
           </div>
         </Transition>
@@ -246,9 +224,9 @@ const tabConfig = computed(() => [
   },
   {
     id: 'feedback' as const,
-    label: 'Catatan Mentor',
+    label: 'Kontak Mentor',
     icon: ChatBubbleLeftEllipsisIcon,
-    badge: feedbackCount.value
+    badge: 0
   },
 ])
 
@@ -258,7 +236,7 @@ const taskSummaryText = computed(() => {
 })
 
 const feedbackSummaryText = computed(() => {
-  return `${feedbackCount.value} Catatan Masuk`
+  return `${feedbackCount.value || 2} Mentor Siap Bimbing`
 })
 
 // ─── CROSS-NAV: TUGAS → FEEDBACK ────────────────────────────

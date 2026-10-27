@@ -29,9 +29,8 @@
           <!-- Headline -->
           <div class="flex-1">
             <h2 class="text-4xl xl:text-5xl font-light leading-[1.2] tracking-tight text-gray-50 mb-4">
-              Bangun Skill.<br />
-              Wujudkan Potensimu di
-              <em class="not-italic font-medium text-indigo-300">Pixelnoid Digital Academy.</em>
+              Bangun Potensimu di
+              <em class="not-italic font-medium text-indigo-300">Pixelnoid Academy.</em>
             </h2>
             <p class="text-[0.9375rem] font-light leading-relaxed text-gray-400 max-w-[380px]">
               Kembangkan kemampuan, kerjakan proyek nyata, dan bangun portofolio yang membuktikan skill-mu. Setiap langkah adalah progres menuju masa depan di dunia teknologi.

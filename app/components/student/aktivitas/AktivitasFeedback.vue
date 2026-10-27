@@ -1,429 +1,265 @@
 <template>
-  <div class="flex flex-col gap-6 sm:gap-8 w-full min-w-0 max-w-full">
-
-    <!-- ── 1. STATS ROW ── -->
-    <section class="grid grid-cols-2 gap-3 lg:grid-cols-4 w-full min-w-0">
-      <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between min-w-0">
-        <div class="flex items-center justify-between gap-1.5 sm:gap-2 min-w-0">
-          <span class="text-[0.6rem] sm:text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A] truncate">Total Catatan</span>
-          <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-[#F0EFF9] border border-[#D8D6F0] flex items-center justify-center text-[#443E8D] shrink-0">
-            <ChatBubbleBottomCenterTextIcon class="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          </div>
-        </div>
-        <div class="mt-2.5 sm:mt-3">
-          <div class="text-[1.5rem] sm:text-[1.75rem] font-black text-[#18181B] tracking-tight leading-none">
-            {{ totalReviews }}
-          </div>
-          <p class="text-[0.62rem] sm:text-[0.7rem] text-[#A1A1AA] font-medium mt-1 mb-0 truncate">Evaluasi mentor masuk</p>
-        </div>
-      </div>
-
-      <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between min-w-0">
-        <div class="flex items-center justify-between gap-1.5 sm:gap-2 min-w-0">
-          <span class="text-[0.6rem] sm:text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A] truncate">Rata-rata Skor</span>
-          <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-[#ECFDF5] border border-[#A7F3D0] flex items-center justify-center text-[#059669] shrink-0">
-            <TrophyIcon class="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          </div>
-        </div>
-        <div class="mt-2.5 sm:mt-3">
-          <div class="text-[1.5rem] sm:text-[1.75rem] font-black text-[#059669] tracking-tight leading-none">
-            {{ averageScore !== null ? averageScore : '-' }}
-            <span v-if="averageScore !== null" class="text-[0.8rem] sm:text-[0.9rem] font-semibold text-[#A1A1AA]">/100</span>
-          </div>
-          <p class="text-[0.62rem] sm:text-[0.7rem] text-[#A1A1AA] font-medium mt-1 mb-0 truncate">Performa tugas</p>
-        </div>
-      </div>
-
-      <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between min-w-0">
-        <div class="flex items-center justify-between gap-1.5 sm:gap-2 min-w-0">
-          <span class="text-[0.6rem] sm:text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A] truncate">Tugas Selesai</span>
-          <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-[#EFF6FF] border border-[#BFDBFE] flex items-center justify-center text-[#2563EB] shrink-0">
-            <CheckBadgeIcon class="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          </div>
-        </div>
-        <div class="mt-2.5 sm:mt-3">
-          <div class="text-[1.5rem] sm:text-[1.75rem] font-black text-[#18181B] tracking-tight leading-none">
-            {{ totalReviews }}
-          </div>
-          <p class="text-[0.62rem] sm:text-[0.7rem] text-[#A1A1AA] font-medium mt-1 mb-0 truncate">Telah diperiksa mentor</p>
-        </div>
-      </div>
-
-      <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between min-w-0">
-        <div class="flex items-center justify-between gap-1.5 sm:gap-2 min-w-0">
-          <span class="text-[0.6rem] sm:text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A] truncate">Mentor</span>
-          <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-[#FDF2F8] border border-[#FBCFE8] flex items-center justify-center text-[#DB2777] shrink-0">
-            <UserGroupIcon class="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          </div>
-        </div>
-        <div class="mt-2.5 sm:mt-3">
-          <div class="text-[1.5rem] sm:text-[1.75rem] font-black text-[#18181B] tracking-tight leading-none">
-            {{ mentors.length }}
-          </div>
-          <p class="text-[0.62rem] sm:text-[0.7rem] text-[#A1A1AA] font-medium mt-1 mb-0 truncate">Aktif membimbing</p>
-        </div>
-      </div>
-    </section>
-
-    <!-- ── 2. DIREKTORI MENTOR KELAS ── -->
-    <section class="space-y-4">
-      <div class="flex items-center justify-between">
-        <div>
-          <h2 class="text-[1.05rem] font-bold text-[#18181B] tracking-tight m-0">Direktori Mentor</h2>
-          <p class="text-[0.78rem] text-[#71717A] m-0">Mentor pengampu yang siap membimbing dan mereview karyamu.</p>
-        </div>
-      </div>
-
-      <div class="grid grid-cols-1 md:grid-cols-2 gap-4 w-full min-w-0">
-        <div
-          v-for="mentor in mentors"
-          :key="mentor.id"
-          class="bg-white rounded-2xl border border-[#E4E4E7] p-4 sm:p-5 shadow-sm flex flex-col justify-between gap-4 transition-all hover:border-[#D4D4D8] hover:shadow-md min-w-0 w-full"
-        >
-          <div class="flex items-start gap-4">
-            <!-- Mentor Avatar -->
-            <div class="w-12 h-12 rounded-2xl bg-gradient-to-br from-[#443E8D] to-[#6366F1] flex items-center justify-center text-white font-black text-[1.1rem] shadow-sm flex-shrink-0">
-              {{ (mentor.fullname || 'M')[0].toUpperCase() }}
+  <main class="mx-auto w-full max-w-7xl space-y-6 sm:space-y-8">
+    <!-- Mentor cards -->
+    <section class="grid grid-cols-1 gap-4 lg:grid-cols-2 lg:gap-5">
+      <article
+        v-for="mentor in mentors"
+        :key="mentor.id ?? mentor.username ?? mentor.fullname"
+        class="group flex min-w-0 flex-col rounded-2xl border border-slate-200 bg-white p-5 shadow-sm transition duration-200 hover:-translate-y-0.5 hover:border-violet-200 hover:shadow-lg hover:shadow-slate-200/60 sm:p-6"
+      >
+        <div class="flex items-start gap-4">
+          <div class="relative shrink-0">
+            <img
+              v-if="mentor.avatar_url && !failedAvatars.has(String(mentor.id ?? mentor.username ?? mentor.fullname))"
+              :src="mentor.avatar_url"
+              :alt="`Foto ${mentor.fullname || 'mentor'}`"
+              loading="lazy"
+              class="h-14 w-14 rounded-2xl border border-slate-200 object-cover"
+              @error="markAvatarFailed(mentor)"
+            />
+            <div v-else class="flex h-14 w-14 items-center justify-center rounded-2xl bg-gradient-to-br from-violet-700 to-indigo-500 text-xl font-bold text-white shadow-sm">
+              {{ getInitials(mentor.fullname) }}
             </div>
+            <span class="absolute -bottom-1 -right-1 h-4 w-4 rounded-full border-[3px] border-white bg-emerald-500" title="Mentor terdaftar"></span>
+          </div>
 
-            <!-- Mentor Details -->
-            <div class="flex-1 min-w-0">
-              <div class="flex items-center gap-2 flex-wrap">
-                <h3 class="text-[0.95rem] font-bold text-[#18181B] m-0 truncate">
-                  {{ mentor.fullname }}
-                </h3>
-                <span class="text-[0.62rem] font-bold px-2 py-0.5 rounded-md bg-[#F0EFF9] text-[#443E8D] border border-[#D8D6F0]">
-                  {{ mentor.specialty }}
-                </span>
-              </div>
-              <p class="text-[0.75rem] text-[#71717A] leading-relaxed mt-1.5 mb-0 font-medium">
-                {{ mentor.bio }}
+          <div class="min-w-0 flex-1 pt-0.5">
+            <h2 class="min-w-0 break-words text-base font-bold tracking-tight text-slate-900">{{ mentor.fullname || 'Nama mentor' }}</h2>
+            <p class="mt-1 text-xs text-slate-500">@{{ mentor.username || 'mentor' }} <span aria-hidden="true">·</span> Mentor Pixelnoid</p>
+          </div>
+        </div>
+
+        <!-- Pekerjaan & Instansi -->
+        <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+          <!-- Pekerjaan -->
+          <div class="flex items-center gap-2.5 rounded-xl border border-slate-100 bg-slate-50/80 p-2.5 min-w-0">
+            <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-violet-100 text-violet-700">
+              <BriefcaseIcon class="h-4 w-4" />
+            </div>
+            <div class="min-w-0 flex-1">
+              <p class="truncate text-xs font-semibold text-slate-800" :title="getPekerjaan(mentor)">
+                {{ getPekerjaan(mentor) }}
               </p>
             </div>
           </div>
 
-          <!-- Contact Actions -->
-          <div class="flex items-center justify-between pt-3 border-t border-[#F4F4F5] gap-3">
-            <span class="text-[0.7rem] text-[#A1A1AA] font-semibold">
-              {{ mentor.reviewCount }} tugas diperiksa
+          <!-- Instansi -->
+          <div class="flex items-center gap-2.5 rounded-xl border border-slate-100 bg-slate-50/80 p-2.5 min-w-0">
+            <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-indigo-100 text-indigo-700">
+              <BuildingOfficeIcon class="h-4 w-4" />
+            </div>
+            <div class="min-w-0 flex-1">
+              <p class="truncate text-xs font-semibold text-slate-800" :title="getInstansi(mentor)">
+                {{ getInstansi(mentor) }}
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <div class="mt-5 flex flex-col gap-3 border-t border-slate-100 pt-4 sm:flex-row sm:items-center sm:justify-between">
+          <span class="inline-flex items-center gap-2 text-xs font-medium text-slate-500">
+            <span class="h-2 w-2 rounded-full bg-emerald-500"></span>
+            Siap menerima konsultasi
+          </span>
+          <div class="grid grid-cols-2 gap-2 sm:flex sm:flex-wrap">
+            <a
+              v-if="hasWhatsApp(mentor)"
+              :href="getWhatsAppLink(mentor)"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="inline-flex items-center justify-center gap-2 rounded-xl bg-emerald-600 px-3.5 py-2.5 text-xs font-bold text-white transition hover:bg-emerald-700 focus:outline-none focus:ring-4 focus:ring-emerald-100"
+            >
+              <ChatBubbleLeftEllipsisIcon class="h-4 w-4 shrink-0" /> WhatsApp
+            </a>
+            <span v-else class="inline-flex cursor-not-allowed items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-100 px-3 py-2.5 text-xs font-semibold text-slate-400" title="Nomor WhatsApp belum tersedia">
+              <ChatBubbleLeftEllipsisIcon class="h-4 w-4 shrink-0" /> WhatsApp
             </span>
-            <div class="flex items-center gap-2">
-              <a
-                v-if="mentor.contactWhatsApp"
-                :href="mentor.contactWhatsApp"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[0.72rem] font-bold text-[#059669] bg-[#ECFDF5] border border-[#A7F3D0] hover:bg-[#D1FAE5] transition-colors"
-              >
-                <span>WhatsApp</span>
-              </a>
-              <a
-                v-if="mentor.contactEmail"
-                :href="mentor.contactEmail"
-                class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-[0.72rem] font-bold text-[#443E8D] bg-[#F0EFF9] border border-[#D8D6F0] hover:bg-[#E0DEFA] transition-colors"
-              >
-                <span>Email</span>
-              </a>
-            </div>
+
+            <a
+              v-if="hasEmail(mentor)"
+              :href="getEmailLink(mentor)"
+              class="inline-flex items-center justify-center gap-2 rounded-xl border border-violet-200 bg-violet-50 px-3.5 py-2.5 text-xs font-bold text-violet-800 transition hover:bg-violet-100 focus:outline-none focus:ring-4 focus:ring-violet-100"
+            >
+              <EnvelopeIcon class="h-4 w-4 shrink-0" /> Email
+            </a>
+            <span v-else class="inline-flex cursor-not-allowed items-center justify-center gap-2 rounded-xl border border-slate-200 bg-slate-100 px-3 py-2.5 text-xs font-semibold text-slate-400" title="Email belum tersedia">
+              <EnvelopeIcon class="h-4 w-4 shrink-0" /> Email
+            </span>
           </div>
         </div>
-      </div>
+      </article>
     </section>
 
-    <!-- ── 3. RIWAYAT PENILAIAN & EVALUASI TUGAS ── -->
-    <section class="space-y-4 w-full min-w-0">
-      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-        <div>
-          <h2 class="text-[1.05rem] font-bold text-[#18181B] tracking-tight m-0">Riwayat Catatan &amp; Feedback</h2>
-          <p class="text-[0.78rem] text-[#71717A] m-0">Evaluasi mendalam dari mentor untuk peningkatan skill kamu.</p>
-        </div>
-
-        <!-- Filter / Search Controls -->
-        <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-2.5 w-full sm:w-auto min-w-0">
-          <div class="relative flex-1 sm:w-64 min-w-0">
-            <MagnifyingGlassIcon class="absolute left-3.5 top-1/2 -translate-y-1/2 w-4 h-4 text-[#A1A1AA]" />
-            <input
-              v-model="searchQuery"
-              type="text"
-              placeholder="Cari tugas atau catatan..."
-              class="w-full pl-10 pr-4 py-2 bg-white border border-[#E4E4E7] rounded-xl text-[0.78rem] text-[#18181B] placeholder-[#A1A1AA] focus:ring-2 focus:ring-[#18181B]/10 focus:border-[#18181B] outline-none transition-all"
-            />
-          </div>
-          <select
-            v-model="mentorFilter"
-            class="px-3 py-2 bg-white border border-[#E4E4E7] rounded-xl text-[0.78rem] font-medium text-[#18181B] outline-none cursor-pointer focus:ring-2 focus:ring-[#18181B]/10 focus:border-[#18181B] transition-all"
-          >
-            <option value="all">Semua Mentor</option>
-            <option v-for="m in mentors" :key="m.id" :value="m.id">
-              {{ m.fullname }}
-            </option>
-          </select>
-        </div>
-      </div>
-
-      <!-- Loading State -->
-      <div v-if="isLoading" class="flex flex-col items-center justify-center py-16 bg-white rounded-2xl border border-[#E4E4E7] gap-3">
-        <div class="w-8 h-8 border-2 border-[#18181B] border-t-transparent rounded-full animate-spin"></div>
-        <p class="text-[0.8rem] text-[#71717A] font-medium">Memuat catatan mentor...</p>
-      </div>
-
-      <!-- Empty State -->
-      <div v-else-if="filteredReviews.length === 0" class="flex flex-col items-center justify-center py-16 bg-white rounded-2xl border border-[#E4E4E7] gap-3 text-center px-4">
-        <div class="w-12 h-12 rounded-2xl bg-[#F4F4F5] flex items-center justify-center text-[#A1A1AA]">
-          <ChatBubbleBottomCenterTextIcon class="w-6 h-6" />
-        </div>
-        <h3 class="text-[0.95rem] font-bold text-[#18181B] m-0">Belum Ada Catatan Mentor</h3>
-        <p class="text-[0.78rem] text-[#71717A] max-w-sm m-0">
-          Kumpulkan tugasmu di tab Tugas. Mentor akan memberikan nilai dan feedback setelah memeriksa hasil karyamu.
-        </p>
-      </div>
-
-      <!-- Review Cards List -->
-      <div v-else class="space-y-4 w-full min-w-0">
-        <div
-          v-for="review in filteredReviews"
-          :key="review.id"
-          class="bg-white rounded-2xl border p-4 sm:p-6 shadow-sm transition-all duration-200 hover:shadow-md flex flex-col gap-4 w-full min-w-0"
-          :class="isHighlighted(review) ? 'border-[#443E8D] ring-2 ring-[#443E8D]/15 bg-[#FCFBFF]' : 'border-[#E4E4E7] hover:border-[#D4D4D8]'"
-        >
-          <!-- Top Row: Assignment Title, Grade & Type -->
-          <div class="flex flex-wrap items-center justify-between gap-3">
-            <div class="flex items-center gap-2.5 flex-wrap">
-              <!-- Type Badge -->
-              <span
-                class="px-2.5 py-0.5 rounded-lg text-[0.62rem] font-bold uppercase tracking-wider border"
-                :class="getTypeBadgeClass(review.assignments?.type)"
-              >
-                {{ getTypeLabel(review.assignments?.type) }}
-              </span>
-
-              <!-- Assignment Title -->
-              <h3 class="text-[0.95rem] font-bold text-[#18181B] m-0">
-                {{ review.assignments?.title || 'Tugas' }}
-              </h3>
-
-              <span
-                v-if="isHighlighted(review)"
-                class="text-[0.62rem] font-bold px-2 py-0.5 rounded-full bg-[#443E8D] text-white"
-              >
-                Dipilih
-              </span>
-            </div>
-
-            <!-- Grade Display -->
-            <div class="flex items-center gap-1.5 px-3 py-1 rounded-xl bg-[#ECFDF5] border border-[#A7F3D0] text-[#047857]">
-              <TrophyIcon class="w-4 h-4 text-[#059669]" />
-              <span class="text-[0.85rem] font-black leading-none">{{ review.grade ?? 0 }}</span>
-              <span class="text-[0.68rem] font-bold text-[#059669]/80">/100</span>
-            </div>
-          </div>
-
-          <!-- Feedback Box -->
-          <div class="p-4 bg-[#FAFAFC] border border-[#E4E4E7] rounded-xl relative">
-            <p class="text-[0.82rem] text-[#18181B] leading-relaxed m-0 italic">
-              "{{ review.feedback }}"
-            </p>
-          </div>
-
-          <!-- Footer Row: Reviewer info & Student link -->
-          <div class="flex flex-wrap items-center justify-between gap-3 pt-3 border-t border-[#F4F4F5]">
-            <!-- Mentor Details -->
-            <div class="flex items-center gap-2.5">
-              <div class="w-7 h-7 rounded-lg bg-[#443E8D] text-white font-bold flex items-center justify-center text-[0.72rem]">
-                {{ getMentorName(review.feedback_by)[0].toUpperCase() }}
-              </div>
-              <div class="text-[0.75rem]">
-                <span class="font-bold text-[#18181B]">{{ getMentorName(review.feedback_by) }}</span>
-                <span class="text-[#A1A1AA] ml-1.5">· {{ formatTimestamp(review.feedback_at) }}</span>
-              </div>
-            </div>
-
-            <!-- Submission URL Link -->
-            <div v-if="review.submission_url">
-              <a
-                :href="review.submission_url"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="inline-flex items-center gap-1.5 text-[0.75rem] font-bold text-[#2563EB] hover:underline"
-              >
-                <ArrowTopRightOnSquareIcon class="w-3.5 h-3.5" />
-                <span>Buka Link Karya</span>
-              </a>
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-
-  </div>
+    <p v-if="errorMessage && mentors.length > 0" class="rounded-xl border border-amber-200 bg-amber-50 px-4 py-3 text-xs leading-5 text-amber-800" role="status">
+      Data yang tampil berasal dari cache karena pembaruan terbaru gagal dimuat. {{ errorMessage }}
+      <button type="button" class="ml-1 font-bold underline underline-offset-2" @click="fetchMentorData(true)">Coba perbarui</button>
+    </p>
+  </main>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import {
-  ChatBubbleBottomCenterTextIcon,
-  TrophyIcon,
-  CheckBadgeIcon,
-  UserGroupIcon,
-  MagnifyingGlassIcon,
-  ArrowTopRightOnSquareIcon
+  BriefcaseIcon,
+  BuildingOfficeIcon,
+  ChatBubbleLeftEllipsisIcon,
+  EnvelopeIcon,
 } from '@heroicons/vue/24/outline'
 
-const props = defineProps<{
-  highlightTaskId?: number | null
-}>()
+type Mentor = {
+  id?: string | number | null
+  fullname?: string | null
+  username?: string | null
+  bio?: string | null
+  pekerjaan?: string | null
+  instansi?: string | null
+  job?: string | null
+  institution?: string | null
+  avatar_url?: string | null
+  whatsapp?: string | null
+  email?: string | null
+  /** Optional URL provided by the API for WhatsApp contact. */
+  contactWhatsApp?: string | boolean | null
+  /** Optional contact flag or email address provided by the API. */
+  contactEmail?: string | boolean | null
+  [key: string]: unknown
+}
 
 const emit = defineEmits<{
   (e: 'feedback-count-updated', count: number): void
 }>()
 
 const supabase = useSupabaseClient()
+const supabaseUser = useSupabaseUser()
+const { profile, fetchProfile } = useUserProfile()
 
-// ── SWR Cache Initialization ──────────────────────────────────────────
 const CACHE_MENTORS_KEY = 'px_cached_mentors'
-const CACHE_REVIEWS_KEY = 'px_cached_mentor_reviews'
+const isLoading = ref(false)
+const errorMessage = ref('')
+const mentors = ref<Mentor[]>([])
+const failedAvatars = ref(new Set<string>())
 
-let initialMentors: any[] = []
-let initialReviews: any[] = []
-
+// Initialize from session cache to avoid an empty screen on repeat visits.
 if (import.meta.client) {
   try {
-    const rawM = sessionStorage.getItem(CACHE_MENTORS_KEY)
-    if (rawM) initialMentors = JSON.parse(rawM)
-    const rawR = sessionStorage.getItem(CACHE_REVIEWS_KEY)
-    if (rawR) initialReviews = JSON.parse(rawR)
-  } catch {}
+    const raw = sessionStorage.getItem(CACHE_MENTORS_KEY)
+    if (raw) {
+      const parsed: unknown = JSON.parse(raw)
+      if (Array.isArray(parsed)) mentors.value = parsed as Mentor[]
+    }
+  } catch (error) {
+    console.warn('Cache mentor tidak dapat dibaca:', error)
+  }
 }
 
-// ── State ─────────────────────────────────────────────────────────────
-const isLoading = ref(initialReviews.length === 0 && initialMentors.length === 0)
-const mentors = ref<any[]>(initialMentors)
-const reviews = ref<any[]>(initialReviews)
-const searchQuery = ref('')
-const mentorFilter = ref('all')
+function getPekerjaan(mentor: Mentor) {
+  return (mentor.pekerjaan || mentor.job || 'Mentor Pengampu').toString().trim()
+}
 
-// ── Data Fetching ─────────────────────────────────────────────────────
+function getInstansi(mentor: Mentor) {
+  return (mentor.instansi || mentor.institution || 'Pixelnoid Academy').toString().trim()
+}
+
+const studentName = computed(() =>
+  profile.value?.fullname ||
+  supabaseUser.value?.user_metadata?.full_name ||
+  supabaseUser.value?.user_metadata?.name ||
+  'Siswa Pixelnoid',
+)
+
 async function fetchMentorData(silent = false) {
-  if (!silent && reviews.value.length === 0) {
-    isLoading.value = true
-  }
+  if (!silent || mentors.value.length === 0) isLoading.value = true
+  errorMessage.value = ''
+
   try {
     const { data: { session } } = await supabase.auth.getSession()
-    const token = session?.access_token
-
     const headers: Record<string, string> = {}
-    if (token) {
-      headers.Authorization = `Bearer ${token}`
-    }
+    if (session?.access_token) headers.Authorization = `Bearer ${session.access_token}`
 
-    const res = await $fetch<{
-      mentors: any[]
-      allStudentReviews: any[]
-    }>('/api/student/mentors', { headers })
+    const response = await $fetch<{ mentors?: Mentor[]; allStudentReviews?: unknown[] }>(
+      '/api/student/mentors',
+      { headers },
+    )
 
-    mentors.value = res.mentors || []
-    reviews.value = res.allStudentReviews || []
+    mentors.value = Array.isArray(response.mentors) ? response.mentors : []
+    emit('feedback-count-updated', mentors.value.length)
 
-    emit('feedback-count-updated', reviews.value.length)
-
-    // Save to session cache
     if (import.meta.client) {
       try {
         sessionStorage.setItem(CACHE_MENTORS_KEY, JSON.stringify(mentors.value))
-        sessionStorage.setItem(CACHE_REVIEWS_KEY, JSON.stringify(reviews.value))
-      } catch {}
+      } catch (error) {
+        console.warn('Cache mentor tidak dapat disimpan:', error)
+      }
     }
-  } catch (err) {
-    console.error('Error fetching mentor data:', err)
+  } catch (error) {
+    console.error('Gagal mengambil data mentor:', error)
+    errorMessage.value = 'Periksa koneksi internet atau coba muat ulang halaman.'
   } finally {
     isLoading.value = false
   }
 }
 
 onMounted(() => {
-  fetchMentorData(reviews.value.length > 0)
+  void fetchProfile()
+  void fetchMentorData(mentors.value.length > 0)
 })
 
-// ── Computed & Helpers ────────────────────────────────────────────────
-const totalReviews = computed(() => reviews.value.length)
-
-const averageScore = computed(() => {
-  const scores = reviews.value.map(r => Number(r.grade)).filter(g => !isNaN(g))
-  if (scores.length === 0) return null
-  return Math.round((scores.reduce((acc, curr) => acc + curr, 0) / scores.length) * 10) / 10
-})
-
-const filteredReviews = computed(() => {
-  let list = [...reviews.value]
-
-  // Filter by highlighted task if set
-  if (props.highlightTaskId) {
-    list.sort((a, b) => {
-      if (a.id === props.highlightTaskId || a.assignment_id === props.highlightTaskId) return -1
-      if (b.id === props.highlightTaskId || b.assignment_id === props.highlightTaskId) return 1
-      return 0
-    })
-  }
-
-  // Filter by selected mentor
-  if (mentorFilter.value !== 'all') {
-    list = list.filter(r => r.feedback_by === mentorFilter.value)
-  }
-
-  // Search query
-  if (searchQuery.value.trim()) {
-    const q = searchQuery.value.toLowerCase().trim()
-    list = list.filter(r => {
-      const title = (r.assignments?.title || '').toLowerCase()
-      const fb = (r.feedback || '').toLowerCase()
-      const mentor = getMentorName(r.feedback_by).toLowerCase()
-      return title.includes(q) || fb.includes(q) || mentor.includes(q)
-    })
-  }
-
-  return list
-})
-
-function isHighlighted(review: any) {
-  if (!props.highlightTaskId) return false
-  return review.id === props.highlightTaskId || review.assignment_id === props.highlightTaskId
+function getMentorKey(mentor: Mentor) {
+  return String(mentor.id ?? mentor.username ?? mentor.fullname ?? 'mentor')
 }
 
-function getMentorName(feedbackBy?: string) {
-  if (!feedbackBy) return 'Mentor'
-  const found = mentors.value.find(m => m.id === feedbackBy)
-  return found?.fullname || 'Senior Mentor'
+function markAvatarFailed(mentor: Mentor) {
+  failedAvatars.value = new Set([...failedAvatars.value, getMentorKey(mentor)])
 }
 
-function getTypeLabel(type?: string) {
-  switch (type) {
-    case 'quizizz': return 'Quizizz'
-    case 'practice': return 'Praktek'
-    case 'case_study': return 'Studi Kasus'
-    default: return 'Tugas'
-  }
+function getInitials(fullname?: string | null) {
+  const words = (fullname || 'Mentor').trim().split(/\s+/).filter(Boolean)
+  return words.slice(0, 2).map((word) => word.charAt(0).toUpperCase()).join('') || 'M'
 }
 
-function getTypeBadgeClass(type?: string) {
-  switch (type) {
-    case 'quizizz': return 'bg-[#F3E8FF] text-[#7E22CE] border-[#E9D5FF]'
-    case 'practice': return 'bg-[#E0F2FE] text-[#0369A1] border-[#BAE6FD]'
-    case 'case_study': return 'bg-[#FEF3C7] text-[#B45309] border-[#FDE68A]'
-    default: return 'bg-[#F4F4F5] text-[#52525B] border-[#E4E4E7]'
-  }
+function normalizePhone(phone?: string | null) {
+  if (!phone) return ''
+  let digits = phone.replace(/\D/g, '')
+  if (digits.startsWith('0')) digits = `62${digits.slice(1)}`
+  return digits
 }
 
-function formatTimestamp(dateStr?: string) {
-  if (!dateStr) return '-'
-  try {
-    const d = new Date(dateStr)
-    return d.toLocaleDateString('id-ID', {
-      day: 'numeric',
-      month: 'short',
-      year: 'numeric'
-    })
-  } catch {
-    return dateStr
+function formatPhoneNumber(phone?: string | null) {
+  const digits = normalizePhone(phone)
+  if (!digits) return null
+  if (digits.startsWith('62') && digits.length >= 10) {
+    return `+62 ${digits.slice(2, 5)}-${digits.slice(5, 9)}-${digits.slice(9)}`
   }
+  return `+${digits}`
+}
+
+function getWhatsAppLink(mentor: Mentor) {
+  const providedContact = typeof mentor.contactWhatsApp === 'string' ? mentor.contactWhatsApp.trim() : ''
+  // Respect a full URL returned by the API when no phone number is available.
+  if (!mentor.whatsapp && /^https?:\/\//i.test(providedContact)) return providedContact
+
+  const phone = normalizePhone(mentor.whatsapp)
+  if (!phone) return '#'
+
+  const message = `Halo Kak ${mentor.fullname || 'Mentor'}, perkenalkan saya ${studentName.value} dari Pixelnoid Academy. Saya ingin berkonsultasi mengenai materi atau tugas bimbingan.`
+  return `https://wa.me/${phone}?text=${encodeURIComponent(message)}`
+}
+
+function getEmailLink(mentor: Mentor) {
+  const email = (mentor.email || '').trim()
+  const subject = encodeURIComponent(`[Konsultasi Pixelnoid] - ${studentName.value}`)
+  const body = encodeURIComponent(
+    `Halo Kak ${mentor.fullname || 'Mentor'},\n\nPerkenalkan saya ${studentName.value} dari Pixelnoid Academy. Saya ingin berkonsultasi mengenai materi atau tugas bimbingan.\n\nTerima kasih.`,
+  )
+  return `mailto:${email}?subject=${subject}&body=${body}`
+}
+
+function hasWhatsApp(mentor: Mentor) {
+  const providedContact = typeof mentor.contactWhatsApp === 'string' ? mentor.contactWhatsApp.trim() : ''
+  return Boolean(normalizePhone(mentor.whatsapp) || /^https?:\/\//i.test(providedContact))
+}
+
+function hasEmail(mentor: Mentor) {
+  return Boolean((mentor.email || '').trim())
 }
 </script>

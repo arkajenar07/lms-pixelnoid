@@ -122,46 +122,31 @@
       <!-- ── TAB SWITCHER ── -->
       <template v-if="activeClass">
         <div class="pt-5 pb-0 px-5 lg:px-8 lg:pt-6">
-          <!-- 3 tab button kompak: icon + label, full width, border bawah sebagai active indicator -->
-          <div class="flex items-stretch bg-white border border-[#E4E4E7] rounded-2xl overflow-hidden shadow-xs w-full">
+          <!-- Tab: icon + label side by side (horizontal pill style) -->
+          <div class="flex items-stretch bg-[#F4F4F6] border border-[#E4E4E7] rounded-2xl overflow-hidden p-1 gap-1 w-full">
             <button
               v-for="(tab, index) in tabs"
               :key="tab.id"
               @click="activeTab = tab.id"
               :title="tab.label"
-              class="group relative flex-1 flex flex-col items-center justify-center gap-1.5 py-3 px-2 text-center transition-all duration-200 cursor-pointer focus:outline-none"
-              :class="[
+              class="group relative flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3 rounded-xl text-center transition-all duration-200 cursor-pointer focus:outline-none"
+              :class="
                 activeTab === tab.id
-                  ? 'bg-[#F0EFF9] text-[#443E8D]'
-                  : 'text-[#71717A] hover:bg-[#FAFAFC] hover:text-[#443E8D]',
-                index < tabs.length - 1 ? 'border-r border-[#E4E4E7]' : ''
-              ]"
+                  ? 'bg-white shadow-sm text-[#443E8D]'
+                  : 'text-[#A1A1AA] hover:text-[#443E8D]'
+              "
             >
-              <!-- Active bar di atas -->
-              <div
-                class="absolute top-0 left-0 right-0 h-[2.5px] rounded-b-full transition-all duration-300"
-                :class="activeTab === tab.id ? 'bg-[#443E8D]' : 'bg-transparent'"
-              ></div>
-
-              <!-- Icon -->
-              <div
-                class="w-8 h-8 rounded-xl flex items-center justify-center transition-all duration-200"
-                :class="activeTab === tab.id ? 'bg-[#443E8D] text-white shadow-sm shadow-[#443E8D]/30' : 'bg-[#F4F4F5] text-[#71717A] group-hover:bg-[#E8E7F5] group-hover:text-[#443E8D]'"
-              >
-                <component :is="tab.icon" class="w-4 h-4 flex-shrink-0" />
-              </div>
+              <!-- Icon — inline, same color as label -->
+              <component :is="tab.icon" class="w-4 h-4 flex-shrink-0" />
 
               <!-- Label -->
-              <span
-                class="text-[0.68rem] font-bold leading-none transition-colors duration-200 whitespace-nowrap"
-                :class="activeTab === tab.id ? 'text-[#443E8D]' : 'text-[#A1A1AA] group-hover:text-[#443E8D]'"
-              >{{ tab.label }}</span>
+              <span class="text-[0.78rem] font-bold leading-none whitespace-nowrap">{{ tab.label }}</span>
 
               <!-- Badge (Live Meeting) -->
               <div
                 v-if="tab.badge"
-                class="absolute top-2 right-2 min-w-[16px] h-4 px-1 rounded-full text-[0.55rem] font-black flex items-center justify-center leading-none"
-                :class="activeTab === tab.id ? 'bg-[#443E8D] text-white ring-2 ring-[#F0EFF9]' : 'bg-[#EF4444] text-white'"
+                class="min-w-[16px] h-4 px-1 rounded-full text-[0.55rem] font-black flex items-center justify-center leading-none"
+                :class="activeTab === tab.id ? 'bg-[#443E8D] text-white' : 'bg-[#EF4444] text-white'"
               >{{ tab.badge }}</div>
             </button>
           </div>

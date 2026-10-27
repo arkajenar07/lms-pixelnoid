@@ -60,15 +60,6 @@
             <span class="hidden sm:inline">Selanjutnya</span>
             <ChevronRightIcon class="w-4 h-4" />
           </button>
-
-          <!-- + Buat Jadwal Baru -->
-          <NuxtLink
-            to="/student/casual-session-booking"
-            class="h-9 px-3.5 rounded-xl bg-[#443E8D] hover:bg-[#373273] text-white text-xs font-semibold transition-all flex items-center gap-1.5 no-underline shadow-xs hover:-translate-y-0.5 cursor-pointer ml-auto sm:ml-0"
-          >
-            <PlusIcon class="w-4 h-4" />
-            <span>Buat Jadwal Baru</span>
-          </NuxtLink>
         </div>
       </div>
 
@@ -197,22 +188,7 @@
               </span>
             </div>
 
-            <!-- Google Sync Badge -->
-            <div class="shrink-0">
-              <span
-                v-if="item.google_sync_status === 'synced'"
-                class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-[0.7rem] font-semibold bg-[#ECFDF5] text-[#059669] border border-[#A7F3D0]/60 shadow-2xs"
-              >
-                <CheckCircleIcon class="w-3.5 h-3.5 text-[#059669]" />
-                <span>Synced</span>
-              </span>
-              <span
-                v-else
-                class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[0.7rem] font-medium bg-gray-100 text-gray-600"
-              >
-                {{ item.google_sync_status || 'Pending' }}
-              </span>
-            </div>
+
           </div>
 
           <!-- Middle Row: Title & Description -->
@@ -229,50 +205,58 @@
           <div class="h-px bg-[#F4F4F5] -mx-4 sm:-mx-5"></div>
 
           <!-- Bottom Row: Mentor/Student Details & Action Buttons -->
-          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-0.5">
-            <!-- Email Details -->
-            <div class="flex flex-col gap-1 text-xs min-w-0">
-              <div v-if="item.mentor_email" class="flex items-center gap-2 text-[#3F3F46] min-w-0">
-                <span class="text-[0.68rem] font-bold uppercase tracking-wider text-[#A1A1AA] w-14 shrink-0">Mentor:</span>
-                <span class="font-medium text-[#18181B] truncate" :title="item.mentor_email">{{ item.mentor_email }}</span>
-              </div>
-              <div v-if="item.student_emails && item.student_emails.length > 0" class="flex items-center gap-2 text-[#3F3F46] min-w-0">
-                <span class="text-[0.68rem] font-bold uppercase tracking-wider text-[#A1A1AA] w-14 shrink-0">Student:</span>
-                <span class="text-[#71717A] truncate" :title="item.student_emails.join(', ')">
-                  {{ item.student_emails.join(', ') }}
+          <div class="flex flex-col sm:flex-row sm:items-start justify-between gap-3 pt-0.5">
+            <!-- Mentor & Students stacked -->
+            <div class="flex flex-col gap-1.5 min-w-0 flex-1">
+              <!-- Mentor row -->
+              <div v-if="item.mentor || item.mentor_email" class="flex items-center gap-2">
+                <span class="text-[0.65rem] font-bold uppercase tracking-wider text-[#A1A1AA] w-12 shrink-0">Mentor</span>
+                <span class="w-6 h-6 rounded-full bg-[#443E8D] text-white font-bold text-[0.6rem] flex items-center justify-center shrink-0 overflow-hidden">
+                  <img v-if="item.mentor?.avatar_url" :src="item.mentor.avatar_url" class="w-full h-full object-cover" />
+                  <span v-else>{{ (item.mentor?.fullname || item.mentor_email || 'M')[0].toUpperCase() }}</span>
                 </span>
+                <span class="text-[0.82rem] font-semibold text-[#18181B]">{{ item.mentor?.fullname || item.mentor_email }}</span>
+              </div>
+
+              <!-- Students row -->
+              <div v-if="(item.students && item.students.length > 0) || item.student_emails?.length" class="flex items-center gap-2 flex-wrap">
+                <span class="text-[0.65rem] font-bold uppercase tracking-wider text-[#A1A1AA] w-12 shrink-0">Murid</span>
+                <template v-if="item.students && item.students.length > 0">
+                  <div v-for="st in item.students" :key="st.email || st.fullname" class="flex items-center gap-1.5">
+                    <span class="w-6 h-6 rounded-full bg-[#E8E7F5] text-[#443E8D] font-bold text-[0.6rem] flex items-center justify-center shrink-0 overflow-hidden">
+                      <img v-if="st.avatar_url" :src="st.avatar_url" class="w-full h-full object-cover" />
+                      <span v-else>{{ (st.fullname || 'S')[0].toUpperCase() }}</span>
+                    </span>
+                    <span class="text-[0.82rem] font-medium text-[#18181B]">{{ st.fullname }}</span>
+                  </div>
+                </template>
+                <template v-else>
+                  <div v-for="email in item.student_emails" :key="email" class="flex items-center gap-1.5">
+                    <span class="w-6 h-6 rounded-full bg-[#E8E7F5] text-[#443E8D] font-bold text-[0.6rem] flex items-center justify-center shrink-0">?</span>
+                    <span class="text-[0.82rem] font-medium text-[#18181B]">{{ email }}</span>
+                  </div>
+                </template>
               </div>
             </div>
 
-            <!-- Action Buttons: Notification Badge, Meet Link & Copy -->
-            <div class="flex items-center gap-2 flex-wrap sm:shrink-0 pt-1 sm:pt-0">
-              <!-- Notification Pill -->
-              <span
-                v-if="formatNotification(item.notifications)"
-                class="inline-flex items-center text-[0.68rem] text-[#6B7280] bg-[#F4F4F5] px-2.5 py-1.5 rounded-xl font-medium"
+            <!-- Action Buttons: Meet Link & Copy -->
+            <div v-if="item.meet_link" class="flex items-center gap-2 shrink-0">
+              <a
+                :href="item.meet_link"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#443E8D] text-white text-xs font-semibold hover:bg-[#373273] transition-all shadow-xs hover:-translate-y-0.5 no-underline"
               >
-                {{ formatNotification(item.notifications) }}
-              </span>
-
-              <!-- Join Meet & Copy Buttons -->
-              <div v-if="item.meet_link" class="flex items-center gap-2">
-                <a
-                  :href="item.meet_link"
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  class="inline-flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-[#443E8D] text-white text-xs font-semibold hover:bg-[#373273] transition-all shadow-xs hover:-translate-y-0.5 no-underline"
-                >
-                  <VideoCameraIcon class="w-4 h-4" />
-                  <span>Join Meet</span>
-                </a>
-                <button
-                  type="button"
-                  @click="copyLink(item.meet_link, item.id)"
-                  class="px-3 py-2 rounded-xl border border-[#E4E4E7] bg-white text-xs font-semibold text-[#52525B] hover:text-[#18181B] hover:bg-[#F4F4F5] transition-colors cursor-pointer"
-                >
-                  {{ copiedId === item.id ? 'Tersalin!' : 'Copy' }}
-                </button>
-              </div>
+                <VideoCameraIcon class="w-4 h-4" />
+                <span>Join Meet</span>
+              </a>
+              <button
+                type="button"
+                @click="copyLink(item.meet_link, item.id)"
+                class="px-3 py-2 rounded-xl border border-[#E4E4E7] bg-white text-xs font-semibold text-[#52525B] hover:text-[#18181B] hover:bg-[#F4F4F5] transition-colors cursor-pointer"
+              >
+                {{ copiedId === item.id ? 'Tersalin!' : 'Copy' }}
+              </button>
             </div>
           </div>
         </div>
@@ -288,12 +272,22 @@ import {
   CalendarDaysIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
-  CheckCircleIcon,
   ArrowPathIcon,
   VideoCameraIcon,
   ClockIcon,
   PlusIcon
 } from '@heroicons/vue/24/outline'
+
+interface UserProfileSummary {
+  id?: string
+  fullname?: string
+  username?: string
+  email: string
+  avatar_url?: string | null
+  whatsapp?: string | null
+  pekerjaan?: string | null
+  instansi?: string | null
+}
 
 interface ScheduleItem {
   id: string
@@ -310,6 +304,8 @@ interface ScheduleItem {
   color: string | null
   status: string | null
   notifications: any[] | null
+  mentor?: UserProfileSummary | null
+  students?: UserProfileSummary[]
 }
 
 const supabase = useSupabaseClient()

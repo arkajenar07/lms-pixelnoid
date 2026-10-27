@@ -4,70 +4,35 @@
     <!-- ── 1. RINGKASAN METRIK (HEADER STAT CARDS) ── -->
     <!-- ── 1. RINGKASAN METRIK (HEADER STAT CARDS) ── -->
     <section class="grid grid-cols-2 gap-3 lg:grid-cols-4 w-full min-w-0">
-      <!-- Card: Pending -->
-      <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between transition-all hover:border-[#D4D4D8] min-w-0">
-        <div class="flex items-center justify-between gap-1.5 sm:gap-2 min-w-0">
-          <span class="text-[0.6rem] sm:text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A] truncate">Perlu Dikerjakan</span>
-          <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-[#FFFBEB] border border-[#FDE68A] flex items-center justify-center text-[#D97706] shrink-0">
-            <ClockIcon class="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+      <article
+        v-for="stat in taskSummaryStats"
+        :key="stat.label"
+        class="rounded-2xl border border-[#E4E4E7] bg-white p-3.5 shadow-sm transition-transform duration-200 hover:-translate-y-0.5"
+      >
+        <div class="flex items-start justify-between gap-2">
+          <div class="min-w-0 flex-1">
+            <p class="truncate text-[0.6rem] font-bold uppercase tracking-wider text-[#71717A]">
+              {{ stat.label }}
+            </p>
+            <p class="mt-1.5 text-[1.5rem] font-bold tracking-tight text-[#18181B] leading-none">
+              <span v-if="isLoading" class="animate-pulse text-[#E4E4E7]">—</span>
+              <span v-else>{{ stat.value }}</span>
+            </p>
+            <p class="mt-1 truncate text-[0.65rem] text-[#71717A]">{{ stat.hint }}</p>
+          </div>
+          <div class="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl border border-[#ECECF1] bg-[#FAFAFB] text-[#443E8D]">
+            <component :is="stat.icon" class="h-4 w-4" />
           </div>
         </div>
-        <div class="mt-2.5 sm:mt-3">
-          <div class="text-[1.5rem] sm:text-[1.75rem] font-black text-[#18181B] tracking-tight leading-none">
-            {{ metrics.pending }}
-          </div>
-          <p class="text-[0.62rem] sm:text-[0.7rem] text-[#A1A1AA] font-medium mt-1 mb-0 truncate">Tugas belum dikumpulkan</p>
-        </div>
-      </div>
-
-      <!-- Card: Submitted -->
-      <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between transition-all hover:border-[#D4D4D8] min-w-0">
-        <div class="flex items-center justify-between gap-1.5 sm:gap-2 min-w-0">
-          <span class="text-[0.6rem] sm:text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A] truncate">Menunggu Review</span>
-          <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-[#EFF6FF] border border-[#BFDBFE] flex items-center justify-center text-[#2563EB] shrink-0">
-            <ArrowUpTrayIcon class="w-3.5 h-3.5 sm:w-4 sm:h-4" />
+        <div v-if="stat.progress !== undefined" class="mt-3">
+          <div class="h-1 w-full overflow-hidden rounded-full bg-[#F1F1F4]">
+            <div
+              class="h-full rounded-full bg-[#443E8D] transition-all duration-700 ease-out"
+              :style="{ width: `${stat.progress}%` }"
+            />
           </div>
         </div>
-        <div class="mt-2.5 sm:mt-3">
-          <div class="text-[1.5rem] sm:text-[1.75rem] font-black text-[#2563EB] tracking-tight leading-none">
-            {{ metrics.submitted }}
-          </div>
-          <p class="text-[0.62rem] sm:text-[0.7rem] text-[#A1A1AA] font-medium mt-1 mb-0 truncate">Antre diperiksa mentor</p>
-        </div>
-      </div>
-
-      <!-- Card: Reviewed -->
-      <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between transition-all hover:border-[#D4D4D8] min-w-0">
-        <div class="flex items-center justify-between gap-1.5 sm:gap-2 min-w-0">
-          <span class="text-[0.6rem] sm:text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A] truncate">Telah Dinilai</span>
-          <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-[#ECFDF5] border border-[#A7F3D0] flex items-center justify-center text-[#059669] shrink-0">
-            <CheckCircleIcon class="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          </div>
-        </div>
-        <div class="mt-2.5 sm:mt-3">
-          <div class="text-[1.5rem] sm:text-[1.75rem] font-black text-[#059669] tracking-tight leading-none">
-            {{ metrics.reviewed }}
-          </div>
-          <p class="text-[0.62rem] sm:text-[0.7rem] text-[#A1A1AA] font-medium mt-1 mb-0 truncate">Skor &amp; feedback masuk</p>
-        </div>
-      </div>
-
-      <!-- Card: Average Grade -->
-      <div class="bg-white p-3.5 sm:p-5 rounded-2xl border border-[#E4E4E7] shadow-[0_1px_3px_rgba(0,0,0,0.02)] flex flex-col justify-between transition-all hover:border-[#D4D4D8] min-w-0">
-        <div class="flex items-center justify-between gap-1.5 sm:gap-2 min-w-0">
-          <span class="text-[0.6rem] sm:text-[0.68rem] font-bold uppercase tracking-wider text-[#71717A] truncate">Rata-rata Nilai</span>
-          <div class="w-7 h-7 sm:w-8 sm:h-8 rounded-xl bg-[#F5F3FF] border border-[#DDD6FE] flex items-center justify-center text-[#7C3AED] shrink-0">
-            <TrophyIcon class="w-3.5 h-3.5 sm:w-4 sm:h-4" />
-          </div>
-        </div>
-        <div class="mt-2.5 sm:mt-3">
-          <div class="text-[1.5rem] sm:text-[1.75rem] font-black text-[#18181B] tracking-tight leading-none">
-            {{ metrics.averageGrade !== null ? metrics.averageGrade : '-' }}
-            <span v-if="metrics.averageGrade !== null" class="text-[0.8rem] sm:text-[0.9rem] font-semibold text-[#A1A1AA]">/100</span>
-          </div>
-          <p class="text-[0.62rem] sm:text-[0.7rem] text-[#A1A1AA] font-medium mt-1 mb-0 truncate">Rata-rata evaluasi</p>
-        </div>
-      </div>
+      </article>
     </section>
 
     <!-- ── 2. FILTER & SEARCH CONTROLS ── -->
@@ -480,10 +445,10 @@
                 </div>
               </div>
               <button
-                class="text-[0.72rem] font-semibold text-[#443E8D] hover:underline"
+                class="text-[0.72rem] font-semibold text-[#443E8D] hover:underline cursor-pointer"
                 @click="goToMentorTab(selectedAssignment)"
               >
-                Lihat di Tab Catatan →
+                Hubungi Mentor Pengampu →
               </button>
             </div>
 
@@ -576,6 +541,40 @@ const isLoading = ref(initialAssignments.length === 0)
 const isSubmitting = ref(false)
 const assignments = ref<any[]>(initialAssignments)
 const metrics = ref(initialMetrics)
+
+const taskSummaryStats = computed(() => {
+  const total = metrics.value.total || 0
+  const reviewed = metrics.value.reviewed || 0
+  const progress = total > 0 ? Math.round((reviewed / total) * 100) : 0
+
+  return [
+    {
+      label: 'Perlu Dikerjakan',
+      value: isLoading.value ? '—' : String(metrics.value.pending),
+      hint: 'Tugas belum dikumpulkan',
+      icon: ClockIcon,
+    },
+    {
+      label: 'Menunggu Review',
+      value: isLoading.value ? '—' : String(metrics.value.submitted),
+      hint: 'Antre diperiksa mentor',
+      icon: ArrowUpTrayIcon,
+    },
+    {
+      label: 'Telah Dinilai',
+      value: isLoading.value ? '—' : String(reviewed),
+      hint: 'Skor & feedback masuk',
+      icon: CheckCircleIcon,
+      progress: progress,
+    },
+    {
+      label: 'Rata-rata Nilai',
+      value: isLoading.value ? '—' : (metrics.value.averageGrade !== null ? `${metrics.value.averageGrade}/100` : '-'),
+      hint: 'Rata-rata evaluasi',
+      icon: TrophyIcon,
+    },
+  ]
+})
 
 const activeStatusFilter = ref('all')
 const activeTypeFilter = ref('all')

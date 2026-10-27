@@ -34,15 +34,24 @@ export default defineEventHandler(async (event) => {
 
   // ── Parse body ─────────────────────────────────────────────────
   const body = await readBody(event)
-  const { username, currentPassword, newPassword } = body as {
+  const { username, whatsapp, pekerjaan, instansi, currentPassword, newPassword } = body as {
     username?: string
+    whatsapp?: string
+    pekerjaan?: string
+    instansi?: string
     currentPassword?: string
     newPassword?: string
   }
 
   const errors: string[] = []
 
-  // ── 1. Update username di tabel users ─────────────────────────
+  // ── 1. Update profil (username, whatsapp, pekerjaan, instansi) ───
+  const profileUpdates: Record<string, any> = {}
+
+  if (whatsapp !== undefined) profileUpdates.whatsapp = whatsapp.trim() || null
+  if (pekerjaan !== undefined) profileUpdates.pekerjaan = pekerjaan.trim() || null
+  if (instansi !== undefined) profileUpdates.instansi = instansi.trim() || null
+
   if (username !== undefined && username.trim() !== '') {
     const cleanUsername = username.trim().toLowerCase().replace(/\s+/g, '_')
 
@@ -57,14 +66,18 @@ export default defineEventHandler(async (event) => {
     if (existing) {
       errors.push('Username sudah digunakan oleh pengguna lain.')
     } else {
-      const { error: updateErr } = await adminClient
-        .from('users')
-        .update({ username: cleanUsername })
-        .eq('id', user.id)
+      profileUpdates.username = cleanUsername
+    }
+  }
 
-      if (updateErr) {
-        errors.push('Gagal memperbarui username: ' + updateErr.message)
-      }
+  if (Object.keys(profileUpdates).length > 0 && errors.length === 0) {
+    const { error: updateErr } = await adminClient
+      .from('users')
+      .update(profileUpdates)
+      .eq('id', user.id)
+
+    if (updateErr) {
+      errors.push('Gagal memperbarui profil: ' + updateErr.message)
     }
   }
 
