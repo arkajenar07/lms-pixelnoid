@@ -816,6 +816,78 @@
                     "
                   ></h3>
 
+                  <!-- Slide / Presentasi (iframe) -->
+                  <div
+                    v-else-if="
+                      isSlideBlock(block)
+                    "
+                    class="
+                      group
+                      my-5
+                      flex min-w-0
+                      flex-col
+                      items-center
+                      sm:my-6
+                    "
+                  >
+                    <div
+                      class="
+                        relative
+                        w-full
+                        overflow-hidden
+                        rounded-xl
+                        border
+                        border-gray-200/70
+                        bg-gray-50
+                        shadow-sm
+                        transition-all
+                        group-hover:shadow-md
+                        sm:rounded-2xl
+                      "
+                      style="padding-top: 56.25%"
+                    >
+                      <iframe
+                        :src="normalizeSlideEmbedUrl(getSlideUrl(block))"
+                        class="
+                          absolute inset-0
+                          h-full w-full
+                        "
+                        frameborder="0"
+                        allowfullscreen
+                        allow="
+                          autoplay;
+                          clipboard-write;
+                          encrypted-media;
+                          fullscreen;
+                          picture-in-picture
+                        "
+                        loading="lazy"
+                      ></iframe>
+                    </div>
+
+                    <span
+                      v-if="
+                        block.caption
+                      "
+                      class="
+                        mt-2
+                        break-words
+                        px-4
+                        text-center
+                        text-[0.65rem]
+                        italic
+                        text-gray-400
+                        [overflow-wrap:anywhere]
+                        sm:text-xs
+                      "
+                      v-html="
+                        formatRichText(
+                          block.caption
+                        )
+                      "
+                    ></span>
+                  </div>
+
                   <!-- Image -->
                   <div
                     v-else-if="
@@ -2329,7 +2401,7 @@ interface TableData {
 interface ContentBlock {
   id?: string
 
-  type: string
+  type?: string
 
   content?:
     | string
@@ -2352,6 +2424,8 @@ interface ContentBlock {
   withHeadings?: boolean
 
   embedService?: string
+
+  _raw?: any
 }
 
 interface ModuleData {
@@ -3118,11 +3192,55 @@ const parsedLessonContent =
       }
     }
 
-    return Array.isArray(
-      raw
-    )
-      ? raw
-      : []
+    // Handle EditorJS wrapper format: { blocks: [...], version: "..." }
+    if (
+      raw &&
+      typeof raw === 'object' &&
+      !Array.isArray(raw) &&
+      Array.isArray((raw as any).blocks)
+    ) {
+      raw = (raw as any).blocks
+    }
+
+    if (!Array.isArray(raw)) {
+      return []
+    }
+
+    // Normalize EditorJS blocks: flatten block.data into block root
+    return (raw as any[]).map((block: any) => {
+      if (
+        block &&
+        typeof block === 'object' &&
+        block.data &&
+        typeof block.data === 'object'
+      ) {
+        // Normalize EditorJS "header" type to "heading{level}"
+        let normalizedType = block.type
+        if (block.type === 'header' && block.data.level) {
+          normalizedType = `heading${block.data.level}`
+        }
+
+        return {
+          id: block.id,
+          type: normalizedType,
+          // EditorJS image: data.file.url → url, data.embed → url for embed blocks
+          url: block.data.file?.url || block.data.embed || block.data.url || block.url,
+          content: block.data.text || block.data.code || block.data.content || block.content,
+          caption: block.data.caption || block.caption,
+          items: block.data.items || block.items,
+          language: block.data.language || block.language,
+          tableData: block.data.withHeadings !== undefined
+            ? { rows: block.data.content, withHeadings: block.data.withHeadings }
+            : block.data.tableData || block.tableData,
+          withHeadings: block.data.withHeadings || block.withHeadings,
+          bookmarkData: block.data.bookmarkData || block.bookmarkData,
+          embedService: block.data.service || block.embedService,
+          // Keep original data reference just in case
+          _raw: block,
+        } as ContentBlock
+      }
+      return block as ContentBlock
+    })
   })
 
 /* =========================================================
@@ -3402,6 +3520,89 @@ function initYouTubePlayer(
  * Images
  * ======================================================= */
 
+/**
+ * Deteksi apakah URL adalah presentasi/slide embed
+ * (Google Slides, Canva, Office 365, Slideshare, dll)
+ * agar dirender sebagai <iframe>, bukan <img>
+ */
+function isSlideEmbedUrl(url: string): boolean {
+  if (!url || typeof url !== 'string') return false
+  const u = url.trim()
+  return (
+    // Google Slides
+    /docs\.google\.com\/presentation/i.test(u) ||
+    // Canva presentation
+    /canva\.com\/(design|presentation)/i.test(u) ||
+    /canva\.com\/.*\/view/i.test(u) ||
+    // Microsoft Office 365 / OneDrive embed
+    /onedrive\.live\.com\/embed/i.test(u) ||
+    /sharepoint\.com\/.*(pptx?|presentation)/i.test(u) ||
+    /officeapps\.live\.com/i.test(u) ||
+    // Slideshare
+    /slideshare\.net/i.test(u) ||
+    // Prezi
+    /prezi\.com\/view/i.test(u) ||
+    // Pitch.com
+    /pitch\.com/i.test(u) ||
+    // Figma
+    /figma\.com\/(file|proto|embed)/i.test(u)
+  )
+}
+
+/**
+ * Cek apakah block adalah slide yang harus dirender sebagai iframe
+ */
+function isSlideBlock(block: ContentBlock): boolean {
+  if (!block) return false
+  const url = getSlideUrl(block)
+  return !!url && isSlideEmbedUrl(url)
+}
+
+/**
+ * Ambil URL slide dari block
+ */
+function getSlideUrl(block: ContentBlock): string {
+  if (!block) return ''
+  const blockData = (block as any).data
+  if (blockData) {
+    if (typeof blockData.file?.url === 'string' && blockData.file.url.trim()) {
+      return blockData.file.url.trim()
+    }
+    if (typeof blockData.embed === 'string' && blockData.embed.trim()) {
+      return blockData.embed.trim()
+    }
+    if (typeof blockData.url === 'string' && blockData.url.trim()) {
+      return blockData.url.trim()
+    }
+  }
+  if (typeof block.url === 'string' && block.url.trim()) {
+    return block.url.trim()
+  }
+  if (typeof block.content === 'string' && block.content.trim()) {
+    return block.content.trim()
+  }
+  return ''
+}
+
+/**
+ * Konversi URL presentasi biasa ke URL embed yang bisa di-iframe-kan.
+ * Misal: Google Slides /pub → /embed
+ */
+function normalizeSlideEmbedUrl(url: string): string {
+  if (!url) return url
+
+  // Google Slides: ubah /pub ke /embed (agar bisa di-iframe)
+  // https://docs.google.com/presentation/d/.../pub?... → .../embed
+  if (/docs\.google\.com\/presentation/i.test(url)) {
+    return url
+      .replace(/\/pub(\?.*)?$/, '/embed')
+      .replace(/\/edit(\?.*)?$/, '/embed')
+      .replace(/\/view(\?.*)?$/, '/embed')
+  }
+
+  return url
+}
+
 function isImageBlock(
   block: ContentBlock
 ) {
@@ -3409,11 +3610,54 @@ function isImageBlock(
     return false
   }
 
+  // Block dengan type 'image' — tapi pastikan URL-nya bukan slide embed
   if (
     block.type ===
     'image'
   ) {
+    // Kalau URL-nya adalah slide, jangan render sebagai gambar
+    const imgUrl = block.url || (typeof block.content === 'string' ? block.content : '')
+    if (isSlideEmbedUrl(imgUrl)) {
+      return false
+    }
     return true
+  }
+
+  // EditorJS format: block.data?.file?.url atau block.data?.url
+  const blockData = (block as any).data
+  if (blockData) {
+    if (
+      typeof blockData.file?.url === 'string' &&
+      blockData.file.url.trim() !== ''
+    ) {
+      if (isSlideEmbedUrl(blockData.file.url)) return false
+      return true
+    }
+    if (
+      typeof blockData.url === 'string' &&
+      blockData.url.trim() !== ''
+    ) {
+      const u = blockData.url.trim()
+      if (isSlideEmbedUrl(u)) return false
+      if (
+        u.startsWith('data:image/') ||
+        /^https?:\/\/\S+/.test(u)
+      ) {
+        return true
+      }
+    }
+  }
+
+  // Block dengan field url berisi base64 atau URL gambar
+  if (typeof block.url === 'string' && block.url.trim() !== '') {
+    const url = block.url.trim()
+    if (isSlideEmbedUrl(url)) return false
+    if (
+      url.startsWith('data:image/') ||
+      /^https?:\/\/\S+/.test(url)
+    ) {
+      return true
+    }
   }
 
   if (
@@ -3451,16 +3695,57 @@ function getImageUrl(
 
   let raw = ''
 
+  const blockData = (block as any).data
+
   if (
     block.type ===
     'image'
   ) {
-    raw =
-      typeof block.content ===
-      'string'
-        ? block.content
-        : block.url ||
-          ''
+    // EditorJS format: data.file.url atau data.url
+    if (blockData) {
+      if (
+        typeof blockData.file?.url === 'string' &&
+        blockData.file.url.trim() !== ''
+      ) {
+        raw = blockData.file.url
+      } else if (
+        typeof blockData.url === 'string' &&
+        blockData.url.trim() !== ''
+      ) {
+        raw = blockData.url
+      }
+    }
+
+    // Fallback: content atau url langsung di block
+    if (!raw) {
+      raw =
+        typeof block.content === 'string' && block.content.trim() !== ''
+          ? block.content
+          : block.url || ''
+    }
+  } else if (blockData) {
+    // Block non-image tapi data-nya punya file.url atau url gambar
+    if (
+      typeof blockData.file?.url === 'string' &&
+      blockData.file.url.trim() !== ''
+    ) {
+      raw = blockData.file.url
+    } else if (
+      typeof blockData.url === 'string' &&
+      blockData.url.trim() !== ''
+    ) {
+      raw = blockData.url
+    }
+  } else if (
+    typeof block.url === 'string' &&
+    block.url.trim() !== '' &&
+    (
+      block.url.startsWith('data:image/') ||
+      /^https?:\/\//.test(block.url)
+    )
+  ) {
+    // Block tanpa type tapi punya url gambar (base64 atau http)
+    raw = block.url
   } else if (
     typeof block.content ===
     'string'
